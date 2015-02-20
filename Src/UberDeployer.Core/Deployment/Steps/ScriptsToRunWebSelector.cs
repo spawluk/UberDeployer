@@ -1,21 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
+using Newtonsoft.Json;
 using UberDeployer.Common.SyntaxSugar;
 
-namespace UberDeployer.Core.Deployment
+namespace UberDeployer.Core.Deployment.Steps
 {
-  public class AsynchronousWebPasswordCollector : IPasswordCollector
+  public class ScriptsToRunWebSelector : IScriptsToRunWebSelector
   {
-    public event EventHandler<DiagnosticMessageEventArgs> DiagnosticMessagePosted;
-
-    private static readonly Dictionary<Guid, string> _collectedPasswordByDeploymentId = new Dictionary<Guid, string>();
-
+    private static readonly Dictionary<Guid, string[]> _collectedPasswordByDeploymentId = new Dictionary<Guid, string[]>();
     private readonly string _internalApiEndpointUrl;
     private readonly int _maxWaitTimeInSeconds;
 
-    public AsynchronousWebPasswordCollector(string internalApiEndpointUrl, int maxWaitTimeInSeconds)
+    public ScriptsToRunWebSelector(string internalApiEndpointUrl, int maxWaitTimeInSeconds)
     {
       Guard.NotNullNorEmpty(internalApiEndpointUrl, "internalApiEndpointUrl");
 
@@ -23,28 +23,13 @@ namespace UberDeployer.Core.Deployment
       _maxWaitTimeInSeconds = maxWaitTimeInSeconds;
     }
 
-    public static void SetCollectedCredentials(Guid deploymentId, string password)
+    public string[] GetSelectedScripts(string[] sourceScriptsList, Guid deploymentId)
     {
-      Guard.NotEmpty(deploymentId, "deploymentId");
-      Guard.NotNullNorEmpty(password, "password");
-
-      lock (_collectedPasswordByDeploymentId)
-      {
-        _collectedPasswordByDeploymentId[deploymentId] = password;
-      }
-    }
-
-    public string CollectPasswordForUser(Guid deploymentId, string environmentName, string machineName, string userName)
-    {
-      Guard.NotNullNorEmpty(environmentName, "environmentName");
-      Guard.NotNullNorEmpty(machineName, "machineName");
-      Guard.NotNullNorEmpty(userName, "userName");
-
       using (var webClient = CreateWebClient())
       {
-        string result =
-          webClient.DownloadString(
-            string.Format("{0}/CollectCredentials?deploymentId={1}&environmentName={2}&machineName={3}&username={4}", _internalApiEndpointUrl, deploymentId, environmentName, machineName, userName));
+        var serializeObject = JsonConvert.SerializeObject(sourceScriptsList);
+
+        var result = webClient.UploadString(string.Format("{0}/CollectScriptsToRun", _internalApiEndpointUrl), serializeObject);
 
         if (!string.Equals(result, "OK", StringComparison.OrdinalIgnoreCase))
         {
@@ -52,8 +37,8 @@ namespace UberDeployer.Core.Deployment
         }
       }
 
-      DateTime pollStartTime = DateTime.UtcNow;
-      string password;
+      var pollStartTime = DateTime.UtcNow;
+      string[] password;
 
       while (true)
       {
@@ -77,20 +62,10 @@ namespace UberDeployer.Core.Deployment
         }
       }
 
-      if (string.IsNullOrEmpty(password))
-      {
-        using (var webClient = CreateWebClient())
-        {
-          webClient.DownloadString(string.Format("{0}/OnCollectCredentialsTimedOut?deploymentId={1}", _internalApiEndpointUrl, deploymentId));
-        }
-
-        throw new TimeoutException("Given up waiting for credentials.");
-      }
-
-      PostDiagnosticMessage("Credentials were provided - we'll continue.", DiagnosticMessageType.Trace);
-
-      return password;
+      return sourceScriptsList;
     }
+
+    public event EventHandler<DiagnosticMessageEventArgs> DiagnosticMessagePosted;
 
     private static WebClient CreateWebClient()
     {
@@ -118,6 +93,14 @@ namespace UberDeployer.Core.Deployment
       if (eventHandler != null)
       {
         eventHandler(sender, diagnosticMessageEventArgs);
+      }
+    }
+
+    public static void SetSelectedScriptsToRun(Guid deploymentId, string[] password)
+    {
+      lock (_collectedPasswordByDeploymentId)
+      {
+        _collectedPasswordByDeploymentId[deploymentId] = password;
       }
     }
   }
