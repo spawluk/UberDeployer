@@ -94,6 +94,8 @@
     <Compile Include="Deployment\MsSqlDbScriptRunnerTests.cs" />
     <Compile Include="Deployment\PrepareVersionedFolderDeploymentStepTests.cs" />
     <Compile Include="Deployment\RunDbScriptsDeploymentStepTests.cs" />
+    <Compile Include="Deployment\Steps\MsSqlDbManagerTests.cs" />
+    <Compile Include="Deployment\Tasks\PublishDbProjectDeploymentTaskTests.cs" />
     <Compile Include="Deployment\UpdateApplicationShortcutDeploymentStepTests.cs" />
     <Compile Include="Domain\IisAppPoolInfoTests.cs" />
     <Compile Include="Domain\EnvironmentInfoTests.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="InternalExceptionTests.cs" />
     <Compile Include="Management\Db\DbVersionProviderTests.cs" />
     <Compile Include="Management\Db\DbVersionProviderTestUtils.cs" />
+    <Compile Include="Management\Db\MsSqlDatabasePublisherTests.cs" />
     <Compile Include="Management\NtServices\ScExeBasedNtServiceManagerTests.cs" />
     <Compile Include="Management\Iis\MsDeployBasedIisManagerTests.cs" />
     <Compile Include="Management\NtServices\NtServiceDescriptorTests.cs" />

@@ -8,9 +8,12 @@ namespace UberDeployer.Core.Domain
 {
   public class DbProjectInfo : ProjectInfo
   {
-    public DbProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string dbName, string databaseServerId, bool isTransactional)
+    private readonly string _dacpacFile;
+
+    public DbProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string dbName, string databaseServerId, bool isTransactional, string dacpacFile)
       : base(name, artifactsRepositoryName, allowedEnvironmentNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
+      _dacpacFile = dacpacFile;
       DbName = dbName;
       DatabaseServerId = databaseServerId;
       IsTransactional = isTransactional;
@@ -54,10 +57,21 @@ namespace UberDeployer.Core.Domain
       throw new NotSupportedException();
     }
 
+    public string GetDacpacFileName()
+    {
+      if (!string.IsNullOrWhiteSpace(_dacpacFile))
+      {
+        return _dacpacFile;
+      }
+
+      // by default dacpac file has the same name as artifacts repository
+      return string.Format("{0}.dacpac", ArtifactsRepositoryName);
+    }
+
     public string DbName { get; private set; }
 
     public string DatabaseServerId { get; set; }
 
-    public bool IsTransactional { get; set; }
+    public bool IsTransactional { get; set; }    
   }
 }

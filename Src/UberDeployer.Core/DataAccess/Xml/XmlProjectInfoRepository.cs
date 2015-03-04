@@ -125,6 +125,8 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string DatabaseServerId { get; set; }
 
       public bool UsesSqlCmdUpgradeScripts { get; set; }
+
+      public string DacpacFile { get; set; }
     }
 
     public class UberDeployerAgentProjectInfoXml : NtServiceProjectInfoXml
@@ -300,7 +302,8 @@ namespace UberDeployer.Core.DataAccess.Xml
             dbProjectInfoXml.ArtifactsAreNotEnvironmentSpecific,
             dbProjectInfoXml.DbName,
             dbProjectInfoXml.DatabaseServerId,
-            dbProjectInfoXml.UsesSqlCmdUpgradeScripts);
+            dbProjectInfoXml.UsesSqlCmdUpgradeScripts,
+            dbProjectInfoXml.DacpacFile);
       }
 
       var extensionProjectXml = projectInfoXml as ExtensionProjectInfoXml;

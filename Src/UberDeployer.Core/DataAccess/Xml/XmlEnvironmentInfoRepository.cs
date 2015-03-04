@@ -75,6 +75,10 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string Id { get; set; }
 
       public string MachineName { get; set; }
+
+      public string DataDirPath { get; set; }
+
+      public string LogDirPath { get; set; }
     }
 
     public class WebAppProjectConfigurationOverrideXml
@@ -209,7 +213,9 @@ namespace UberDeployer.Core.DataAccess.Xml
             e =>
               new DatabaseServer(
                 e.Id,
-                e.MachineName)),
+                e.MachineName,
+                e.DataDirPath,
+                e.LogDirPath)),
           environmentInfoXml.ProjectToFailoverClusterGroupMappings.Select(
             e =>
               new ProjectToFailoverClusterGroupMapping(

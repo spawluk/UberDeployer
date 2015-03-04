@@ -64,7 +64,8 @@ namespace UberDeployer.Core.Tests.Generators
           !areEnvironmentSpecific,
           "database_name",
           "database_server",
-          false);
+          false,
+          "dacpacFile");
     }
 
     public static TerminalAppProjectInfo GetTerminalAppProjectInfo()

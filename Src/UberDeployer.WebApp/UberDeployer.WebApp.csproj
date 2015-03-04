@@ -130,6 +130,7 @@
     <Content Include="Static\css\bootstrap-helpers.min.css">
       <DependentUpon>bootstrap-helpers.css</DependentUpon>
     </Content>
+    <Content Include="favicon.ico" />
     <Content Include="Static\plugins\bootstrap\css\bootstrap.min.css">
       <DependentUpon>bootstrap.css</DependentUpon>
     </Content>

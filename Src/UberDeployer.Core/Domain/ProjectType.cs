@@ -11,5 +11,6 @@
     WebService = 6,
     UberDeployerAgent = 7,
     Extension = 8,
+    SsdtDb = 9,
   }
 }
