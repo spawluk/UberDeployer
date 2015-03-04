@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Management.Db;

@@ -8,6 +8,7 @@ using UberDeployer.Core.DataAccess;
 using UberDeployer.Core.DataAccess.Xml;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
+using UberDeployer.Core.Domain.Input;
 using UberDeployer.Core.Management.Cmd;
 using UberDeployer.Core.Management.Db;
 using UberDeployer.Core.Management.Db.DbManager;
@@ -23,12 +24,12 @@ namespace UberDeployer.Core.Tests.Deployment.Tasks
     [SetUp]
     public void SetUp()
     {
-      const string projectFilePath = @"..\..\Data\ProjectInfos.xml";
-      const string environmentFilePath = @"..\..\Data\EnvironmentInfo_Local.xml";
+      const string projectFilePath = @"Data\ProjectInfos.xml";
+      const string environmentDirPath = @"Data";
 
       IProjectInfoRepository projectInfoRepository = new XmlProjectInfoRepository(projectFilePath);
       IMsSqlDatabasePublisher databasePublisher = new MsSqlDatabasePublisher(new CmdExecutor());
-      IEnvironmentInfoRepository environmentInfoRepository = new XmlEnvironmentInfoRepository(environmentFilePath);
+      IEnvironmentInfoRepository environmentInfoRepository = new XmlEnvironmentInfoRepository(environmentDirPath);
       IFileAdapter fileAdapter = new FileAdapter();
       IArtifactsRepository artifactsRepository = new TeamCityArtifactsRepository(new TeamCityClient("teamcity", 90, "guest", "guest"));
       IDbManagerFactory dbManagerFactory = new MsSqlDbManagerFactory();
@@ -48,7 +49,13 @@ namespace UberDeployer.Core.Tests.Deployment.Tasks
     public void PublishDbProject()
     {
       // arrange
-      DeploymentInfo deploymentInfo = new DeploymentInfo(Guid.NewGuid(), false, "");
+      const string projectName = "Constance.Database";
+      const string projectConfigurationName = "Production";
+      const string projectConfigurationBuildId = "162841"; // "1.13.2.221";
+      const string targetEnvironmentName = "Local";
+      InputParams inputParams = new SsdtInputParams();
+
+      DeploymentInfo deploymentInfo = new DeploymentInfo(Guid.NewGuid(), false, projectName, projectConfigurationName, projectConfigurationBuildId, targetEnvironmentName, inputParams);
       _publishDbProjectDeploymentTask.Initialize(deploymentInfo);
 
       // act

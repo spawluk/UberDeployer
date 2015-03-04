@@ -86,7 +86,7 @@ namespace UberDeployer.Core.Management.Db.DbManager
       {
         Server server = GetServer(connection);
 
-        return server.ConnectionContext.ExecuteNonQuery(queryString);
+        return server.ConnectionContext.ExecuteScalar(queryString);
       }
     }
 

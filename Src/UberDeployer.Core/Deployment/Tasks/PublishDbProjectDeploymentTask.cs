@@ -1,4 +1,5 @@
-﻿using UberDeployer.Common.IO;
+﻿using System;
+using UberDeployer.Common.IO;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
@@ -50,14 +51,16 @@ namespace UberDeployer.Core.Deployment.Tasks
         environmentInfo.GetDbProjectConfiguration(projectInfo);
 
       DatabaseServer databaseServer =
-        environmentInfo.GetDatabaseServer(dbProjectConfiguration.DatabaseServerId);      
+        environmentInfo.GetDatabaseServer(dbProjectConfiguration.DatabaseServerId);
+
+      string artifactsDirPath = GetTempDirPath();
 
       // create a step for downloading the artifacts
       var downloadArtifactsDeploymentStep =
         new DownloadArtifactsDeploymentStep(
           projectInfo,
           DeploymentInfo,
-          GetTempDirPath(),
+          artifactsDirPath,
           _artifactsRepository);
 
       AddSubTask(downloadArtifactsDeploymentStep);
@@ -98,11 +101,11 @@ namespace UberDeployer.Core.Deployment.Tasks
         new PublishDatabaseDeploymentStep(
           projectInfo,
           databaseServer,
-          extractArtifactsDeploymentStep.BinariesDirPath,
+          artifactsDirPath,
           _databasePublisher);
 
       AddSubTask(publishDatabaseDeploymentStep);
-    }    
+    }
 
     public override string Description
     {
