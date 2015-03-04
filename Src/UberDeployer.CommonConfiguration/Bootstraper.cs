@@ -7,12 +7,15 @@ using NHibernate;
 using Castle.MicroKernel.Registration;
 using UberDeployer.Common.IO;
 using UberDeployer.Core.Configuration;
+using UberDeployer.Core.DataAccess.Json;
 using UberDeployer.Core.DataAccess.NHibernate;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.DataAccess.Xml;
 using UberDeployer.Core.DataAccess;
+using UberDeployer.Core.Management.Cmd;
 using UberDeployer.Core.Management.Db;
+using UberDeployer.Core.Management.Db.DbManager;
 using UberDeployer.Core.Management.Metadata;
 using UberDeployer.Core.Management.MsDeploy;
 using UberDeployer.Core.TeamCity;
@@ -31,6 +34,7 @@ namespace UberDeployer.CommonConfiguration
     private static readonly string _ApplicationConfigPath = Path.Combine(_BaseDirPath, @"Data\ApplicationConfiguration.xml");
     private static readonly string _ProjectInfosFilePath = Path.Combine(_BaseDirPath, @"Data\ProjectInfos.xml");
     private static readonly string _EnvironmentInfosDirPath = Path.Combine(_BaseDirPath, @"Data");
+    private static readonly string _EnvironmentDeployInfosDirPath = Path.Combine(_BaseDirPath, @"Data\EnvDeploy");
 
     private static readonly TimeSpan _NtServiceManagerOperationsTimeout = TimeSpan.FromMinutes(2);
 
@@ -53,6 +57,10 @@ namespace UberDeployer.CommonConfiguration
 
         Component.For<IEnvironmentInfoRepository>()
           .UsingFactoryMethod(() => new XmlEnvironmentInfoRepository(_EnvironmentInfosDirPath))
+          .LifeStyle.Singleton,
+          
+        Component.For<IEnvironmentDeployInfoRepository>()
+          .UsingFactoryMethod(() => new JsonEnvironmentDeployInfoRepository(_EnvironmentDeployInfosDirPath))
           .LifeStyle.Singleton);
 
       container.Register(
@@ -132,6 +140,21 @@ namespace UberDeployer.CommonConfiguration
 
                 return deploymentPipeline;
               })
+          .LifeStyle.Transient);
+
+      container.Register(
+        Component.For<IDbManagerFactory>()
+          .ImplementedBy<MsSqlDbManagerFactory>()
+          .LifeStyle.Transient);
+
+      container.Register(
+        Component.For<IMsSqlDatabasePublisher>()
+          .ImplementedBy<MsSqlDatabasePublisher>()
+          .LifeStyle.Transient);
+
+      container.Register(
+        Component.For<ICmdExecutor>()
+          .ImplementedBy<CmdExecutor>()
           .LifeStyle.Transient);
 
       container.Register(

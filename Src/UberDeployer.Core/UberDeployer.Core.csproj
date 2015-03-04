@@ -82,6 +82,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\Dapper\SqlMapper.cs" />
+    <Compile Include="Domain\ProjectDeploymentInfo.cs" />
+    <Compile Include="Domain\IEnvironmentDeployInfoRepository.cs" />
+    <Compile Include="Domain\EnvironmentDeployInfo.cs" />
+    <Compile Include="DataAccess\Json\JsonEnvironmentDeployInfoRepository.cs" />
     <Compile Include="Deployment\AsynchronousWebPasswordCollector.cs" />
     <Compile Include="Deployment\Steps\CleanDirectoryDeploymentStep.cs" />
     <Compile Include="Deployment\Steps\ConfigureBinariesStep.cs" />
@@ -93,6 +97,7 @@
     <Compile Include="Deployment\DirPathParamsResolver.cs" />
     <Compile Include="Deployment\IDirPathParamsResolver.cs" />
     <Compile Include="Deployment\Steps\ToggleSchedulerAppEnabledStep.cs" />
+    <Compile Include="Deployment\Tasks\DeployEnvironmentTask.cs" />
     <Compile Include="Deployment\Tasks\PublishDbProjectDeploymentTask.cs" />
     <Compile Include="Deployment\Steps\DropDatabaseDeploymentStep.cs" />
     <Compile Include="Deployment\Steps\PublishDatabaseDeploymentStep.cs" />
@@ -102,6 +107,7 @@
     <Compile Include="Domain\DbProjectConfigurationOverride.cs" />
     <Compile Include="Deployment\Tasks\DeployUberDeployerAgentDeploymentTask.cs" />
     <Compile Include="Deployment\Tasks\DeployExtensionProjectDeploymentTask.cs" />
+    <Compile Include="Domain\BatchDeploymentInfo.cs" />
     <Compile Include="Domain\Input\ExtensionInputParams.cs" />
     <Compile Include="Domain\Input\SsdtInputParams.cs" />
     <Compile Include="Domain\Repetition.cs" />

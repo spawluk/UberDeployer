@@ -26,6 +26,10 @@
       <Id>Sample.User</Id>
       <UserName>UberDeployer</UserName>
     </EnvironmentUserXml>
+    <EnvironmentUserXml>
+      <Id>Constance.User</Id>
+      <UserName>ki-centrala\m.rubin</UserName>
+    </EnvironmentUserXml>
   </EnvironmentUsers>
   <AppPoolInfos>
     <AppPoolInfoXml>
@@ -38,7 +42,9 @@
   <DatabaseServers>
     <DatabaseServerXml>
       <Id>Default</Id>
-      <MachineName>localhost</MachineName>
+      <MachineName>localhost\mssqlserver2012</MachineName>
+      <DataDirPath>C:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER2012\MSSQL\DATA</DataDirPath>
+      <LogDirPath>C:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER2012\MSSQL\DATA</LogDirPath>
     </DatabaseServerXml>
   </DatabaseServers>
   <WebAppProjectConfigurationOverrides>

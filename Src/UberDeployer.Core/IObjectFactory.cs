@@ -3,8 +3,10 @@ using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
+using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Management.Db;
+using UberDeployer.Core.Management.Db.DbManager;
 using UberDeployer.Core.Management.FailoverCluster;
 using UberDeployer.Core.Management.Iis;
 using UberDeployer.Core.Management.Metadata;
@@ -57,5 +59,11 @@ namespace UberDeployer.Core
     IFileAdapter CreateFileAdapter();
     
     IZipFileAdapter CreateZipFileAdapter();
+    
+    IEnvironmentDeployInfoRepository CreateEnvironmentDeployInfoRepository();
+
+    IDbManagerFactory CreateDbManagerFactory();
+
+    IMsSqlDatabasePublisher CreateMsSqlDatabasePublisher();
   }
 }

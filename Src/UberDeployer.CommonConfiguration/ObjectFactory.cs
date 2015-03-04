@@ -1,11 +1,14 @@
 ﻿using UberDeployer.Common.IO;
 using UberDeployer.Core;
 using UberDeployer.Core.Configuration;
+using UberDeployer.Core.DataAccess.Json;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
+using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Management.Db;
+using UberDeployer.Core.Management.Db.DbManager;
 using UberDeployer.Core.Management.FailoverCluster;
 using UberDeployer.Core.Management.Iis;
 using UberDeployer.Core.Management.Metadata;
@@ -147,6 +150,21 @@ namespace UberDeployer.CommonConfiguration
     public IZipFileAdapter CreateZipFileAdapter()
     {
       return new ZipFileAdapter();
+    }
+
+    public IEnvironmentDeployInfoRepository CreateEnvironmentDeployInfoRepository()
+    {
+      return _container.Resolve<IEnvironmentDeployInfoRepository>();
+    }
+
+    public IDbManagerFactory CreateDbManagerFactory()
+    {
+      return _container.Resolve<IDbManagerFactory>();
+    }
+
+    public IMsSqlDatabasePublisher CreateMsSqlDatabasePublisher()
+    {
+      return _container.Resolve<IMsSqlDatabasePublisher>();
     }
 
     #endregion

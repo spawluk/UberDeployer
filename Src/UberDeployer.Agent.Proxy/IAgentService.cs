@@ -17,7 +17,7 @@ namespace UberDeployer.Agent.Proxy
 
     [OperationContract]
     [FaultContract(typeof(ProjectNotFoundFault))]
-    void DeployAsync(Guid deploymentId, Guid uniqueClientId, string requesterIdentity, DeploymentInfo deploymentInfo);
+    void DeployAsync(Guid deploymentId, Guid uniqueClientId, string requesterIdentity, DeploymentInfo deploymentInfoDto);
 
     [OperationContract]
     [FaultContract(typeof(ProjectNotFoundFault))]
