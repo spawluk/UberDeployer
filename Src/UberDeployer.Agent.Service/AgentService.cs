@@ -247,7 +247,7 @@ namespace UberDeployer.Agent.Service
       foreach (var projectToDeploy in environmentDeployInfo.ProjectsToDeploy)
       {        
         ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectToDeploy);
-        ProjectConfigurationBuild lastSuccessfulBuild = GetLatestSuccessfulBuild(projectToDeploy, projectConfigurationName);
+        ProjectConfigurationBuild lastSuccessfulBuild = GetLatestSuccessfulBuild(projectToDeploy, projectConfigurationName);        
 
         if (lastSuccessfulBuild == null)
         {
@@ -356,7 +356,7 @@ namespace UberDeployer.Agent.Service
         environmentInfos
           .Select(DtoMapper.Map<EnvironmentInfo, Proxy.Dto.EnvironmentInfo>)
           .ToList();
-    }
+    }   
 
     public List<string> GetWebMachineNames(string environmentName)
     {
@@ -652,6 +652,19 @@ namespace UberDeployer.Agent.Service
       }
 
       return _dirPathParamsResolver.ResolveParams(environmentInfo.ManualDeploymentPackageDirPath, projectName);           
+    }
+
+    public List<string> GetProjectsForEnvironmentDeploy(string environmentName)
+    {
+      EnvironmentDeployInfo environmentDeployInfo =
+        _environmentDeployInfoRepository.FindByName(environmentName);
+
+      if (environmentDeployInfo == null)
+      {
+        return null;
+      }
+
+      return environmentDeployInfo.ProjectsToDeploy;
     }
 
     #endregion

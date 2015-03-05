@@ -85,6 +85,11 @@ namespace UberDeployer.Agent.Proxy
       return Exec(@as => @as.GetDefaultPackageDirPath(environmentName, projectName));
     }
 
+    public List<string> GetProjectsForEnvironmentDeploy(string environmentName)
+    {
+      return Exec(@as => @as.GetProjectsForEnvironmentDeploy(environmentName));
+    }
+
     #endregion
   }
 }

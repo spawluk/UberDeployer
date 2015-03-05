@@ -22,6 +22,9 @@
         <li class="@(Model.CurrentAppPage == AppPage.History ? "active" : "")">
           <a href="@Url.Action("Index", "History")">History</a>
         </li>
+        <li class="@(Model.CurrentAppPage == AppPage.EnvDeployment ? "active" : "")">
+          <a href="@Url.Action("Index", "EnvDeployment")">Environment Deployment</a>
+        </li>
       </ul>
       <div id="sidebar-footer">
         <a href="https://github.com/marek-stoj/UberDeployer" target="_blank" class="github"><i class="fa fa-github fa-3x"></i></a>

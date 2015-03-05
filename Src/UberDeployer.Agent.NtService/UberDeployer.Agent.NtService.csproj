@@ -129,6 +129,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Data\EnvDeploy\Local.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>

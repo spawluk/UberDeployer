@@ -71,5 +71,8 @@ namespace UberDeployer.Agent.Proxy
     [FaultContract(typeof(ProjectNotFoundFault))]
     [FaultContract(typeof(EnvironmentNotFoundFault))]
     string GetDefaultPackageDirPath(string environmentName, string projectName);
+
+    [OperationContract]
+    List<string> GetProjectsForEnvironmentDeploy(string environmentName);
   }
 }

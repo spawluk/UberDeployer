@@ -4,5 +4,6 @@ namespace UberDeployer.WebApp.Core.Models
   {
     Deployment,
     History,
+    EnvDeployment,
   }
 }

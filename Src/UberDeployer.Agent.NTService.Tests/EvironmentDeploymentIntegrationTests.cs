@@ -19,6 +19,7 @@ namespace UberDeployer.Agent.NTService.Tests
     }
 
     [Test]
+    [Ignore("Manual integration test")]
     public void DeployEnv()
     {
       // arrange  

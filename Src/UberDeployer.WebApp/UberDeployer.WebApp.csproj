@@ -87,6 +87,7 @@
     <Compile Include="Core\Connectivity\ClientNotConnectedException.cs" />
     <Compile Include="Core\Connectivity\DeploymentHub.cs" />
     <Compile Include="Core\Controllers\ApiController.cs" />
+    <Compile Include="Core\Controllers\EnvDeploymentController.cs" />
     <Compile Include="Core\Controllers\InternalApiController.cs" />
     <Compile Include="Core\Models\Api\MachineSpecificProjectVersionViewModel.cs" />
     <Compile Include="Core\Models\Api\ProjectMetadataViewModel.cs" />
@@ -131,6 +132,9 @@
       <DependentUpon>bootstrap-helpers.css</DependentUpon>
     </Content>
     <Content Include="favicon.ico" />
+    <Content Include="Static\js\envDeploy.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Static\plugins\bootstrap\css\bootstrap.min.css">
       <DependentUpon>bootstrap.css</DependentUpon>
     </Content>
@@ -243,6 +247,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\EnvDeployment\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberDeployer.Agent.Proxy\UberDeployer.Agent.Proxy.csproj">
