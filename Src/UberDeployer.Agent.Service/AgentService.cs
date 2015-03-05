@@ -207,17 +207,18 @@ namespace UberDeployer.Agent.Service
 
       List<ProjectDeploymentInfo> projectsToDeploy = CreateProjectDeploymentInfos(environmentDeployInfo).ToList();
 
-      ThreadPool.QueueUserWorkItem(
-        state =>
-        {
-          IEnumerable<ProjectDeploymentInfo> dbProjectsToDeploy = projectsToDeploy.TakeWhile(x => x.ProjectInfo.Type == ProjectType.Db);
+      //ThreadPool.QueueUserWorkItem(
+      //  state =>
+      //  {
+          IEnumerable<ProjectDeploymentInfo> dbProjectsToDeploy = projectsToDeploy.FindAll(x => x.ProjectInfo.Type == ProjectType.Db);
+          projectsToDeploy.RemoveAll(x => x.ProjectInfo.Type == ProjectType.Db);
 
           // first deploy databases
           DoBatchDeployment(dbProjectsToDeploy, uniqueClientId, requesterIdentity);
 
           // then deploy other projects
           DoBatchDeployment(projectsToDeploy, uniqueClientId, requesterIdentity);
-        });
+        //});
     }
 
     private void DoBatchDeployment(IEnumerable<ProjectDeploymentInfo> projectDeploymentInfos, Guid uniqueClientId, string requesterIdentity)
@@ -254,7 +255,7 @@ namespace UberDeployer.Agent.Service
         }
 
         InputParams inputParams = BuildInputParams(projectInfo, environmentInfo);
-        var deploymentInfo = new Core.Domain.DeploymentInfo(Guid.NewGuid(), false, projectToDeploy, projectConfigurationName, lastSuccessfulBuild.Number, environmentDeployInfo.TargetEnvironment, inputParams);
+        var deploymentInfo = new Core.Domain.DeploymentInfo(Guid.NewGuid(), false, projectToDeploy, projectConfigurationName, lastSuccessfulBuild.Id, environmentDeployInfo.TargetEnvironment, inputParams);
         
         DeploymentTask deploymentTask = CreateDeploymentTask(projectInfo);
         

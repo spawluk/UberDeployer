@@ -30,6 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NHibernate, Version=3.1.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\NHibernate\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate.ByteCode.Castle">
+      <HintPath>..\..\Lib\NHibernate\NHibernate.ByteCode.Castle.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\Lib\NUnit\framework\nunit.framework.dll</HintPath>
     </Reference>
@@ -57,6 +64,10 @@
     <ProjectReference Include="..\UberDeployer.CommonConfiguration\UberDeployer.CommonConfiguration.csproj">
       <Project>{1F7893B7-4540-4469-BE29-39A3BEEE2584}</Project>
       <Name>UberDeployer.CommonConfiguration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UberDeployer.Core\UberDeployer.Core.csproj">
+      <Project>{ff46ef5a-c434-4b3c-9f90-5bd242238b83}</Project>
+      <Name>UberDeployer.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

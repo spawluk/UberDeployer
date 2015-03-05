@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <EnvironmentInfoXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Local</Name>
-  <ConfigurationTemplateName>Dev</ConfigurationTemplateName>
+  <ConfigurationTemplateName>dev3</ConfigurationTemplateName>
   <AppServerMachineName>localhost</AppServerMachineName>
   <FailoverClusterMachineName></FailoverClusterMachineName>
   <WebServerMachineNames>
@@ -14,7 +14,7 @@
   <SchedulerServerBinariesMachineNames>
     <string>localhost</string>
   </SchedulerServerBinariesMachineNames>
-  <NtServicesBaseDirPath>C:\Program Files\NtServices</NtServicesBaseDirPath>
+  <NtServicesBaseDirPath>E:\APPS</NtServicesBaseDirPath>
   <WebAppsBaseDirPath>C:\inetpub\wwwroot</WebAppsBaseDirPath>
   <SchedulerAppsBaseDirPath>C:\Program Files\SchedulerApps</SchedulerAppsBaseDirPath>
   <TerminalAppsBaseDirPath>C:\Program Files\TerminalApps</TerminalAppsBaseDirPath>
