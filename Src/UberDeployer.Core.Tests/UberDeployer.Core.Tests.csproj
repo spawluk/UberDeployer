@@ -94,7 +94,6 @@
     <Compile Include="Deployment\MsSqlDbScriptRunnerTests.cs" />
     <Compile Include="Deployment\PrepareVersionedFolderDeploymentStepTests.cs" />
     <Compile Include="Deployment\RunDbScriptsDeploymentStepTests.cs" />
-    <Compile Include="Deployment\Steps\MsSqlDbManagerTests.cs" />
     <Compile Include="Deployment\Tasks\PublishDbProjectDeploymentTaskTests.cs" />
     <Compile Include="Deployment\UpdateApplicationShortcutDeploymentStepTests.cs" />
     <Compile Include="Domain\IisAppPoolInfoTests.cs" />

@@ -1,23 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using FluentNHibernate.Cfg;
-using FluentNHibernate.Cfg.Db;
 using Moq;
-using Newtonsoft.Json;
-using NHibernate;
 using NUnit.Framework;
 using UberDeployer.Agent.Proxy.Faults;
 using UberDeployer.Agent.Service.Diagnostics;
-using UberDeployer.Core;
-using UberDeployer.Core.DataAccess.Json;
-using UberDeployer.Core.DataAccess.NHibernate;
-using UberDeployer.Core.DataAccess.Xml;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
 using UberDeployer.Core.Domain;
-using UberDeployer.Core.Management.Db;
 using UberDeployer.Core.Management.Metadata;
 using UberDeployer.Core.TeamCity;
 
@@ -52,15 +43,15 @@ namespace UberDeployer.Agent.Service.Tests
 
       _agentService =
         new AgentService(
-        _deploymentPipelineFake.Object,
-        _projectInfoRepositoryFake.Object,
-        _environmentInfoRepositoryFake.Object,
-        _teamCityClientFake.Object,
-        _deploymentRequestRepositoryFake.Object,
-        _diagnositcMessagesLoggerFake.Object,
-        _projectMetadataExplorerFake.Object,
-        _dirPathParamsResolver.Object,
-        _environmentDeployInfoRepositoryFake.Object);
+          _deploymentPipelineFake.Object,
+          _projectInfoRepositoryFake.Object,
+          _environmentInfoRepositoryFake.Object,
+          _teamCityClientFake.Object,
+          _deploymentRequestRepositoryFake.Object,
+          _diagnositcMessagesLoggerFake.Object,
+          _projectMetadataExplorerFake.Object,
+          _dirPathParamsResolver.Object,
+          _environmentDeployInfoRepositoryFake.Object);
     }
 
     [Test]
@@ -71,7 +62,7 @@ namespace UberDeployer.Agent.Service.Tests
 
       _environmentInfoRepositoryFake
         .Setup(x => x.FindByName(notExistingEnvName))
-        .Returns((EnvironmentInfo)null);
+        .Returns((EnvironmentInfo) null);
 
       // act assert
       Assert.Throws<FaultException<EnvironmentNotFoundFault>>(
@@ -82,7 +73,7 @@ namespace UberDeployer.Agent.Service.Tests
     public void GetWebMachineNames_properly_gets_machines_names()
     {
       // arrange  
-      var expectedWebMachineNames = new List<string> {"machine1", "machine2"};
+      var expectedWebMachineNames = new List<string> { "machine1", "machine2" };
       const string environmentName = "env name";
 
       var environmentInfo = GetEnvironmentInfo(environmentName, expectedWebMachineNames);
@@ -110,7 +101,8 @@ namespace UberDeployer.Agent.Service.Tests
       Assert.Throws<ArgumentException>(() => _agentService.GetWebMachineNames(string.Empty));
     }
 
-    private static EnvironmentInfo GetEnvironmentInfo(string environmentName, IEnumerable<string> expectedWebMachineNames)
+    private static EnvironmentInfo GetEnvironmentInfo(string environmentName,
+      IEnumerable<string> expectedWebMachineNames)
     {
       return new EnvironmentInfo(
         environmentName,
@@ -135,83 +127,5 @@ namespace UberDeployer.Agent.Service.Tests
         "terminalAppsShortcutFolder",
         "artifactsDeploymentDirPath");
     }
-
-    [Test]
-    public void DeployEnvironmentAsync()
-    {
-      // arrange  
-      Guid uniqueClientId = Guid.NewGuid();
-      const string requesterIdentity = "test_identity";
-      const string targetEnvironment = "Local";
-
-      const string projectinfosXml = @"Data\ProjectInfos.xml"; ;
-      const string envInfoDirPath = @"Data";
-      const string configurationFilesDirPath = @"Data\EnvDeploy";
-
-      const string connectionString = "Database=UberDeployer;Server=ALIAS_DEV_SQL03;Integrated Security=SSPI;Application Name=UberDeployer";
-
-      XmlProjectInfoRepository projectInfoRepository = new XmlProjectInfoRepository(projectinfosXml);
-      IEnvironmentInfoRepository environmentInfoRepository = new XmlEnvironmentInfoRepository(envInfoDirPath);
-      IDbVersionProvider dbVersionProvider = CreateDbVersionProvider();
-      Mock<IObjectFactory> objectFactoryMock = new Mock<IObjectFactory>();
-
-      var agentService = new AgentService(
-        new DeploymentPipeline(), 
-        projectInfoRepository,
-        environmentInfoRepository,
-        new TeamCityClient("teamcity", 90, "guest", "guest"),
-        new NHibernateDeploymentRequestRepository(CreateSessionFactory(connectionString)),
-        InMemoryDiagnosticMessagesLogger.Instance,
-        new ProjectMetadataExplorer(objectFactoryMock.Object, projectInfoRepository, environmentInfoRepository, dbVersionProvider),
-        new DirPathParamsResolver("yyyy.MM.dd"),
-        new JsonEnvironmentDeployInfoRepository(configurationFilesDirPath));
-
-      // act
-      agentService.DeployEnvironmentAsync(uniqueClientId, requesterIdentity, targetEnvironment);
-
-      // assert
-    }
-
-    [Test]
-    public void json()
-    {
-      // arrange
-
-      // act
-      var environmentDeployInfo = new EnvironmentDeployInfo("Local", new List<string> { "Constance.Database", "Constance" });
-
-      string serializeObject = JsonConvert.SerializeObject(environmentDeployInfo);
-      // assert
-    }
-
-    private static IDbVersionProvider CreateDbVersionProvider()
-    {
-      IDbVersionProvider dbVersionProvider = new DbVersionProvider(new List<DbVersionTableInfo>
-      {
-        new DbVersionTableInfo
-        {
-          TableName = "VERSION",
-          ColumnName = "dbVersion"
-        },
-        new DbVersionTableInfo
-        {
-          TableName = "VERSIONHISTORY",
-          ColumnName = "DBLabel"
-        }
-      });
-      return dbVersionProvider;
-    }
-
-    private ISessionFactory CreateSessionFactory(string connectionString)
-    {
-      FluentConfiguration fluentConfiguration =
-        Fluently.Configure()
-          .Database(
-            MsSqlConfiguration.MsSql2008
-              .ConnectionString(connectionString))
-          .Mappings(mc => mc.FluentMappings.AddFromAssemblyOf<NHibernateRepository>());
-
-      return fluentConfiguration.BuildSessionFactory();
-    } 
   }
 }

@@ -6,6 +6,7 @@ using NUnit.Framework;
 using UberDeployer.Common.IO;
 using UberDeployer.Core.DataAccess;
 using UberDeployer.Core.DataAccess.Xml;
+using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Domain.Input;
@@ -46,22 +47,30 @@ namespace UberDeployer.Core.Tests.Deployment.Tasks
     }
 
     [Test]
-    public void PublishDbProject()
+    public void Prepare_adds_PublishDatabaseDeploymentStep()
     {
       // arrange
-      const string projectName = "Constance.Database";
-      const string projectConfigurationName = "Production";
-      const string projectConfigurationBuildId = "162841"; // "1.13.2.221";
-      const string targetEnvironmentName = "Local";
-      InputParams inputParams = new SsdtInputParams();
+      DeploymentInfo deploymentInfo = CreateDeploymentInfo();
 
-      DeploymentInfo deploymentInfo = new DeploymentInfo(Guid.NewGuid(), false, projectName, projectConfigurationName, projectConfigurationBuildId, targetEnvironmentName, inputParams);
       _publishDbProjectDeploymentTask.Initialize(deploymentInfo);
 
       // act
-      _publishDbProjectDeploymentTask.PrepareAndExecute();
+      _publishDbProjectDeploymentTask.Prepare();
 
       // assert
+      Assert.IsNotEmpty(_publishDbProjectDeploymentTask.SubTasks.OfType<PublishDatabaseDeploymentStep>().ToList());
+    }
+
+    private static DeploymentInfo CreateDeploymentInfo()
+    {      
+      return new DeploymentInfo(
+        Guid.NewGuid(), 
+        false, 
+        "Constance.Database", 
+        "Production",
+        "162841", 
+        "Local", 
+        new SsdtInputParams());
     }
   }
 }
