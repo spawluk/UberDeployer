@@ -11,10 +11,10 @@ UberDeployer.EnvDeploy = function() {
     var targetEnvironmentName = getSelectedTargetEnvironmentName();
 
     $.ajax({
-      url: g_AppPrefix + 'Api/DeployEnvironment',
+      url: g_AppPrefix + 'EnvDeployment/DeployAll',
       type: "POST",
       data: {
-        targetEnvironmentName: targetEnvironmentName,
+        environmentName: targetEnvironmentName,
       },
       traditional: true,
       success: function(data) {

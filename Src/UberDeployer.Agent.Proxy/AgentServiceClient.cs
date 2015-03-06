@@ -90,6 +90,11 @@ namespace UberDeployer.Agent.Proxy
       return Exec(@as => @as.GetProjectsForEnvironmentDeploy(environmentName));
     }
 
+    public void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment)
+    {
+      Exec(@as => @as.DeployEnvironmentAsync(uniqueClientId, requesterIdentity, targetEnvironment));
+    }
+
     #endregion
   }
 }

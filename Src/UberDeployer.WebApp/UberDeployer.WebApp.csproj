@@ -94,6 +94,8 @@
     <Compile Include="Core\InternalException.cs" />
     <Compile Include="Core\Models\Api\ProjectTypeViewModel.cs" />
     <Compile Include="Core\Models\Deployment\InitialSelection.cs" />
+    <Compile Include="Core\Models\EnvDeploy\EnvDeployProjectViewModel.cs" />
+    <Compile Include="Core\Models\EnvDeploy\IndexViewModel.cs" />
     <Compile Include="Core\Models\History\DeploymentRequestViewModel.cs" />
     <Compile Include="Core\Controllers\HistoryController.cs" />
     <Compile Include="Core\Controllers\HomeController.cs" />
@@ -313,7 +315,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>63515</DevelopmentServerPort>
           <DevelopmentServerVPath>/UberDeployer</DevelopmentServerVPath>
-          <IISUrl>http://localhost:63515/</IISUrl>
+          <IISUrl>http://localhost:63516/Uber</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

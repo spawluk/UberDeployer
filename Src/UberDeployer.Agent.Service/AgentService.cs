@@ -207,9 +207,9 @@ namespace UberDeployer.Agent.Service
 
       List<ProjectDeploymentInfo> projectsToDeploy = CreateProjectDeploymentInfos(environmentDeployInfo).ToList();
 
-      //ThreadPool.QueueUserWorkItem(
-      //  state =>
-      //  {
+      ThreadPool.QueueUserWorkItem(
+        state =>
+        {
           IEnumerable<ProjectDeploymentInfo> dbProjectsToDeploy = projectsToDeploy.FindAll(x => x.ProjectInfo.Type == ProjectType.Db);
           projectsToDeploy.RemoveAll(x => x.ProjectInfo.Type == ProjectType.Db);
 
@@ -218,7 +218,7 @@ namespace UberDeployer.Agent.Service
 
           // then deploy other projects
           DoBatchDeployment(projectsToDeploy, uniqueClientId, requesterIdentity);
-        //});
+        });
     }
 
     private void DoBatchDeployment(IEnumerable<ProjectDeploymentInfo> projectDeploymentInfos, Guid uniqueClientId, string requesterIdentity)

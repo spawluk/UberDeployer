@@ -74,5 +74,8 @@ namespace UberDeployer.Agent.Proxy
 
     [OperationContract]
     List<string> GetProjectsForEnvironmentDeploy(string environmentName);
+
+    [OperationContract]
+    void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment);
   }
 }

@@ -1,6 +1,6 @@
-﻿@model UberDeployer.WebApp.Core.Models.Deployment.IndexViewModel
+﻿@model UberDeployer.WebApp.Core.Models.EnvDeploy.EnvDeployViewModel
 @{
-  ViewBag.Title = "Deployment | ÜberDeployer";
+  ViewBag.Title = "Deploy All | ÜberDeployer";
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,7 +11,7 @@
     </div>
   </div>
 </div>
-<div class="page-content inset">
+<div class="dispage-content inset">
   <div class="row">
     <div id="errorMsg" class="alert alert-error" style="display: none;">
     </div>
@@ -19,28 +19,20 @@
   <div id="main-container">
     <div class="row">
       <div class="col-md-6">
+
         <label for="lst-environments" class="lst-header">Target environment:</label>
-        <select id="lst-environments" size="5"></select>
-      </div>
-    </div>
-    <div class="row" id="main-row">
-      <div class="col-md-3">
+        <select id="lst-environments" size="7"></select>
+
+        <button type="button" id="btn-deployEnv" name="btn-deployEnv" class="flat-butt flat-primary-butt flat-butt-full-width">
+          <i class="fa fa-cloud-upload"></i> Deploy Environment!
+        </button>
+      </div>    
+      <div class="col-md-6">        
         <label for="lst-projects" class="lst-header">Projects to deploy:</label>
-        <select id="lst-projects" size="10"></select>
+        <select id="lst-projects" size="10" disabled="disabled"></select>
       </div>
     </div>
-    <div class="row row-with-top-margin row-with-bottom-margin">      
-      <div class="col-md-6">
-        <div class="row">
-          <div class="col-md-8">
-            <button type="button" id="btn-deployEnv" name="btn-deployEnv" class="flat-butt flat-primary-butt flat-butt-full-width" @(!Model.CanDeploy ? "disabled=\"disabled\"" : "")>
-              <i class="fa fa-cloud-upload"></i> Deploy Environment!
-            </button>
-          </div>          
-        </div>
-      </div>
-    </div>
-    <div class="row">
+    <div class="row row-with-top-margin">
       <div class="col-md-12">
         <div id="txt-logs">
         </div>
@@ -48,7 +40,7 @@
           <i class="fa fa-trash-o"></i> Clear
         </button>
       </div>
-    </div>    
+    </div>
   </div>
 </div>
 
@@ -103,7 +95,7 @@
     $(document).ready(function() {
       var initData = {        
         initialSelection: {
-          targetEnvironmentName: @Html.Raw(Model.InitialSelection != null ? string.Format("'{0}'", Model.InitialSelection.TargetEnvironmentName) : "null")
+          targetEnvironmentName: @Html.Raw(string.IsNullOrWhiteSpace(Model.InitialTargetEnvironment) ? "null" : string.Format("'{0}'", Model.InitialTargetEnvironment))
         }
       };
 
