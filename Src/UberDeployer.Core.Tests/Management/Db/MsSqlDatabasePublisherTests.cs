@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 using UberDeployer.Core.Management.Cmd;
 using UberDeployer.Core.Management.Db;
 
@@ -16,15 +17,21 @@ namespace UberDeployer.Core.Tests.Management.Db
     }
 
     [Test]
+    [Ignore]
     public void PublishFromDacpac()
     {
       // arrange  
       const string dacpacFilePath = @"C:\Users\m.rubin.KI-CENTRALA\Desktop\Constance.Database.dacpac";
       const string databaseName = "TestDb";
       const string databaseServer = @"localhost\mssqlserver2012";
+      Dictionary<string, string> variables = new Dictionary<string, string>
+      {
+        { "DacpacDirPath", "" },
+        { "Rahl", "" }
+      };
 
       // act
-      _msSqlDatabasePublisher.PublishFromDacpac(dacpacFilePath, databaseName, databaseServer);
+      _msSqlDatabasePublisher.PublishFromDacpac(dacpacFilePath, databaseName, databaseServer, variables);
 
       // assert
     }

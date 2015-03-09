@@ -79,6 +79,17 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string DataDirPath { get; set; }
 
       public string LogDirPath { get; set; }
+
+      public List<Variable> SqlPackageVariables { get; set; }
+    }
+
+    public class Variable
+    {
+      [XmlAttribute("name")]
+      public string Name { get; set; }
+
+      [XmlAttribute("value")]
+      public string Value { get; set; }
     }
 
     public class WebAppProjectConfigurationOverrideXml
@@ -215,7 +226,8 @@ namespace UberDeployer.Core.DataAccess.Xml
                 e.Id,
                 e.MachineName,
                 e.DataDirPath,
-                e.LogDirPath)),
+                e.LogDirPath,
+                ConvertSqlPakcageVariables(e.SqlPackageVariables))),
           environmentInfoXml.ProjectToFailoverClusterGroupMappings.Select(
             e =>
               new ProjectToFailoverClusterGroupMapping(
@@ -237,6 +249,16 @@ namespace UberDeployer.Core.DataAccess.Xml
           environmentInfoXml.TerminalAppsShortcutFolder,
           environmentInfoXml.ManualDeploymentPackageDirPath
           );
+    }
+
+    private static Dictionary<string, string> ConvertSqlPakcageVariables(IEnumerable<Variable> sqlPackageVariables)
+    {
+      if (sqlPackageVariables == null)
+      {
+        return null;
+      }
+
+      return sqlPackageVariables.ToDictionary(x => x.Name, x => x.Value);
     }
   }
 }

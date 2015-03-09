@@ -29,7 +29,7 @@ namespace UberDeployer.Core.Deployment.Steps
     {
       string dacpacFilePath = Path.Combine(_artifactsDirPath, _dbProjectInfo.GetDacpacFileName());
       
-      _databasePublisher.PublishFromDacpac(dacpacFilePath, _dbProjectInfo.DbName, _databaseServer.MachineName);
+      _databasePublisher.PublishFromDacpac(dacpacFilePath, _dbProjectInfo.DbName, _databaseServer.MachineName, _databaseServer.SqlPackageVariables);
     }
 
     public override string Description
