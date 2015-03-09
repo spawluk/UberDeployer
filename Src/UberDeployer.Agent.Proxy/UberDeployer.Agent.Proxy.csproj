@@ -89,6 +89,7 @@
     <Compile Include="Dto\TeamCity\ProjectsList.cs" />
     <Compile Include="Dto\EnvironmentInfo.cs" />
     <Compile Include="Dto\TerminalAppProjectInfo.cs" />
+    <Compile Include="Faults\EnvironmentDeployConfigurationNotFoundFault.cs" />
     <Compile Include="Faults\EnvironmentNotFoundFault.cs" />
     <Compile Include="Faults\ProjectConfigurationNotFoundFault.cs" />
     <Compile Include="IAgentService.cs" />

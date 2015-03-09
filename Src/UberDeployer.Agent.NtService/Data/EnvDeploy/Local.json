@@ -1,5 +1,6 @@
 ﻿{
   "TargetEnvironment": "Local",
+  "BuildConfigurationName":  "Production",
   "ProjectsToDeploy": [ "Constance.Database", "Constance" ] 
 }
 

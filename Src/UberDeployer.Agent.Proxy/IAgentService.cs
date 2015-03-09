@@ -73,9 +73,12 @@ namespace UberDeployer.Agent.Proxy
     string GetDefaultPackageDirPath(string environmentName, string projectName);
 
     [OperationContract]
+    [FaultContract(typeof(EnvironmentDeployConfigurationNotFoundFault))]
     List<string> GetProjectsForEnvironmentDeploy(string environmentName);
 
     [OperationContract]
+    [FaultContract(typeof(EnvironmentDeployConfigurationNotFoundFault))]
+    [FaultContract(typeof(EnvironmentNotFoundFault))]
     void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment);
   }
 }

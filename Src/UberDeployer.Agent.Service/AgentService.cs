@@ -203,9 +203,20 @@ namespace UberDeployer.Agent.Service
 
     public void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment)
     {
+      Guard.NotEmpty(uniqueClientId, "uniqueClientId");
+      Guard.NotNullNorEmpty(requesterIdentity, "requesterIdentity");
+      Guard.NotNullNorEmpty(targetEnvironment, "targetEnvironment");
+
+      LogMessage(uniqueClientId, DiagnosticMessageType.Info, string.Format("Start environment deployment. target environment: '{0}'", targetEnvironment));
+      
       EnvironmentDeployInfo environmentDeployInfo = _environmentDeployInfoRepository.FindByName(targetEnvironment);
 
-      List<ProjectDeploymentInfo> projectsToDeploy = CreateProjectDeploymentInfos(environmentDeployInfo).ToList();
+      if (environmentDeployInfo == null)
+      {
+        throw new FaultException<EnvironmentDeployConfigurationNotFoundFault>(new EnvironmentDeployConfigurationNotFoundFault { EnvironmentName = targetEnvironment });
+      }
+
+      List<ProjectDeploymentInfo> projectsToDeploy = CreateProjectDeploymentInfos(uniqueClientId, environmentDeployInfo).ToList();
 
       ThreadPool.QueueUserWorkItem(
         state =>
@@ -214,10 +225,22 @@ namespace UberDeployer.Agent.Service
           projectsToDeploy.RemoveAll(x => x.ProjectInfo.Type == ProjectType.Db);
 
           // first deploy databases
-          DoBatchDeployment(dbProjectsToDeploy, uniqueClientId, requesterIdentity);
+          if (dbProjectsToDeploy.Any())
+          {
+            LogMessage(uniqueClientId, DiagnosticMessageType.Trace, string.Format("Start deploying database projects on evnfironment: '{0}'", targetEnvironment));
 
-          // then deploy other projects
-          DoBatchDeployment(projectsToDeploy, uniqueClientId, requesterIdentity);
+            DoBatchDeployment(dbProjectsToDeploy, uniqueClientId, requesterIdentity);
+          }
+
+          if (projectsToDeploy.Any())
+          {
+            // then deploy other projects
+            LogMessage(uniqueClientId, DiagnosticMessageType.Trace, string.Format("Start deploying other projects on evnfironment: '{0}'", targetEnvironment));
+
+            DoBatchDeployment(projectsToDeploy, uniqueClientId, requesterIdentity);
+          }
+
+          LogMessage(uniqueClientId, DiagnosticMessageType.Info, string.Format("Finished deployment of environment: '{0}'", targetEnvironment));
         });
     }
 
@@ -236,30 +259,46 @@ namespace UberDeployer.Agent.Service
       }
     }
 
-    private IEnumerable<ProjectDeploymentInfo> CreateProjectDeploymentInfos(EnvironmentDeployInfo environmentDeployInfo)
+    private IEnumerable<ProjectDeploymentInfo> CreateProjectDeploymentInfos(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo)
     {
-      const string projectConfigurationName = "Production";
-
       var projectDeployments = new List<ProjectDeploymentInfo>();
 
       EnvironmentInfo environmentInfo = _environmentInfoRepository.FindByName(environmentDeployInfo.TargetEnvironment);
 
+      if (environmentInfo == null)
+      {
+        throw new FaultException<EnvironmentNotFoundFault>(new EnvironmentNotFoundFault { EnvironmentName = environmentDeployInfo.TargetEnvironment });
+      }
+
       foreach (var projectToDeploy in environmentDeployInfo.ProjectsToDeploy)
-      {        
-        ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectToDeploy);
-        ProjectConfigurationBuild lastSuccessfulBuild = GetLatestSuccessfulBuild(projectToDeploy, projectConfigurationName);        
-
-        if (lastSuccessfulBuild == null)
+      {
+        try
         {
-          throw new DeploymentTaskException(string.Format("Successful build not found for project: {0} and configuration: {1}", projectToDeploy, projectConfigurationName));
-        }
+          ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectToDeploy);
 
-        InputParams inputParams = BuildInputParams(projectInfo, environmentInfo);
-        var deploymentInfo = new Core.Domain.DeploymentInfo(Guid.NewGuid(), false, projectToDeploy, projectConfigurationName, lastSuccessfulBuild.Id, environmentDeployInfo.TargetEnvironment, inputParams);
-        
-        DeploymentTask deploymentTask = CreateDeploymentTask(projectInfo);
-        
-        projectDeployments.Add(new ProjectDeploymentInfo(deploymentInfo, projectInfo, deploymentTask));
+          if (projectInfo == null)
+          {
+            throw new DeploymentTaskException(string.Format("Not found configuration for project: {0}", projectToDeploy));
+          }
+
+          ProjectConfigurationBuild lastSuccessfulBuild = GetLatestSuccessfulBuild(projectToDeploy, environmentDeployInfo.BuildConfigurationName);
+
+          if (lastSuccessfulBuild == null)
+          {
+            throw new DeploymentTaskException(string.Format("Successful build not found for project: {0} and configuration: {1}", projectToDeploy, environmentDeployInfo.BuildConfigurationName));
+          }
+
+          InputParams inputParams = BuildInputParams(projectInfo, environmentInfo);
+          var deploymentInfo = new Core.Domain.DeploymentInfo(Guid.NewGuid(), false, projectToDeploy, environmentDeployInfo.BuildConfigurationName, lastSuccessfulBuild.Id, environmentDeployInfo.TargetEnvironment, inputParams);
+
+          DeploymentTask deploymentTask = CreateDeploymentTask(projectInfo);
+
+          projectDeployments.Add(new ProjectDeploymentInfo(deploymentInfo, projectInfo, deploymentTask));
+        }
+        catch (Exception e)
+        {
+          LogMessage(uniqueClientId, DiagnosticMessageType.Error, e.Message);
+        }
       }
 
       return projectDeployments;
@@ -661,8 +700,8 @@ namespace UberDeployer.Agent.Service
 
       if (environmentDeployInfo == null)
       {
-        return null;
-      }
+        throw new FaultException<EnvironmentDeployConfigurationNotFoundFault>(new EnvironmentDeployConfigurationNotFoundFault { EnvironmentName = environmentName });
+      }      
 
       return environmentDeployInfo.ProjectsToDeploy;
     }
@@ -728,12 +767,7 @@ namespace UberDeployer.Agent.Service
         new DeploymentContext(requesterIdentity);
 
       EventHandler<DiagnosticMessageEventArgs> deploymentPipelineDiagnosticMessageAction =
-        (eventSender, tmpArgs) =>
-        {
-          _log.DebugIfEnabled(() => string.Format("{0}: {1}", tmpArgs.MessageType, tmpArgs.Message));
-
-          _diagnosticMessagesLogger.LogMessage(uniqueClientId, tmpArgs.MessageType, tmpArgs.Message);
-        };
+        (eventSender, tmpArgs) => LogMessage(uniqueClientId, tmpArgs.MessageType, tmpArgs.Message);
 
       try
       {
@@ -745,6 +779,13 @@ namespace UberDeployer.Agent.Service
       {
         _deploymentPipeline.DiagnosticMessagePosted -= deploymentPipelineDiagnosticMessageAction;
       }
+    }
+
+    private void LogMessage(Guid uniqueClientId, DiagnosticMessageType messageType, string message)
+    {
+      _log.DebugIfEnabled(() => string.Format("{0}: {1}", messageType, message));
+
+      _diagnosticMessagesLogger.LogMessage(uniqueClientId, messageType, message);
     }
 
     #endregion

@@ -70,12 +70,15 @@ namespace UberDeployer.Core.DataAccess.Json
     {
       return new EnvironmentDeployInfo(
         environmentDeployInfoJson.TargetEnvironment, 
+        environmentDeployInfoJson.BuildConfigurationName,
         environmentDeployInfoJson.ProjectsToDeploy);
     }
 
-    public class EnvironmentDeployInfoJson
+    internal class EnvironmentDeployInfoJson
     {
       public string TargetEnvironment { get; set; }
+
+      public string BuildConfigurationName { get; set; }
 
       public List<string> ProjectsToDeploy { get; set; } 
     }
