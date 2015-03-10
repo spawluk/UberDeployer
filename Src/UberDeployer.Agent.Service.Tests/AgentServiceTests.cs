@@ -27,6 +27,7 @@ namespace UberDeployer.Agent.Service.Tests
     private Mock<IDeploymentRequestRepository> _deploymentRequestRepositoryFake;
     private Mock<IProjectMetadataExplorer> _projectMetadataExplorerFake;
     private Mock<IDirPathParamsResolver> _dirPathParamsResolver;
+    private Mock<IEnvDeploymentPipeline> _envDeploymentPipeline;
 
     [SetUp]
     public void SetUp()
@@ -40,6 +41,7 @@ namespace UberDeployer.Agent.Service.Tests
       _projectMetadataExplorerFake = new Mock<IProjectMetadataExplorer>();
       _dirPathParamsResolver = new Mock<IDirPathParamsResolver>();
       _environmentDeployInfoRepositoryFake = new Mock<IEnvironmentDeployInfoRepository>();
+      _envDeploymentPipeline = new Mock<IEnvDeploymentPipeline>();
 
       _agentService =
         new AgentService(
@@ -51,7 +53,8 @@ namespace UberDeployer.Agent.Service.Tests
           _diagnositcMessagesLoggerFake.Object,
           _projectMetadataExplorerFake.Object,
           _dirPathParamsResolver.Object,
-          _environmentDeployInfoRepositoryFake.Object);
+          _environmentDeployInfoRepositoryFake.Object,
+          _envDeploymentPipeline.Object);
     }
 
     [Test]

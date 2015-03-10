@@ -109,7 +109,6 @@
     <Compile Include="InternalExceptionTests.cs" />
     <Compile Include="Management\Db\DbVersionProviderTests.cs" />
     <Compile Include="Management\Db\DbVersionProviderTestUtils.cs" />
-    <Compile Include="Management\Db\MsSqlDatabasePublisherTests.cs" />
     <Compile Include="Management\NtServices\ScExeBasedNtServiceManagerTests.cs" />
     <Compile Include="Management\Iis\MsDeployBasedIisManagerTests.cs" />
     <Compile Include="Management\NtServices\NtServiceDescriptorTests.cs" />

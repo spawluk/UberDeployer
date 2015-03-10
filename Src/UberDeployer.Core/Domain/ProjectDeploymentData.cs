@@ -2,9 +2,9 @@
 
 namespace UberDeployer.Core.Domain
 {
-  public class ProjectDeploymentInfo
+  public class ProjectDeploymentData
   {
-    public ProjectDeploymentInfo(DeploymentInfo deploymentInfo, ProjectInfo projectInfo, DeploymentTask deploymentTask)
+    public ProjectDeploymentData(DeploymentInfo deploymentInfo, ProjectInfo projectInfo, DeploymentTask deploymentTask)
     {
       DeploymentTask = deploymentTask;
       DeploymentInfo = deploymentInfo;

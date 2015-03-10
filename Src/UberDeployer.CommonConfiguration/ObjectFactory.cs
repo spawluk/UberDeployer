@@ -167,6 +167,11 @@ namespace UberDeployer.CommonConfiguration
       return _container.Resolve<IMsSqlDatabasePublisher>();
     }
 
+    public IEnvDeploymentPipeline CrateEnvDeploymentPipeline()
+    {
+      return _container.Resolve<IEnvDeploymentPipeline>();
+    }
+
     #endregion
 
     #region Properties

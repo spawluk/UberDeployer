@@ -143,6 +143,11 @@ namespace UberDeployer.CommonConfiguration
           .LifeStyle.Transient);
 
       container.Register(
+        Component.For<IEnvDeploymentPipeline>()
+          .ImplementedBy<EnvDeploymentPipeline>()
+          .LifeStyle.Transient);
+
+      container.Register(
         Component.For<IDbManagerFactory>()
           .ImplementedBy<MsSqlDbManagerFactory>()
           .LifeStyle.Transient);

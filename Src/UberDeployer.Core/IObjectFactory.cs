@@ -65,5 +65,7 @@ namespace UberDeployer.Core
     IDbManagerFactory CreateDbManagerFactory();
 
     IMsSqlDatabasePublisher CreateMsSqlDatabasePublisher();
+    
+    IEnvDeploymentPipeline CrateEnvDeploymentPipeline();
   }
 }

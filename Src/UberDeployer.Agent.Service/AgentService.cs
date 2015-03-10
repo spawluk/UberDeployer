@@ -39,6 +39,7 @@ namespace UberDeployer.Agent.Service
     private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
     private readonly IDeploymentPipeline _deploymentPipeline;
+    private readonly IEnvDeploymentPipeline _envDeploymentPipeline;
     private readonly IProjectInfoRepository _projectInfoRepository;
     private readonly IEnvironmentInfoRepository _environmentInfoRepository;
     private readonly IEnvironmentDeployInfoRepository _environmentDeployInfoRepository;
@@ -46,7 +47,7 @@ namespace UberDeployer.Agent.Service
     private readonly IDeploymentRequestRepository _deploymentRequestRepository;
     private readonly IDiagnosticMessagesLogger _diagnosticMessagesLogger;
     private readonly IProjectMetadataExplorer _projectMetadataExplorer;
-    private readonly IDirPathParamsResolver _dirPathParamsResolver;
+    private readonly IDirPathParamsResolver _dirPathParamsResolver;    
 
     #region Constructor(s)
 
@@ -59,7 +60,8 @@ namespace UberDeployer.Agent.Service
       IDiagnosticMessagesLogger diagnosticMessagesLogger,
       IProjectMetadataExplorer projectMetadataExplorer,
       IDirPathParamsResolver dirPathParamsResolver, 
-      IEnvironmentDeployInfoRepository environmentDeployInfoRepository)
+      IEnvironmentDeployInfoRepository environmentDeployInfoRepository, 
+      IEnvDeploymentPipeline envDeploymentPipeline)
     {
       Guard.NotNull(deploymentPipeline, "deploymentPipeline");
       Guard.NotNull(projectInfoRepository, "projectInfoRepository");
@@ -69,6 +71,7 @@ namespace UberDeployer.Agent.Service
       Guard.NotNull(diagnosticMessagesLogger, "diagnosticMessagesLogger");
       Guard.NotNull(dirPathParamsResolver, "dirPathParamsResolver");
       Guard.NotNull(environmentDeployInfoRepository, "environmentDeployInfoRepository");
+      Guard.NotNull(envDeploymentPipeline, "envDeploymentPipeline");
 
       _projectInfoRepository = projectInfoRepository;
       _environmentInfoRepository = environmentInfoRepository;
@@ -79,6 +82,7 @@ namespace UberDeployer.Agent.Service
       _projectMetadataExplorer = projectMetadataExplorer;
       _dirPathParamsResolver = dirPathParamsResolver;
       _environmentDeployInfoRepository = environmentDeployInfoRepository;
+      _envDeploymentPipeline = envDeploymentPipeline;
     }
 
     public AgentService()
@@ -91,7 +95,8 @@ namespace UberDeployer.Agent.Service
         InMemoryDiagnosticMessagesLogger.Instance,
         ObjectFactory.Instance.CreateProjectMetadataExplorer(),
         ObjectFactory.Instance.CreateDirPathParamsResolver(), 
-        ObjectFactory.Instance.CreateEnvironmentDeployInfoRepository())
+        ObjectFactory.Instance.CreateEnvironmentDeployInfoRepository(), 
+        ObjectFactory.Instance.CrateEnvDeploymentPipeline())
     {
     }
 
@@ -207,8 +212,6 @@ namespace UberDeployer.Agent.Service
       Guard.NotNullNorEmpty(requesterIdentity, "requesterIdentity");
       Guard.NotNullNorEmpty(targetEnvironment, "targetEnvironment");
 
-      LogMessage(uniqueClientId, DiagnosticMessageType.Info, string.Format("Start environment deployment. target environment: '{0}'", targetEnvironment));
-      
       EnvironmentDeployInfo environmentDeployInfo = _environmentDeployInfoRepository.FindByName(targetEnvironment);
 
       if (environmentDeployInfo == null)
@@ -216,52 +219,30 @@ namespace UberDeployer.Agent.Service
         throw new FaultException<EnvironmentDeployConfigurationNotFoundFault>(new EnvironmentDeployConfigurationNotFoundFault { EnvironmentName = targetEnvironment });
       }
 
-      List<ProjectDeploymentInfo> projectsToDeploy = CreateProjectDeploymentInfos(uniqueClientId, environmentDeployInfo).ToList();
+      List<ProjectDeploymentData> projectsToDeploy = CreateProjectDeployments(uniqueClientId, environmentDeployInfo).ToList();
 
       ThreadPool.QueueUserWorkItem(
         state =>
         {
-          IEnumerable<ProjectDeploymentInfo> dbProjectsToDeploy = projectsToDeploy.FindAll(x => x.ProjectInfo.Type == ProjectType.Db);
-          projectsToDeploy.RemoveAll(x => x.ProjectInfo.Type == ProjectType.Db);
+          EventHandler<DiagnosticMessageEventArgs> deploymentPipelineDiagnosticMessageAction =
+            (eventSender, tmpArgs) => LogMessage(uniqueClientId, tmpArgs.MessageType, tmpArgs.Message);
 
-          // first deploy databases
-          if (dbProjectsToDeploy.Any())
+          try
           {
-            LogMessage(uniqueClientId, DiagnosticMessageType.Trace, string.Format("Start deploying database projects on evnfironment: '{0}'", targetEnvironment));
+            _envDeploymentPipeline.DiagnosticMessagePosted += deploymentPipelineDiagnosticMessageAction;
 
-            DoBatchDeployment(dbProjectsToDeploy, uniqueClientId, requesterIdentity);
+            _envDeploymentPipeline.StartDeployment(targetEnvironment, projectsToDeploy, new DeploymentContext(requesterIdentity));
           }
-
-          if (projectsToDeploy.Any())
+          finally
           {
-            // then deploy other projects
-            LogMessage(uniqueClientId, DiagnosticMessageType.Trace, string.Format("Start deploying other projects on evnfironment: '{0}'", targetEnvironment));
-
-            DoBatchDeployment(projectsToDeploy, uniqueClientId, requesterIdentity);
+            _envDeploymentPipeline.DiagnosticMessagePosted -= deploymentPipelineDiagnosticMessageAction;
           }
-
-          LogMessage(uniqueClientId, DiagnosticMessageType.Info, string.Format("Finished deployment of environment: '{0}'", targetEnvironment));
         });
     }
 
-    private void DoBatchDeployment(IEnumerable<ProjectDeploymentInfo> projectDeploymentInfos, Guid uniqueClientId, string requesterIdentity)
+    private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo)
     {
-      foreach (ProjectDeploymentInfo projectDeploymentInfo in projectDeploymentInfos)
-      {
-        try
-        {
-          StartTask(projectDeploymentInfo.DeploymentTask, uniqueClientId, requesterIdentity, projectDeploymentInfo.DeploymentInfo);
-        }
-        catch (Exception exc)
-        {
-          HandleProjectDeploymentException(exc, uniqueClientId, projectDeploymentInfo.ProjectInfo.Name);
-        }
-      }
-    }
-
-    private IEnumerable<ProjectDeploymentInfo> CreateProjectDeploymentInfos(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo)
-    {
-      var projectDeployments = new List<ProjectDeploymentInfo>();
+      var projectDeployments = new List<ProjectDeploymentData>();
 
       EnvironmentInfo environmentInfo = _environmentInfoRepository.FindByName(environmentDeployInfo.TargetEnvironment);
 
@@ -293,7 +274,7 @@ namespace UberDeployer.Agent.Service
 
           DeploymentTask deploymentTask = CreateDeploymentTask(projectInfo);
 
-          projectDeployments.Add(new ProjectDeploymentInfo(deploymentInfo, projectInfo, deploymentTask));
+          projectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, deploymentTask));
         }
         catch (Exception e)
         {
