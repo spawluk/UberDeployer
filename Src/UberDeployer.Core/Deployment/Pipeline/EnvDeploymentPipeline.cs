@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentNHibernate.Utils;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
@@ -148,9 +149,10 @@ namespace UberDeployer.Core.Deployment.Pipeline
       catch (Exception ex)
       {
         PostDiagnosticMessage(string.Format("Exception: {0}", ex.Message), DiagnosticMessageType.Error);
+        LogInnerException(ex);
       }
       finally
-      {        
+      {
         // TODO IMM HI: catch exceptions; pass them upstream using some mechanisms like DeploymentTask.DiagnosticMessagePosted event
         OnDeploymentTaskFinished(deploymentInfo, deploymentTask, deploymentContext);
 
@@ -158,6 +160,16 @@ namespace UberDeployer.Core.Deployment.Pipeline
       }
 
       return false;
+    }
+
+    private void LogInnerException(Exception exc)
+    {
+      if (exc.InnerException != null && !string.IsNullOrEmpty(exc.InnerException.Message))
+      {
+        PostDiagnosticMessage(string.Format("Inner Exception: {0}", exc.InnerException.Message), DiagnosticMessageType.Error);
+
+        LogInnerException(exc.InnerException);
+      }
     }
 
     private bool PrepareProject(ProjectDeploymentData projectDeploymentData, DeploymentContext deploymentContext)

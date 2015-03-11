@@ -126,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <None Include="Properties\PublishProfiles\tmp2.pubxml" />
     <None Include="Static\css\bootstrap-helpers.less" />
     <Content Include="Static\css\bootstrap-helpers.css">
       <DependentUpon>bootstrap-helpers.less</DependentUpon>
@@ -133,7 +134,6 @@
     <Content Include="Static\css\bootstrap-helpers.min.css">
       <DependentUpon>bootstrap-helpers.css</DependentUpon>
     </Content>
-    <Content Include="favicon.ico" />
     <Content Include="Static\js\envDeploy.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -315,7 +315,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>63515</DevelopmentServerPort>
           <DevelopmentServerVPath>/UberDeployer</DevelopmentServerVPath>
-          <IISUrl>http://localhost:63517/Uber</IISUrl>
+          <IISUrl>http://localhost:63518/Uber</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

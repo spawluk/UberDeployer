@@ -681,7 +681,7 @@ namespace UberDeployer.Agent.Service
 
       if (environmentDeployInfo == null)
       {
-        throw new FaultException<EnvironmentDeployConfigurationNotFoundFault>(new EnvironmentDeployConfigurationNotFoundFault { EnvironmentName = environmentName });
+        return null;
       }      
 
       return environmentDeployInfo.ProjectsToDeploy;
