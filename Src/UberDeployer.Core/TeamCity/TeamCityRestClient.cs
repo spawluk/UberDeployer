@@ -33,9 +33,6 @@ namespace UberDeployer.Core.TeamCity
 
       _url = teamCityUrl.ToString().TrimEnd('/');
 
-      _basePath = string.Format("{0}/{1}", _userName == null ? _guestAuthenticationType : _httpAuthenticationType, _basePathTemplate);
-
-      _isGuestMode = _userName == null;
     }
 
     public TeamCityRestClient(Uri teamCityUrl, string userName, string password)
@@ -46,6 +43,9 @@ namespace UberDeployer.Core.TeamCity
 
       _userName = userName;
       _password = password;
+
+      _isGuestMode = _userName == null;
+      _basePath = string.Format("{0}/{1}", _userName == null ? _guestAuthenticationType : _httpAuthenticationType, _basePathTemplate);
     }
 
     public IEnumerable<TeamCityProject> GetAllProjects()
