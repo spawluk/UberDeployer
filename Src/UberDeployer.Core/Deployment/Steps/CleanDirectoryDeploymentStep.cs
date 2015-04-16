@@ -44,7 +44,7 @@ namespace UberDeployer.Core.Deployment.Steps
           () =>
           {
             _directoryAdapter.GetDirectories(_dstDirPath.Value)
-              .Where(x => !_excludedDirs.Any(x.EndsWith))
+              .Where(x => !_excludedDirs.Any(s => x.EndsWith(s, StringComparison.CurrentCultureIgnoreCase)))
               .ToList()
               .ForEach(dirPath => _directoryAdapter.Delete(dirPath, true));
 
