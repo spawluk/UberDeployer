@@ -9,6 +9,7 @@ using NUnit.Framework;
 using UberDeployer.Agent.Proxy.Faults;
 using UberDeployer.Agent.Service;
 using UberDeployer.Agent.Service.Diagnostics;
+using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
@@ -22,14 +23,24 @@ namespace UberDeployer.Tests.Agent.Service
   public class AgentServiceTests
   {
     private AgentService _agentService;
+
     private Mock<IDeploymentPipeline> _deploymentPipelineFake;
+
     private Mock<IDiagnosticMessagesLogger> _diagnositcMessagesLoggerFake;
+
     private Mock<IProjectInfoRepository> _projectInfoRepositoryFake;
+
     private Mock<IEnvironmentInfoRepository> _environmentInfoRepositoryFake;
+
     private Mock<ITeamCityRestClient> _teamCityClientFake;
+
     private Mock<IDeploymentRequestRepository> _deploymentRequestRepositoryFake;
+
     private Mock<IProjectMetadataExplorer> _projectMetadataExplorerFake;
+
     private Mock<IDirPathParamsResolver> _dirPathParamsResolver;
+
+    private Mock<IApplicationConfiguration> _applicationConfigurationMock;
 
     [SetUp]
     public void SetUp()
@@ -42,6 +53,7 @@ namespace UberDeployer.Tests.Agent.Service
       _deploymentRequestRepositoryFake = new Mock<IDeploymentRequestRepository>();
       _projectMetadataExplorerFake = new Mock<IProjectMetadataExplorer>();
       _dirPathParamsResolver = new Mock<IDirPathParamsResolver>();
+      _applicationConfigurationMock = new Mock<IApplicationConfiguration>();
 
       _agentService =
         new AgentService(
@@ -52,7 +64,8 @@ namespace UberDeployer.Tests.Agent.Service
         _deploymentRequestRepositoryFake.Object,
         _diagnositcMessagesLoggerFake.Object,
         _projectMetadataExplorerFake.Object,
-        _dirPathParamsResolver.Object);
+        _dirPathParamsResolver.Object, 
+        _applicationConfigurationMock.Object);
     }
 
     [Test]
@@ -106,6 +119,7 @@ namespace UberDeployer.Tests.Agent.Service
     {
       return new EnvironmentInfo(
         environmentName,
+        true,
         "configurationTemplateName",
         "appServerMachineName",
         "failOverMachineName",

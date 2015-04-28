@@ -83,6 +83,7 @@ namespace UberDeployer.Tests.Core.Domain
       var envInfo =
         new EnvironmentInfo(
           "name",
+          true,
           "templates",
           machine,
           "failover",
@@ -128,6 +129,7 @@ namespace UberDeployer.Tests.Core.Domain
       var envInfo =
         new EnvironmentInfo(
           "name",
+          true,
           "templates",
           machine,
           "failover",

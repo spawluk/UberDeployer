@@ -8,13 +8,13 @@ using System.Threading;
 using log4net;
 
 using UberDeployer.Agent.Proxy;
-using UberDeployer.Agent.Proxy.Dto;
 using UberDeployer.Agent.Proxy.Dto.TeamCity;
 using UberDeployer.Agent.Proxy.Faults;
 using UberDeployer.Agent.Service.Diagnostics;
 using UberDeployer.Common;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.CommonConfiguration;
+using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
@@ -33,6 +33,7 @@ using DiagnosticMessageType = UberDeployer.Core.Deployment.DiagnosticMessageType
 using EnvironmentInfo = UberDeployer.Core.Domain.EnvironmentInfo;
 using MachineSpecificProjectVersion = UberDeployer.Agent.Proxy.Dto.Metadata.MachineSpecificProjectVersion;
 using ProjectInfo = UberDeployer.Core.Domain.ProjectInfo;
+using UberDeployerAgentProjectInfo = UberDeployer.Core.Domain.UberDeployerAgentProjectInfo;
 using WebAppProjectInfo = UberDeployer.Core.Domain.WebAppProjectInfo;
 
 namespace UberDeployer.Agent.Service
@@ -42,13 +43,22 @@ namespace UberDeployer.Agent.Service
     private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
     private readonly IDeploymentPipeline _deploymentPipeline;
+
     private readonly IProjectInfoRepository _projectInfoRepository;
+
     private readonly IEnvironmentInfoRepository _environmentInfoRepository;
+
     private readonly ITeamCityRestClient _teamCityClient;
+
     private readonly IDeploymentRequestRepository _deploymentRequestRepository;
+
     private readonly IDiagnosticMessagesLogger _diagnosticMessagesLogger;
+
     private readonly IProjectMetadataExplorer _projectMetadataExplorer;
+
     private readonly IDirPathParamsResolver _dirPathParamsResolver;
+
+    private readonly IApplicationConfiguration _applicationConfiguration;
 
     public AgentService(
       IDeploymentPipeline deploymentPipeline,
@@ -58,7 +68,8 @@ namespace UberDeployer.Agent.Service
       IDeploymentRequestRepository deploymentRequestRepository,
       IDiagnosticMessagesLogger diagnosticMessagesLogger,
       IProjectMetadataExplorer projectMetadataExplorer,
-      IDirPathParamsResolver dirPathParamsResolver)
+      IDirPathParamsResolver dirPathParamsResolver, 
+      IApplicationConfiguration applicationConfiguration)
     {
       Guard.NotNull(deploymentPipeline, "deploymentPipeline");
       Guard.NotNull(projectInfoRepository, "projectInfoRepository");
@@ -67,6 +78,7 @@ namespace UberDeployer.Agent.Service
       Guard.NotNull(deploymentRequestRepository, "deploymentRequestRepository");
       Guard.NotNull(diagnosticMessagesLogger, "diagnosticMessagesLogger");
       Guard.NotNull(dirPathParamsResolver, "dirPathParamsResolver");
+      Guard.NotNull(applicationConfiguration, "applicationConfiguration");
 
       _projectInfoRepository = projectInfoRepository;
       _environmentInfoRepository = environmentInfoRepository;
@@ -76,6 +88,7 @@ namespace UberDeployer.Agent.Service
       _diagnosticMessagesLogger = diagnosticMessagesLogger;
       _projectMetadataExplorer = projectMetadataExplorer;
       _dirPathParamsResolver = dirPathParamsResolver;
+      _applicationConfiguration = applicationConfiguration;
     }
 
     public AgentService()
@@ -87,7 +100,8 @@ namespace UberDeployer.Agent.Service
         ObjectFactory.Instance.CreateDeploymentRequestRepository(),
         InMemoryDiagnosticMessagesLogger.Instance,
         ObjectFactory.Instance.CreateProjectMetadataExplorer(),
-        ObjectFactory.Instance.CreateDirPathParamsResolver())
+        ObjectFactory.Instance.CreateDirPathParamsResolver(), 
+        ObjectFactory.Instance.CreateApplicationConfiguration())
     {
     }
 
@@ -218,6 +232,7 @@ namespace UberDeployer.Agent.Service
 
       return
         environmentInfos
+          .Where(x => x.IsVisibleToClients)
           .Select(DtoMapper.Map<EnvironmentInfo, Proxy.Dto.EnvironmentInfo>)
           .ToList();
     }
@@ -475,6 +490,20 @@ namespace UberDeployer.Agent.Service
     {
       Core.Domain.DeploymentInfo deploymentInfo =
         DtoMapper.ConvertDeploymentInfo(deploymentInfoDto, projectInfo);
+
+      
+
+      if (projectInfo is UberDeployerAgentProjectInfo)
+      {
+        deploymentInfo = new Core.Domain.DeploymentInfo(
+          deploymentInfo.DeploymentId,
+          deploymentInfo.IsSimulation,
+          deploymentInfo.ProjectName,
+          deploymentInfo.ProjectConfigurationName,
+          deploymentInfo.ProjectConfigurationBuildId,
+          _applicationConfiguration.AgentServiceEnvironmentName,
+          deploymentInfo.InputParams);
+      }
 
       var deploymentContext =
         new DeploymentContext(requesterIdentity);

@@ -1,21 +1,15 @@
 using System.Collections.Generic;
-using UberDeployer.Core.Deployment;
+
 using UberDeployer.Core.Deployment.Tasks;
 
 namespace UberDeployer.Core.Domain
 {
   public class UberDeployerAgentProjectInfo : NtServiceProjectInfo
   {
-    #region Constructor(s)
-
     public UberDeployerAgentProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string ntServiceName, string ntServiceDirName, string ntServiceDisplayName, string ntServiceExeName, string ntServiceUserId)
       : base(name, artifactsRepositoryName, allowedEnvironmentNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific, ntServiceName, ntServiceDirName, ntServiceDisplayName, ntServiceExeName, ntServiceUserId, string.Empty)
     {
     }
-
-    #endregion
-
-    #region Overrides of ProjectInfo
 
     public override ProjectType Type
     {
@@ -36,7 +30,5 @@ namespace UberDeployer.Core.Domain
           objectFactory.CreateFileAdapter(),
           objectFactory.CreateZipFileAdapter());
     }
-
-    #endregion
   }
 }

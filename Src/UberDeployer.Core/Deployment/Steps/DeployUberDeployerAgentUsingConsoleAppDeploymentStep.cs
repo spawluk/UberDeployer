@@ -16,8 +16,6 @@ namespace UberDeployer.Core.Deployment.Steps
     private readonly DeploymentInfo _deploymentInfo;
     private readonly IDirectoryAdapter _directoryAdapter;
 
-    #region Constructor(s)
-
     public DeployUberDeployerAgentUsingConsoleAppDeploymentStep(DeploymentInfo deploymentInfo, IDirectoryAdapter directoryAdapter)
     {
       Guard.NotNull(deploymentInfo, "deploymentInfo");
@@ -26,10 +24,6 @@ namespace UberDeployer.Core.Deployment.Steps
       _deploymentInfo = deploymentInfo;
       _directoryAdapter = directoryAdapter;
     }
-
-    #endregion
-
-    #region Overrides of DeploymentStep
 
     protected override void DoExecute()
     {
@@ -91,7 +85,5 @@ namespace UberDeployer.Core.Deployment.Steps
     {
       get { return "Deploy UberDeployer.Agent using UberDeployer.ConsoleApp."; }
     }
-
-    #endregion
   }
 }

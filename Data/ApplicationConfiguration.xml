@@ -10,4 +10,5 @@
   <WebAppInternalApiEndpointUrl>http://localhost/UberDeployer/InternalApi/</WebAppInternalApiEndpointUrl>
   <WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds>45</WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds>
   <ManualDeploymentPackageCurrentDateFormat>yyyy.MM.dd</ManualDeploymentPackageCurrentDateFormat>
+  <AgentServiceEnvironmentName>server</AgentServiceEnvironmentName>
 </ApplicationConfigurationXml>

@@ -34,6 +34,7 @@ namespace UberDeployer.Tests.Core.Domain
         {
           new EnvironmentInfo(
             _EnvironmentName,
+            true,
             null,
             _AppServerMachine,
             _FailoverClusterMachineName,
@@ -65,6 +66,7 @@ namespace UberDeployer.Tests.Core.Domain
         {
           new EnvironmentInfo(
             _EnvironmentName,
+            true,
             "",
             _AppServerMachine,
             _FailoverClusterMachineName,
@@ -93,6 +95,7 @@ namespace UberDeployer.Tests.Core.Domain
     {
       var envInfo = new EnvironmentInfo(
         _EnvironmentName,
+        true,
         _ConfigurationTemplateName,
         _AppServerMachine,
         _FailoverClusterMachineName,
@@ -124,6 +127,7 @@ namespace UberDeployer.Tests.Core.Domain
       var envInfo =
         new EnvironmentInfo(
           _EnvironmentName,
+          true,
           _ConfigurationTemplateName,
           _AppServerMachine,
           _FailoverClusterMachineName,
@@ -155,6 +159,7 @@ namespace UberDeployer.Tests.Core.Domain
       var envInfo =
         new EnvironmentInfo(
           _EnvironmentName,
+          true,
           _ConfigurationTemplateName,
           _AppServerMachine,
           _FailoverClusterMachineName,

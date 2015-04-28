@@ -21,6 +21,7 @@ namespace UberDeployer.Tests.Core.Generators
       return
         new EnvironmentInfo(
           "env_name",
+          true,
           "config_template_name",
           "app_server_machine_name",
           "failover_cluster_machine_name",
@@ -48,6 +49,7 @@ namespace UberDeployer.Tests.Core.Generators
       return
         new EnvironmentInfo(
           "env_name",
+          true,
           "config_template_name",
           "app_server_machine_name",
           "failover_cluster_machine_name",

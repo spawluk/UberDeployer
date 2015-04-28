@@ -6,6 +6,8 @@ namespace UberDeployer.Agent.Proxy.Dto
   {
     public string Name { get; set; }
 
+    public bool IsVisibleToClients { get; set; }
+
     public string ConfigurationTemplateName { get; set; }
 
     public string AppServerMachineName { get; set; }

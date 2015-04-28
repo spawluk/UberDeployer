@@ -13,6 +13,8 @@ namespace UberDeployer.Core.DataAccess.Xml
     {
       public string Name { get; set; }
 
+      public bool IsVisibleToClients { get; set; }
+
       public string ConfigurationTemplateName { get; set; }
 
       public string AppServerMachineName { get; set; }
@@ -182,6 +184,7 @@ namespace UberDeployer.Core.DataAccess.Xml
       return
         new EnvironmentInfo(
           environmentInfoXml.Name,
+          environmentInfoXml.IsVisibleToClients,
           environmentInfoXml.ConfigurationTemplateName,
           environmentInfoXml.AppServerMachineName,
           environmentInfoXml.FailoverClusterMachineName,

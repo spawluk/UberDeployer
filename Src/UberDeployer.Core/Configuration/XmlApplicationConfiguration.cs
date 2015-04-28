@@ -6,8 +6,6 @@ namespace UberDeployer.Core.Configuration
 {
   public class XmlApplicationConfiguration : IApplicationConfiguration
   {
-    #region Nested types
-
     public class ApplicationConfigurationXml
     {
       public string TeamCityHostName { get; set; }
@@ -27,15 +25,13 @@ namespace UberDeployer.Core.Configuration
       public int WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds { get; set; }
 
       public string ManualDeploymentPackageCurrentDateFormat { get; set; }
+
+      public string AgentServiceEnvironmentName { get; set; }
     }
 
     private readonly string _xmlFilePath;
 
     private ApplicationConfigurationXml _applicationConfigurationXml;
-
-    #endregion
-
-    #region Constructor(s)
 
     public XmlApplicationConfiguration(string xmlFilePath)
     {
@@ -46,8 +42,6 @@ namespace UberDeployer.Core.Configuration
 
       _xmlFilePath = xmlFilePath;
     }
-
-    #endregion
 
     #region IApplicationConfiguration Members
 
@@ -216,6 +210,23 @@ namespace UberDeployer.Core.Configuration
         LoadXmlIfNeeded();
 
         _applicationConfigurationXml.ManualDeploymentPackageCurrentDateFormat = value;
+      }
+    }
+
+    public string AgentServiceEnvironmentName
+    {
+      get
+      {
+        LoadXmlIfNeeded();
+
+        return _applicationConfigurationXml.AgentServiceEnvironmentName;
+      }
+
+      set
+      {
+        LoadXmlIfNeeded();
+
+        _applicationConfigurationXml.AgentServiceEnvironmentName = value;
       }
     }
 
