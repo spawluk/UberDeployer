@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using log4net;
@@ -19,6 +17,7 @@ namespace UberDeployer.Core.Management.Db
     private readonly string _databaseName;
     private string _tempDirPath;
     private string _tmpScriptPath;
+    private static string _tmpErrorPath;
 
     public MsSqlSqlCmdScriptRunner(string databaseServer, string databaseName)
     {
@@ -44,7 +43,10 @@ namespace UberDeployer.Core.Management.Db
       }
 
       _tmpScriptPath = Path.Combine(GetTempDirPath(), Guid.NewGuid().ToString("N") + ".sql");
-      File.WriteAllText(_tmpScriptPath, scriptToExecute, new UTF8Encoding(true));
+      _tmpErrorPath = Path.Combine(GetTempDirPath(), Guid.NewGuid().ToString("N") + ".txt");
+
+      File.WriteAllText(_tmpScriptPath, string.Format(":Error \"{0}\"\nGO\n", _tmpErrorPath), new UTF8Encoding(true));
+      File.AppendAllText(_tmpScriptPath, scriptToExecute, new UTF8Encoding(true));
 
       try
       {
@@ -57,12 +59,13 @@ namespace UberDeployer.Core.Management.Db
       }
       catch (Exception exception)
       {
-        _log.Error(exception);
+        _log.Error(exception.Message);
         throw;
       }
       finally
       {
         File.Delete(_tmpScriptPath);
+        File.Delete(_tmpErrorPath);
       }
     }
 
@@ -94,25 +97,16 @@ namespace UberDeployer.Core.Management.Db
             }
           };
 
-          StringBuilder sb = new StringBuilder();
-
-          exeProcess.ErrorDataReceived += (sender, args) =>
-          {
-            if (string.IsNullOrEmpty(args.Data) == false)
-            {
-              _log.Error(args.Data);
-              sb.AppendLine(args.Data);
-            }
-          };
-
           exeProcess.BeginErrorReadLine();
           exeProcess.BeginOutputReadLine();
           exeProcess.WaitForExit();
 
           if (exeProcess.ExitCode > 0)
           {
-            _log.Error(string.Format("Error on executing command line. Error Code : [{0}], Message = [{1}].", exeProcess.ExitCode, sb));
-            throw new DbScriptRunnerException(string.Format("Error on executing command line. Error Code : [{0}], Message = [{1}].", exeProcess.ExitCode, sb));
+            var sqlCmdError = File.Exists(_tmpErrorPath) ? File.ReadAllText(_tmpErrorPath) : string.Empty;
+
+            _log.Error(string.Format("Error on executing command line. Error Code : [{0}], Message = [{1}]", exeProcess.ExitCode, sqlCmdError));
+            throw new DbScriptRunnerException(string.Format("Error on executing command line. Error Code : [{0}], Message = [{1}]", exeProcess.ExitCode, sqlCmdError));
           }
         }
       }
