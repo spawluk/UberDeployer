@@ -10,7 +10,7 @@ namespace UberDeployer.Core.Management.Db.DbManager
   public class MsSqlDbManager : IDbManager
   {
     private const string _ConnectionStringPattern = "Server={0};Integrated Security=SSPI";
-    private const string _DropDatabaseTemplate = "DROP DATABASE {0}";
+    private const string _DropDatabaseTemplate = "ALTER DATABASE {0} SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE {0}";
     private const string _DbExistQueryTemplate = "SELECT TOP 1 1 FROM master.dbo.sysdatabases WHERE name='{0}'";
 
     private readonly string _databaseServer;
