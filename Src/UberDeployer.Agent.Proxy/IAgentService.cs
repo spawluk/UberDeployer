@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using UberDeployer.Agent.Proxy.Dto;
+using UberDeployer.Agent.Proxy.Dto.EnvDeployment;
 using UberDeployer.Agent.Proxy.Dto.Metadata;
 using UberDeployer.Agent.Proxy.Dto.TeamCity;
 using UberDeployer.Agent.Proxy.Faults;
@@ -79,6 +80,6 @@ namespace UberDeployer.Agent.Proxy
     [OperationContract]
     [FaultContract(typeof(EnvironmentDeployConfigurationNotFoundFault))]
     [FaultContract(typeof(EnvironmentNotFoundFault))]
-    void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment);
+    void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment, List<ProjectToDeploy> projects);
   }
 }

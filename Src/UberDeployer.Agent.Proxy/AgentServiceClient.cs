@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UberDeployer.Agent.Proxy.Dto;
+using UberDeployer.Agent.Proxy.Dto.EnvDeployment;
 using UberDeployer.Agent.Proxy.Dto.Metadata;
 using UberDeployer.Agent.Proxy.Dto.TeamCity;
 
@@ -90,9 +91,9 @@ namespace UberDeployer.Agent.Proxy
       return Exec(@as => @as.GetProjectsForEnvironmentDeploy(environmentName));
     }
 
-    public void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment)
+    public void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment, List<ProjectToDeploy> projects)    
     {
-      Exec(@as => @as.DeployEnvironmentAsync(uniqueClientId, requesterIdentity, targetEnvironment));
+      Exec(@as => @as.DeployEnvironmentAsync(uniqueClientId, requesterIdentity, targetEnvironment, projects));
     }
 
     #endregion

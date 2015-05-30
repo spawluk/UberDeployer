@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Threading;
 using UberDeployer.Agent.Proxy;
 using UberDeployer.Agent.Proxy.Dto;
+using UberDeployer.Agent.Proxy.Dto.EnvDeployment;
 using UberDeployer.Agent.Proxy.Dto.TeamCity;
 using UberDeployer.Agent.Proxy.Faults;
 using UberDeployer.Agent.Service.Diagnostics;
@@ -206,7 +207,7 @@ namespace UberDeployer.Agent.Service
       }
     }
 
-    public void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment)
+    public void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment, List<ProjectToDeploy> projects)
     {
       Guard.NotEmpty(uniqueClientId, "uniqueClientId");
       Guard.NotNullNorEmpty(requesterIdentity, "requesterIdentity");
@@ -219,7 +220,7 @@ namespace UberDeployer.Agent.Service
         throw new FaultException<EnvironmentDeployConfigurationNotFoundFault>(new EnvironmentDeployConfigurationNotFoundFault { EnvironmentName = targetEnvironment });
       }
 
-      List<ProjectDeploymentData> projectsToDeploy = CreateProjectDeployments(uniqueClientId, environmentDeployInfo).ToList();
+      List<ProjectDeploymentData> projectsToDeploy = CreateProjectDeployments(uniqueClientId, environmentDeployInfo, projects).ToList();
 
       ThreadPool.QueueUserWorkItem(
         state =>
@@ -240,7 +241,7 @@ namespace UberDeployer.Agent.Service
         });
     }
 
-    private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo)
+    private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, List<ProjectToDeploy> projects)
     {
       var projectDeployments = new List<ProjectDeploymentData>();
 
@@ -251,18 +252,18 @@ namespace UberDeployer.Agent.Service
         throw new FaultException<EnvironmentNotFoundFault>(new EnvironmentNotFoundFault { EnvironmentName = environmentDeployInfo.TargetEnvironment });
       }
 
-      foreach (var projectToDeploy in environmentDeployInfo.ProjectsToDeploy)
+      foreach (var projectToDeploy in projects)
       {
         try
         {
-          ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectToDeploy);
+          ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectToDeploy.ProjectName);
 
           if (projectInfo == null)
           {
             throw new DeploymentTaskException(string.Format("Not found configuration for project: {0}", projectToDeploy));
           }
 
-          ProjectConfigurationBuild lastSuccessfulBuild = GetLatestSuccessfulBuild(projectToDeploy, environmentDeployInfo.BuildConfigurationName);
+          ProjectConfigurationBuild lastSuccessfulBuild = GetLatestSuccessfulBuild(projectToDeploy.ProjectName, environmentDeployInfo.BuildConfigurationName);
 
           if (lastSuccessfulBuild == null)
           {
@@ -270,7 +271,7 @@ namespace UberDeployer.Agent.Service
           }
 
           InputParams inputParams = BuildInputParams(projectInfo, environmentInfo);
-          var deploymentInfo = new Core.Domain.DeploymentInfo(Guid.NewGuid(), false, projectToDeploy, environmentDeployInfo.BuildConfigurationName, lastSuccessfulBuild.Id, environmentDeployInfo.TargetEnvironment, inputParams);
+          var deploymentInfo = new Core.Domain.DeploymentInfo(projectToDeploy.DeploymentId, false, projectToDeploy.ProjectName, environmentDeployInfo.BuildConfigurationName, lastSuccessfulBuild.Id, environmentDeployInfo.TargetEnvironment, inputParams);
 
           DeploymentTask deploymentTask = CreateDeploymentTask(projectInfo);
 
@@ -297,7 +298,7 @@ namespace UberDeployer.Agent.Service
           ObjectFactory.Instance.CreateFileAdapter(),
           ObjectFactory.Instance.CreateZipFileAdapter(),
           ObjectFactory.Instance.CreateDbManagerFactory(), 
-          ObjectFactory.Instance.CreateMsSqlDatabasePublisher());        
+          ObjectFactory.Instance.CreateMsSqlDatabasePublisher());
       }
 
       return projectInfo.CreateDeploymentTask(ObjectFactory.Instance);
