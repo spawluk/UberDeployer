@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+
 using UberDeployer.Common;
 using UberDeployer.Common.IO;
 using UberDeployer.Common.SyntaxSugar;
@@ -15,36 +16,41 @@ namespace UberDeployer.Core.Deployment.Tasks
   {
     private readonly IDirectoryAdapter _directoryAdapter;
 
-    #region Constructor(s)
-
-    public DeployUberDeployerAgentDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, INtServiceManager ntServiceManager, IPasswordCollector passwordCollector, IFailoverClusterManager failoverClusterManager, IDirectoryAdapter directoryAdapter, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter)
-      : base(projectInfoRepository, environmentInfoRepository, artifactsRepository, ntServiceManager, passwordCollector, failoverClusterManager, directoryAdapter, fileAdapter, zipFileAdapter)
+    public DeployUberDeployerAgentDeploymentTask(
+      IProjectInfoRepository projectInfoRepository,
+      IEnvironmentInfoRepository environmentInfoRepository,
+      IArtifactsRepository artifactsRepository,
+      INtServiceManager ntServiceManager,
+      IPasswordCollector passwordCollector,
+      IFailoverClusterManager failoverClusterManager,
+      IDirectoryAdapter directoryAdapter,
+      IFileAdapter fileAdapter,
+      IZipFileAdapter zipFileAdapter)
+      : base(
+        projectInfoRepository,
+        environmentInfoRepository,
+        artifactsRepository,
+        ntServiceManager,
+        passwordCollector,
+        failoverClusterManager,
+        directoryAdapter,
+        fileAdapter,
+        zipFileAdapter)
     {
       Guard.NotNull(directoryAdapter, "directoryAdapter");
 
       _directoryAdapter = directoryAdapter;
     }
 
-    #endregion
-
-    #region Overrides of DeploymentTaskBase
-
     protected override void DoPrepare()
     {
-      string currentExeFileName =
-        Path.GetFileName(
-          ReflectionUtils.GetCodeBaseFilePath(
-            Assembly.GetEntryAssembly()));
+      string currentExeFileName = Path.GetFileName(ReflectionUtils.GetCodeBaseFilePath(Assembly.GetEntryAssembly()));
 
-      bool isRunningInsideAgent =
-        string.Equals(currentExeFileName, "UberDeployer.Agent.NtService.exe", StringComparison.OrdinalIgnoreCase);
+      bool isRunningInsideAgent = string.Equals(currentExeFileName, "UberDeployer.Agent.NtService.exe", StringComparison.OrdinalIgnoreCase);
 
       if (isRunningInsideAgent)
       {
-        var deployUberDeployerAgentStep =
-          new DeployUberDeployerAgentUsingConsoleAppDeploymentStep(
-            DeploymentInfo,
-            _directoryAdapter);
+        var deployUberDeployerAgentStep = new DeployUberDeployerAgentUsingConsoleAppDeploymentStep(DeploymentInfo, _directoryAdapter);
 
         AddSubTask(deployUberDeployerAgentStep);
       }
@@ -67,7 +73,5 @@ namespace UberDeployer.Core.Deployment.Tasks
             DeploymentInfo.TargetEnvironmentName);
       }
     }
-
-    #endregion
   }
 }

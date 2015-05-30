@@ -89,10 +89,13 @@
     <Compile Include="Domain\EnvironmentDeployInfo.cs" />
     <Compile Include="DataAccess\Json\JsonEnvironmentDeployInfoRepository.cs" />
     <Compile Include="Deployment\AsynchronousWebPasswordCollector.cs" />
+    <Compile Include="Deployment\ScriptsToRunSelection.cs" />
     <Compile Include="Deployment\Steps\CleanDirectoryDeploymentStep.cs" />
     <Compile Include="Deployment\Steps\ConfigureBinariesStep.cs" />
     <Compile Include="Deployment\Converter.cs" />
     <Compile Include="Deployment\Steps\CreateDatabaseDeploymentStep.cs" />
+    <Compile Include="Deployment\Steps\IScriptsToRunWebSelector.cs" />
+    <Compile Include="Deployment\Steps\ScriptsToRunWebSelector.cs" />
     <Compile Include="Deployment\Tasks\CreateManualDeploymentPackageDeploymentTask.cs" />
     <Compile Include="Deployment\DbScriptToRun.cs" />
     <Compile Include="Deployment\Steps\DeployUberDeployerAgentUsingConsoleAppDeploymentStep.cs" />
@@ -137,6 +140,7 @@
     <Compile Include="Domain\ProjectToFailoverClusterGroupMapping.cs" />
     <Compile Include="Domain\ProjectType.cs" />
     <Compile Include="InternalException.cs" />
+    <Compile Include="Management\Db\DbVersionInfo.cs" />
     <Compile Include="Management\Cmd\CmdExecutor.cs" />
     <Compile Include="Management\Cmd\CmdExecutionException.cs" />
     <Compile Include="Management\Cmd\ICmdExecutor.cs" />
@@ -251,11 +255,18 @@
     <Compile Include="Management\Shortcut\ShellLinkNative.cs" />
     <Compile Include="Management\Shortcut\ShellShortcut.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TeamCity\ApiModels\TeamCityBuild.cs" />
+    <Compile Include="TeamCity\ApiModels\TeamCityBuildType.cs" />
+    <Compile Include="TeamCity\ApiModels\TeamCityBuildTypeBranch.cs" />
+    <Compile Include="TeamCity\ApiModels\TeamCityProject.cs" />
     <Compile Include="TeamCity\Http10WebClient.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TeamCity\ITeamCityRestClient.cs" />
     <Compile Include="TeamCity\Models\BuildsLocation.cs" />
     <Compile Include="TeamCity\Models\BuildStatus.cs" />
+    <Compile Include="TeamCity\Models\ProjectBranch.cs" />
+    <Compile Include="TeamCity\Models\ProjectBranchList.cs" />
     <Compile Include="TeamCity\Models\ProjectConfigurationBuild.cs" />
     <Compile Include="TeamCity\Models\ProjectConfigurationDetails.cs" />
     <Compile Include="TeamCity\Models\ProjectConfigurationsList.cs" />
@@ -269,6 +280,7 @@
     <Compile Include="Domain\WebServiceProjectInfo.cs" />
     <Compile Include="DataAccess\Xml\XmlEnvironmentInfoRepository.cs" />
     <Compile Include="DataAccess\Xml\XmlProjectInfoRepository.cs" />
+    <Compile Include="TeamCity\TeamCityRestClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Deployment\PasswordPromptForm.resx">
@@ -276,10 +288,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UberDeployer.Agent.Proxy\UberDeployer.Agent.Proxy.csproj">
-      <Project>{20970513-4A64-420E-B814-4D8FC89698FA}</Project>
-      <Name>UberDeployer.Agent.Proxy</Name>
-    </ProjectReference>
     <ProjectReference Include="..\UberDeployer.Common\UberDeployer.Common.csproj">
       <Project>{256FF6D7-F1B8-43E7-97CA-7A63455C0BE6}</Project>
       <Name>UberDeployer.Common</Name>

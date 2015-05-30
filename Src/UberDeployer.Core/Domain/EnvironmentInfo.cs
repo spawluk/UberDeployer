@@ -22,6 +22,7 @@ namespace UberDeployer.Core.Domain
 
     public EnvironmentInfo(
       string name,
+      bool isVisibleToClients,
       string configurationTemplateName,
       string appServerMachineName,
       string failoverClusterMachineName,
@@ -103,6 +104,7 @@ namespace UberDeployer.Core.Domain
       Guard.NotNullNorEmpty(name, "terminalAppShortcutPath");      
 
       Name = name;
+      IsVisibleToClients = isVisibleToClients;
       ConfigurationTemplateName = configurationTemplateName;
       AppServerMachineName = appServerMachineName;
       FailoverClusterMachineName = failoverClusterMachineName;
@@ -347,6 +349,8 @@ namespace UberDeployer.Core.Domain
     }
 
     public string Name { get; private set; }
+
+    public bool IsVisibleToClients { get; private set; }
 
     public string ConfigurationTemplateName { get; private set; }
 

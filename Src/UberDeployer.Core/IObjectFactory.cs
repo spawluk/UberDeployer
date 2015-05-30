@@ -4,6 +4,7 @@ using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
 using UberDeployer.Core.Deployment.Tasks;
+using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Management.Db;
 using UberDeployer.Core.Management.Db.DbManager;
@@ -35,34 +36,38 @@ namespace UberDeployer.Core
     INtServiceManager CreateNtServiceManager();
 
     IIisManager CreateIIisManager();
-    
+
     ITaskScheduler CreateTaskScheduler();
 
     IMsDeploy CreateIMsDeploy();
-    
+
     IDeploymentPipeline CreateDeploymentPipeline();
 
     IPasswordCollector CreatePasswordCollector();
-    
+
     IDbScriptRunnerFactory CreateDbScriptRunnerFactory();
 
     IDbVersionProvider CreateDbVersionProvider();
 
     IFailoverClusterManager CreateFailoverClusterManager();
-    
+
     IDirectoryAdapter CreateDirectoryAdapter();
 
     IProjectMetadataExplorer CreateProjectMetadataExplorer();
-    
+
     IDirPathParamsResolver CreateDirPathParamsResolver();
-    
+
     IFileAdapter CreateFileAdapter();
-    
+
     IZipFileAdapter CreateZipFileAdapter();
     
     IEnvironmentDeployInfoRepository CreateEnvironmentDeployInfoRepository();
 
     IDbManagerFactory CreateDbManagerFactory();
+
+    IScriptsToRunWebSelector CreateScriptsToRunWebSelector();
+    
+    ITeamCityRestClient CreateTeamCityRestClient();
 
     IMsSqlDatabasePublisher CreateMsSqlDatabasePublisher();
     

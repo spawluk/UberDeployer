@@ -124,7 +124,7 @@ namespace UberDeployer.Core.DataAccess.Xml
 
       public string DatabaseServerId { get; set; }
 
-      public bool UsesSqlCmdUpgradeScripts { get; set; }
+      public bool IsTransacional { get; set; }
 
       public string DacpacFile { get; set; }
     }
@@ -302,7 +302,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             dbProjectInfoXml.ArtifactsAreNotEnvironmentSpecific,
             dbProjectInfoXml.DbName,
             dbProjectInfoXml.DatabaseServerId,
-            dbProjectInfoXml.UsesSqlCmdUpgradeScripts,
+            dbProjectInfoXml.IsTransacional,
             dbProjectInfoXml.DacpacFile);
       }
 

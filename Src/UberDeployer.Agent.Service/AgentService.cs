@@ -4,6 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
 using System.Threading;
+
+using log4net;
+
 using UberDeployer.Agent.Proxy;
 using UberDeployer.Agent.Proxy.Dto;
 using UberDeployer.Agent.Proxy.Dto.EnvDeployment;
@@ -13,15 +16,19 @@ using UberDeployer.Agent.Service.Diagnostics;
 using UberDeployer.Common;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.CommonConfiguration;
+using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
+using UberDeployer.Core.Deployment.Steps;
+using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Domain.Input;
 using UberDeployer.Core.Management.Metadata;
 using UberDeployer.Core.TeamCity;
-using log4net;
-using UberDeployer.Core.Deployment.Tasks;
+using UberDeployer.Core.TeamCity.ApiModels;
+
+using DbScriptsToRunSelection = UberDeployer.Core.Deployment.DbScriptsToRunSelection;
 using DeploymentInfo = UberDeployer.Agent.Proxy.Dto.DeploymentInfo;
 using DeploymentRequest = UberDeployer.Core.Deployment.Pipeline.Modules.DeploymentRequest;
 using DiagnosticMessage = UberDeployer.Core.Deployment.DiagnosticMessage;
@@ -31,6 +38,7 @@ using MachineSpecificProjectVersion = UberDeployer.Agent.Proxy.Dto.Metadata.Mach
 using Project = UberDeployer.Core.TeamCity.Models.Project;
 using ProjectInfo = UberDeployer.Core.Domain.ProjectInfo;
 using ProjectType = UberDeployer.Core.Domain.ProjectType;
+using UberDeployerAgentProjectInfo = UberDeployer.Core.Domain.UberDeployerAgentProjectInfo;
 using WebAppProjectInfo = UberDeployer.Core.Domain.WebAppProjectInfo;
 
 namespace UberDeployer.Agent.Service
@@ -42,25 +50,31 @@ namespace UberDeployer.Agent.Service
     private readonly IDeploymentPipeline _deploymentPipeline;
     private readonly IEnvDeploymentPipeline _envDeploymentPipeline;
     private readonly IProjectInfoRepository _projectInfoRepository;
+
     private readonly IEnvironmentInfoRepository _environmentInfoRepository;
     private readonly IEnvironmentDeployInfoRepository _environmentDeployInfoRepository;
-    private readonly ITeamCityClient _teamCityClient; // TODO IMM HI: abstract away?
+    private readonly ITeamCityRestClient _teamCityClient;
+
     private readonly IDeploymentRequestRepository _deploymentRequestRepository;
+
     private readonly IDiagnosticMessagesLogger _diagnosticMessagesLogger;
+
     private readonly IProjectMetadataExplorer _projectMetadataExplorer;
+
     private readonly IDirPathParamsResolver _dirPathParamsResolver;    
 
-    #region Constructor(s)
+    private readonly IApplicationConfiguration _applicationConfiguration;
 
     public AgentService(
       IDeploymentPipeline deploymentPipeline,
       IProjectInfoRepository projectInfoRepository,
       IEnvironmentInfoRepository environmentInfoRepository,
-      ITeamCityClient teamCityClient,
+      ITeamCityRestClient teamCityClient,
       IDeploymentRequestRepository deploymentRequestRepository,
       IDiagnosticMessagesLogger diagnosticMessagesLogger,
       IProjectMetadataExplorer projectMetadataExplorer,
-      IDirPathParamsResolver dirPathParamsResolver, 
+      IDirPathParamsResolver dirPathParamsResolver,
+      IApplicationConfiguration applicationConfiguration, 
       IEnvironmentDeployInfoRepository environmentDeployInfoRepository, 
       IEnvDeploymentPipeline envDeploymentPipeline)
     {
@@ -71,6 +85,7 @@ namespace UberDeployer.Agent.Service
       Guard.NotNull(deploymentRequestRepository, "deploymentRequestRepository");
       Guard.NotNull(diagnosticMessagesLogger, "diagnosticMessagesLogger");
       Guard.NotNull(dirPathParamsResolver, "dirPathParamsResolver");
+      Guard.NotNull(applicationConfiguration, "applicationConfiguration");
       Guard.NotNull(environmentDeployInfoRepository, "environmentDeployInfoRepository");
       Guard.NotNull(envDeploymentPipeline, "envDeploymentPipeline");
 
@@ -82,6 +97,7 @@ namespace UberDeployer.Agent.Service
       _diagnosticMessagesLogger = diagnosticMessagesLogger;
       _projectMetadataExplorer = projectMetadataExplorer;
       _dirPathParamsResolver = dirPathParamsResolver;
+      _applicationConfiguration = applicationConfiguration;
       _environmentDeployInfoRepository = environmentDeployInfoRepository;
       _envDeploymentPipeline = envDeploymentPipeline;
     }
@@ -91,19 +107,16 @@ namespace UberDeployer.Agent.Service
         ObjectFactory.Instance.CreateDeploymentPipeline(),
         ObjectFactory.Instance.CreateProjectInfoRepository(),
         ObjectFactory.Instance.CreateEnvironmentInfoRepository(),
-        ObjectFactory.Instance.CreateTeamCityClient(),
+        ObjectFactory.Instance.CreateTeamCityRestClient(),
         ObjectFactory.Instance.CreateDeploymentRequestRepository(),
         InMemoryDiagnosticMessagesLogger.Instance,
         ObjectFactory.Instance.CreateProjectMetadataExplorer(),
         ObjectFactory.Instance.CreateDirPathParamsResolver(), 
-        ObjectFactory.Instance.CreateEnvironmentDeployInfoRepository(), 
+        ObjectFactory.Instance.CreateApplicationConfiguration(),
+        ObjectFactory.Instance.CreateEnvironmentDeployInfoRepository(),
         ObjectFactory.Instance.CrateEnvDeploymentPipeline())
     {
     }
-
-    #endregion
-
-    #region IAgentService Members
 
     public void Deploy(Guid deploymentId, Guid uniqueClientId, string requesterIdentity, DeploymentInfo deploymentInfoDto)
     {
@@ -188,9 +201,9 @@ namespace UberDeployer.Agent.Service
           throw new FaultException<ProjectNotFoundFault>(new ProjectNotFoundFault { ProjectName = deploymentInfo.ProjectName });
         }
 
-        //ThreadPool.QueueUserWorkItem(
-        //  state =>
-        //  {
+        ThreadPool.QueueUserWorkItem(
+          state =>
+          {
             try
             {
               DoCreatePackage(uniqueClientId, requesterIdentity, deploymentInfo, projectInfo, packageDirPath);
@@ -199,7 +212,7 @@ namespace UberDeployer.Agent.Service
             {
               HandleDeploymentException(exc, uniqueClientId);
             }
-          //});
+          });
       }
       catch (Exception exc)
       {
@@ -337,12 +350,23 @@ namespace UberDeployer.Agent.Service
 
     private ProjectConfigurationBuild GetLatestSuccessfulBuild(string projectName, string projectConfigurationName)
     {
-      const int maxBuildCount = 10;
-      List<ProjectConfigurationBuild> projectBuilds = GetProjectConfigurationBuilds(projectName, projectConfigurationName, maxBuildCount, ProjectConfigurationBuildFilter.Empty);
+      Guard.NotNullNorEmpty(projectName, "projectName");
+      Guard.NotNullNorEmpty(projectConfigurationName, "projectConfigurationName");
 
-      return projectBuilds.Where(x => x.Status == BuildStatus.Success)
-        .OrderByDescending(x => x.StartDate)
-        .FirstOrDefault();             
+      ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectName);
+
+      TeamCityBuildType teamCityBuildType = _teamCityClient.GetBuildTypes(projectInfo.ArtifactsRepositoryName).FirstOrDefault(x => x.Name == projectConfigurationName);      
+      
+      if (teamCityBuildType == null)
+      {
+        return null;
+      }
+
+      TeamCityBuild lastSuccessfulBuild = _teamCityClient.GetLastSuccessfulBuild(teamCityBuildType.Id);
+
+      ProjectConfigurationBuild projectConfigurationOfLastBuild = DtoMapper.Map<TeamCityBuild, ProjectConfigurationBuild>(lastSuccessfulBuild);
+
+      return projectConfigurationOfLastBuild;
     }
 
     public List<Proxy.Dto.ProjectInfo> GetProjectInfos(Proxy.Dto.ProjectFilter projectFilter)
@@ -375,9 +399,10 @@ namespace UberDeployer.Agent.Service
 
       return
         environmentInfos
+          .Where(x => x.IsVisibleToClients)
           .Select(DtoMapper.Map<EnvironmentInfo, Proxy.Dto.EnvironmentInfo>)
           .ToList();
-    }   
+    }    
 
     public List<string> GetWebMachineNames(string environmentName)
     {
@@ -400,128 +425,34 @@ namespace UberDeployer.Agent.Service
       return environmentInfo.WebServerMachineNames.ToList();
     }
 
-    public List<ProjectConfiguration> GetProjectConfigurations(string projectName, Proxy.Dto.ProjectConfigurationFilter projectConfigurationFilter)
+    public List<ProjectConfiguration> GetProjectConfigurations(string projectName)
     {
-      if (string.IsNullOrEmpty(projectName))
-      {
-        throw new ArgumentException("Argument can't be null nor empty.", "projectName");
-      }
+      Guard.NotNullNorEmpty(projectName, "projectName");
 
-      if (projectConfigurationFilter == null)
-      {
-        throw new ArgumentNullException("projectConfigurationFilter");
-      }
+      ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectName);
 
-      ProjectInfo projectInfo =
-        _projectInfoRepository.FindByName(projectName);
+      List<TeamCityBuildType> projectConfigurations = _teamCityClient.GetBuildTypesWithBranches(projectInfo.ArtifactsRepositoryName).ToList();
 
-      Core.TeamCity.Models.Project project =
-        projectInfo != null
-          ? _teamCityClient.GetProjectByName(projectInfo.ArtifactsRepositoryName)
-          : null;
-
-      Core.TeamCity.Models.ProjectDetails projectDetails =
-        project != null
-          ? _teamCityClient.GetProjectDetails(project)
-          : null;
-
-      if (projectDetails == null)
-      {
-        throw new FaultException<ProjectNotFoundFault>(new ProjectNotFoundFault { ProjectName = projectName });
-      }
-
-      if (projectDetails.ConfigurationsList == null || projectDetails.ConfigurationsList.Configurations == null)
-      {
-        return new List<ProjectConfiguration>();
-      }
-
-      IEnumerable<Core.TeamCity.Models.ProjectConfiguration> projectConfigurations =
-        projectDetails.ConfigurationsList.Configurations;
-
-      if (!string.IsNullOrEmpty(projectConfigurationFilter.Name))
-      {
-        projectConfigurations =
-          projectConfigurations
-            .Where(pc => !string.IsNullOrEmpty(pc.Name) && pc.Name.IndexOf(projectConfigurationFilter.Name, StringComparison.CurrentCultureIgnoreCase) > -1);
-      }
-
-      return projectConfigurations
-        .Select(DtoMapper.Map<Core.TeamCity.Models.ProjectConfiguration, ProjectConfiguration>)
-        .ToList();
+      return projectConfigurations.Select(DtoMapper.Map<TeamCityBuildType, ProjectConfiguration>).ToList();
     }
 
-    public List<ProjectConfigurationBuild> GetProjectConfigurationBuilds(string projectName, string projectConfigurationName, int maxCount, Proxy.Dto.ProjectConfigurationBuildFilter projectConfigurationBuildFilter)
+    public List<ProjectConfigurationBuild> GetProjectConfigurationBuilds(string projectName, string projectConfigurationName, string branchName, int maxCount)
     {
-      if (string.IsNullOrEmpty(projectName))
-      {
-        throw new ArgumentException("Argument can't be null nor empty.", "projectName");
-      }
+      Guard.NotNullNorEmpty(projectName, "projectName");
+      Guard.NotNullNorEmpty(projectConfigurationName, "projectConfigurationName");
 
-      if (string.IsNullOrEmpty(projectConfigurationName))
-      {
-        throw new ArgumentException("Argument can't be null nor empty.", "projectConfigurationName");
-      }
+      ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectName);
 
-      if (projectConfigurationBuildFilter == null)
-      {
-        throw new ArgumentNullException("projectConfigurationBuildFilter");
-      }
+      TeamCityBuildType teamCityBuildType = _teamCityClient.GetBuildTypes(projectInfo.ArtifactsRepositoryName).FirstOrDefault(x => x.Name == projectConfigurationName);
 
-      ProjectInfo projectInfo =
-        _projectInfoRepository.FindByName(projectName);
-
-      Core.TeamCity.Models.Project project =
-        projectInfo != null
-          ? _teamCityClient.GetProjectByName(projectInfo.ArtifactsRepositoryName)
-          : null;
-
-      Core.TeamCity.Models.ProjectDetails projectDetails =
-        project != null
-          ? _teamCityClient.GetProjectDetails(project)
-          : null;
-
-      if (projectDetails == null)
-      {
-        throw new FaultException<ProjectNotFoundFault>(new ProjectNotFoundFault { ProjectName = projectName });
-      }
-
-      Core.TeamCity.Models.ProjectConfiguration projectConfiguration =
-        (projectDetails.ConfigurationsList != null && projectDetails.ConfigurationsList.Configurations != null)
-          ? projectDetails.ConfigurationsList.Configurations
-              .SingleOrDefault(pc => pc.Name == projectConfigurationName)
-          : null;
-
-      Core.TeamCity.Models.ProjectConfigurationDetails projectConfigurationDetails =
-        projectConfiguration != null
-          ? _teamCityClient.GetProjectConfigurationDetails(projectConfiguration)
-          : null;
-
-      if (projectConfigurationDetails == null)
-      {
-        throw new FaultException<ProjectConfigurationNotFoundFault>(new ProjectConfigurationNotFoundFault { ProjectName = projectInfo.Name, ProjectConfigurationName = projectConfigurationName });
-      }
-
-      Core.TeamCity.Models.ProjectConfigurationBuildsList projectConfigurationBuildsList =
-        _teamCityClient.GetProjectConfigurationBuilds(projectConfigurationDetails, 0, maxCount);
-
-      if (projectConfigurationBuildsList.Builds == null)
+      if (teamCityBuildType == null)
       {
         return new List<ProjectConfigurationBuild>();
       }
 
-      IEnumerable<Core.TeamCity.Models.ProjectConfigurationBuild> projectConfigurationBuilds =
-        projectConfigurationBuildsList.Builds;
+      IEnumerable<TeamCityBuild> projectConfigurationBuilds = _teamCityClient.GetBuilds(teamCityBuildType.Id, branchName, 0, maxCount, true);
 
-      if (!string.IsNullOrEmpty(projectConfigurationBuildFilter.Number))
-      {
-        projectConfigurationBuilds =
-          projectConfigurationBuilds
-            .Where(pcb => !string.IsNullOrEmpty(pcb.Number) && pcb.Number.IndexOf(projectConfigurationBuildFilter.Number, StringComparison.CurrentCultureIgnoreCase) > -1);
-      }
-
-      return projectConfigurationBuilds
-        .Select(DtoMapper.Map<Core.TeamCity.Models.ProjectConfigurationBuild, ProjectConfigurationBuild>)
-        .ToList();
+      return projectConfigurationBuilds.Select(DtoMapper.Map<TeamCityBuild, ProjectConfigurationBuild>).ToList();
     }
 
     public List<string> GetWebAppProjectTargetUrls(string projectName, string environmentName)
@@ -645,7 +576,7 @@ namespace UberDeployer.Agent.Service
       catch (Exception exc)
       {
         _log.ErrorIfEnabled(() => "Unhandled exception.", exc);
-        
+
         throw;
       }
     }
@@ -656,6 +587,18 @@ namespace UberDeployer.Agent.Service
       Guard.NotNullNorEmpty(password, "password");
 
       AsynchronousWebPasswordCollector.SetCollectedCredentials(deploymentId, password);
+    }
+
+    public void SetSelectedDbScriptsToRun(Guid deploymentId, Proxy.Dto.DbScriptsToRunSelection scriptsToRunSelection)
+    {
+      ScriptsToRunWebSelector.SetSelectedScriptsToRun(
+        deploymentId,
+        DtoMapper.Map<Proxy.Dto.DbScriptsToRunSelection, DbScriptsToRunSelection>(scriptsToRunSelection));
+    }
+
+    public void CancelDbScriptsSelection(Guid deploymentId)
+    {
+      ScriptsToRunWebSelector.CancelDbScriptsSelection(deploymentId);
     }
 
     public string GetDefaultPackageDirPath(string environmentName, string projectName)
@@ -672,7 +615,7 @@ namespace UberDeployer.Agent.Service
         return null;
       }
 
-      return _dirPathParamsResolver.ResolveParams(environmentInfo.ManualDeploymentPackageDirPath, projectName);           
+      return _dirPathParamsResolver.ResolveParams(environmentInfo.ManualDeploymentPackageDirPath, projectName);
     }
 
     public List<string> GetProjectsForEnvironmentDeploy(string environmentName)
@@ -688,10 +631,6 @@ namespace UberDeployer.Agent.Service
       return environmentDeployInfo.ProjectsToDeploy;
     }
 
-    #endregion
-
-    #region Private methods
-
     private void HandleDeploymentException(Exception exception, Guid uniqueClientId)
     {
       const string errorMessage = "Unhandled exception.";
@@ -703,26 +642,32 @@ namespace UberDeployer.Agent.Service
           string.Format("{0}{1}", errorMessage, (exception != null ? Environment.NewLine + exception : " (no exception info)")));
 
       _log.ErrorIfEnabled(() => errorMessage, exception);
-    }
-
-    private void HandleProjectDeploymentException(Exception exception, Guid uniqueClientId, string projectName)
-    {
-      string errorMessage = string.Format("Unhandled exception while deploying project: {0}.", projectName);
-
-      _diagnosticMessagesLogger
-        .LogMessage(
-          uniqueClientId,
-          DiagnosticMessageType.Error,
-          string.Format("{0}{1}", errorMessage, (exception != null ? Environment.NewLine + exception : " (no exception info)")));
-
-      _log.ErrorIfEnabled(() => errorMessage, exception);
-    }
+    }    
 
     private void DoDeploy(Guid uniqueClientId, string requesterIdentity, Core.Domain.DeploymentInfo deploymentInfo, ProjectInfo projectInfo)
     {
-      DeploymentTask deploymentTask = projectInfo.CreateDeploymentTask(ObjectFactory.Instance);      
+      DeploymentTask deploymentTask = projectInfo.CreateDeploymentTask(ObjectFactory.Instance);
 
-      StartTask(deploymentTask, uniqueClientId, requesterIdentity, deploymentInfo);
+      Core.Domain.DeploymentInfo deployInfo = OverwriteConfigurationIfSelfDeployment(deploymentInfo, projectInfo);
+      
+      StartTask(deploymentTask, uniqueClientId, requesterIdentity, deployInfo);
+    }
+
+    private Core.Domain.DeploymentInfo OverwriteConfigurationIfSelfDeployment(Core.Domain.DeploymentInfo deploymentInfo, ProjectInfo projectInfo)
+    {
+      if (projectInfo is UberDeployerAgentProjectInfo)
+      {
+        return new Core.Domain.DeploymentInfo(
+          deploymentInfo.DeploymentId,
+          deploymentInfo.IsSimulation,
+          deploymentInfo.ProjectName,
+          deploymentInfo.ProjectConfigurationName,
+          deploymentInfo.ProjectConfigurationBuildId,
+          _applicationConfiguration.AgentServiceEnvironmentName,
+          deploymentInfo.InputParams);
+      }
+
+      return deploymentInfo;
     }
 
     private void DoCreatePackage(Guid uniqueClientId, string requesterIdentity, DeploymentInfo deploymentInfoDto, ProjectInfo projectInfo, string packageDirPath)
@@ -744,7 +689,7 @@ namespace UberDeployer.Agent.Service
     }
 
     private void StartTask(DeploymentTask deploymentTask, Guid uniqueClientId, string requesterIdentity, Core.Domain.DeploymentInfo deploymentInfo)
-    {
+    {     
       var deploymentContext =
         new DeploymentContext(requesterIdentity);
 
@@ -769,7 +714,5 @@ namespace UberDeployer.Agent.Service
 
       _diagnosticMessagesLogger.LogMessage(uniqueClientId, messageType, message);
     }
-
-    #endregion
   }
 }
