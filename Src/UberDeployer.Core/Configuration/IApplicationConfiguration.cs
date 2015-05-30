@@ -21,5 +21,7 @@
     int WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds { get; set; }
     
     string ManualDeploymentPackageCurrentDateFormat { get; set; }
+    
+    string SqlPackageDirPath { get; set; }
   }
 }

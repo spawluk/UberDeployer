@@ -154,7 +154,14 @@ namespace UberDeployer.CommonConfiguration
 
       container.Register(
         Component.For<IMsSqlDatabasePublisher>()
-          .ImplementedBy<MsSqlDatabasePublisher>()
+          .UsingFactoryMethod(
+            kernel =>
+            {
+              var applicationConfiguration = kernel.Resolve<IApplicationConfiguration>();
+              var cmdExecutor = kernel.Resolve<ICmdExecutor>();
+
+              return new MsSqlDatabasePublisher(cmdExecutor, applicationConfiguration.SqlPackageDirPath);
+            })
           .LifeStyle.Transient);
 
       container.Register(
