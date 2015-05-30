@@ -13,10 +13,14 @@ namespace UberDeployer.WebApp.Core.Controllers
 {
   public class EnvDeploymentController : UberDeployerWebAppController
   {
+    //TODO MARIO: should be set from env deploy configuration, it's only shown on credentials prompt, doesn't affect deploy.
+    public const string ProjectConfigurationName = "Production";
+
     private readonly IAgentService _agentService;
 
     private readonly ISessionService _sessionService;
-    private IDeploymentStateProvider _deploymentStateProvider;
+
+    private readonly IDeploymentStateProvider _deploymentStateProvider;
 
     public EnvDeploymentController(IAgentService agentService, ISessionService sessionService, IDeploymentStateProvider deploymentStateProvider)
     {
@@ -70,7 +74,7 @@ namespace UberDeployer.WebApp.Core.Controllers
     }
 
     [HttpPost]
-    public ActionResult DeployAll(string environmentName, string projectConfigurationName, string[] projectNames)
+    public ActionResult DeployAll(string environmentName, string[] projectNames)
     {
       if (string.IsNullOrWhiteSpace(environmentName))
       {
@@ -84,7 +88,7 @@ namespace UberDeployer.WebApp.Core.Controllers
 
       foreach (var projectName in projectNames)
       {
-        Guid deploymentId = SetDeploymentState(environmentName, projectConfigurationName, projectName);
+        Guid deploymentId = SetDeploymentState(environmentName, ProjectConfigurationName, projectName);
 
         projectsToDeploy.Add(
           new ProjectToDeploy
@@ -97,7 +101,7 @@ namespace UberDeployer.WebApp.Core.Controllers
       _agentService.DeployEnvironmentAsync(uniqueClientId, requesterIdentity, environmentName, projectsToDeploy);
 
       return Json(new { Status = "OK" });
-    }
+    }    
 
     private Guid SetDeploymentState(string environmentName, string projectConfigurationName, string projectName)
     {
@@ -109,7 +113,6 @@ namespace UberDeployer.WebApp.Core.Controllers
           UserIdentity,
           projectName,
           projectConfigurationName,
-          null,
           environmentName);
 
       _deploymentStateProvider.SetDeploymentState(

@@ -241,7 +241,7 @@ namespace UberDeployer.Agent.Service
         });
     }
 
-    private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, List<ProjectToDeploy> projects)
+    private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, IEnumerable<ProjectToDeploy> projects)
     {
       var projectDeployments = new List<ProjectDeploymentData>();
 

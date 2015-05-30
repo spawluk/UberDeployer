@@ -14,7 +14,8 @@ UberDeployer.EnvDeploy = function() {
       url: g_AppPrefix + 'EnvDeployment/DeployAll',
       type: "POST",
       data: {
-        environmentName: targetEnvironmentName,
+        environmentName: targetEnvironmentName,        
+        projectNames: Object.keys(_projects)
       },
       traditional: true,
       success: function(data) {

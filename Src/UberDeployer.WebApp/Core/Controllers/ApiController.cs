@@ -412,7 +412,6 @@ namespace UberDeployer.WebApp.Core.Controllers
             UserIdentity,
             projectName,
             projectConfigurationName,
-            projectConfigurationBuildId,
             targetEnvironmentName);
 
         _deploymentStateProvider.SetDeploymentState(
