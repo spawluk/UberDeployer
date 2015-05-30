@@ -29,7 +29,7 @@ namespace UberDeployer.Core.Tests.Deployment.Tasks
       const string environmentDirPath = @"Data";
 
       IProjectInfoRepository projectInfoRepository = new XmlProjectInfoRepository(projectFilePath);
-      IMsSqlDatabasePublisher databasePublisher = new MsSqlDatabasePublisher(new CmdExecutor());
+      IMsSqlDatabasePublisher databasePublisher = new MsSqlDatabasePublisher(new CmdExecutor(), null);
       IEnvironmentInfoRepository environmentInfoRepository = new XmlEnvironmentInfoRepository(environmentDirPath);
       IFileAdapter fileAdapter = new FileAdapter();
       IArtifactsRepository artifactsRepository = new TeamCityArtifactsRepository(new TeamCityClient("teamcity", 90, "guest", "guest"));

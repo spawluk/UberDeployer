@@ -27,6 +27,8 @@ namespace UberDeployer.Core.Configuration
       public int WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds { get; set; }
 
       public string ManualDeploymentPackageCurrentDateFormat { get; set; }
+
+      public string SqlPackageDirPath { get; set; }
     }
 
     private readonly string _xmlFilePath;
@@ -216,6 +218,23 @@ namespace UberDeployer.Core.Configuration
         LoadXmlIfNeeded();
 
         _applicationConfigurationXml.ManualDeploymentPackageCurrentDateFormat = value;
+      }
+    }
+
+    public string SqlPackageDirPath
+    {
+      get
+      {
+        LoadXmlIfNeeded();
+
+        return _applicationConfigurationXml.SqlPackageDirPath;
+      }
+
+      set
+      {
+        LoadXmlIfNeeded();
+
+        _applicationConfigurationXml.SqlPackageDirPath = value;
       }
     }
 
