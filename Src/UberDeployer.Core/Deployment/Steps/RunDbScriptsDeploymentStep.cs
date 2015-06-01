@@ -73,7 +73,7 @@ namespace UberDeployer.Core.Deployment.Steps
       }
       catch (DbScriptRunnerException exc)
       {
-        string message = string.Format("Script execution failed, script name: '{0}'.", executedScriptName);
+        string message = string.Format("Script execution failed, script name: '{0}'. {1}.", executedScriptName, exc.Message);
 
         Exception eLocal = exc.InnerException;
 

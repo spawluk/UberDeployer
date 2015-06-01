@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using log4net;
@@ -23,6 +21,7 @@ namespace UberDeployer.Core.Management.Db
 
     private string _tempDirPath;
     private string _tmpScriptPath;
+    private static string _tmpErrorPath;
 
     public MsSqlSqlCmdScriptRunner(string databaseServer, string databaseName, ICmdExecutor cmdExecutor)
     {
@@ -43,7 +42,10 @@ namespace UberDeployer.Core.Management.Db
       }
 
       _tmpScriptPath = Path.Combine(GetTempDirPath(), Guid.NewGuid().ToString("N") + ".sql");
-      File.WriteAllText(_tmpScriptPath, scriptToExecute, new UTF8Encoding(true));
+      _tmpErrorPath = Path.Combine(GetTempDirPath(), Guid.NewGuid().ToString("N") + ".txt");
+
+      File.WriteAllText(_tmpScriptPath, string.Format(":Error \"{0}\"\nGO\n", _tmpErrorPath), new UTF8Encoding(true));
+      File.AppendAllText(_tmpScriptPath, scriptToExecute, new UTF8Encoding(true));
 
       try
       {
@@ -55,14 +57,65 @@ namespace UberDeployer.Core.Management.Db
       }
       catch (Exception exception)
       {
-        _log.Error(exception);
+        _log.Error(exception.Message);
         throw;
       }
       finally
       {
         File.Delete(_tmpScriptPath);
+        File.Delete(_tmpErrorPath);
       }
-    }   
+
+    }
+
+    private static void Execute(string fileToExecute, string arguments)
+    {
+      ProcessStartInfo processStartInfo = new ProcessStartInfo();
+      processStartInfo.FileName = fileToExecute;
+      processStartInfo.CreateNoWindow = true;
+      processStartInfo.UseShellExecute = false;
+      processStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+      processStartInfo.RedirectStandardError = true;
+      processStartInfo.RedirectStandardOutput = true;
+      processStartInfo.Arguments = arguments;
+
+      Stopwatch stopwatch = new Stopwatch();
+      stopwatch.Start();
+
+      try
+      {
+        _log.Info("Executing : " + fileToExecute + " " + arguments);
+        using (Process exeProcess = Process.Start(processStartInfo))
+        {
+          exeProcess.EnableRaisingEvents = true;
+          exeProcess.OutputDataReceived += (sender, args) =>
+          {
+            if (string.IsNullOrEmpty(args.Data) == false)
+            {
+              _log.Info(args.Data);
+            }
+          };
+
+          exeProcess.BeginErrorReadLine();
+          exeProcess.BeginOutputReadLine();
+          exeProcess.WaitForExit();
+
+          if (exeProcess.ExitCode > 0)
+          {
+            var sqlCmdError = File.Exists(_tmpErrorPath) ? File.ReadAllText(_tmpErrorPath) : string.Empty;
+
+            _log.Error(string.Format("Error on executing command line. Error Code : [{0}], Message = [{1}]", exeProcess.ExitCode, sqlCmdError));
+            throw new DbScriptRunnerException(string.Format("Error on executing command line. Error Code : [{0}], Message = [{1}]", exeProcess.ExitCode, sqlCmdError));
+          }
+        }
+      }
+      finally
+      {
+        stopwatch.Stop();
+
+        _log.InfoFormat("Executing file [{0}] took: {1} s.", fileToExecute, stopwatch.Elapsed.TotalSeconds);
+      }
+    }
 
     protected string GetTempDirPath()
     {
