@@ -125,8 +125,7 @@ namespace UberDeployer.CommonConfiguration
 
     public IDbScriptRunnerFactory CreateDbScriptRunnerFactory()
     {
-      //TODO MARIO configure container
-      return _container.Resolve<MsSqlDbScriptRunnerFactory>();
+      return _container.Resolve<IDbScriptRunnerFactory>();
     }
 
     public IDbVersionProvider CreateDbVersionProvider()

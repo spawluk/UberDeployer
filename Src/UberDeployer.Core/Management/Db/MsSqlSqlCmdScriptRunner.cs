@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using log4net;
 using UberDeployer.Common.SyntaxSugar;
-using UberDeployer.Core.Management.Cmd;
 
 namespace UberDeployer.Core.Management.Db
 {
@@ -17,21 +16,18 @@ namespace UberDeployer.Core.Management.Db
 
     private readonly string _databaseServer;
     private readonly string _databaseName;
-    private readonly ICmdExecutor _cmdExecutor;
 
     private string _tempDirPath;
     private string _tmpScriptPath;
     private static string _tmpErrorPath;
 
-    public MsSqlSqlCmdScriptRunner(string databaseServer, string databaseName, ICmdExecutor cmdExecutor)
+    public MsSqlSqlCmdScriptRunner(string databaseServer, string databaseName)
     {
       Guard.NotNullNorEmpty(databaseServer, "databaseServer");
       Guard.NotNullNorEmpty(databaseName, "databaseName");
-      Guard.NotNull(cmdExecutor, "cmdExecutor");
 
       _databaseServer = databaseServer;
       _databaseName = databaseName;
-      _cmdExecutor = cmdExecutor;
     }
 
     public void Execute(string scriptToExecute)
@@ -51,7 +47,7 @@ namespace UberDeployer.Core.Management.Db
       {
         string arguments = string.Format("-S \"{0}\" -E -i \"{2}\" -V15 -b -v DatabaseName=\"{1}\"", _databaseServer, _databaseName, _tmpScriptPath);
 
-        _cmdExecutor.Execute(SqlCmdExe, arguments);        
+        Execute(SqlCmdExe, arguments);        
 
         _log.Debug("Applying script to database ended successfully.");
       }

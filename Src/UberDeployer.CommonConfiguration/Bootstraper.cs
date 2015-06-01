@@ -231,6 +231,11 @@ namespace UberDeployer.CommonConfiguration
               return new DirPathParamsResolver(appConfig.ManualDeploymentPackageCurrentDateFormat);
             })
           .LifeStyle.Is(LifestyleType.Transient));
+
+      container.Register(
+        Component.For<IDbScriptRunnerFactory>()
+          .ImplementedBy<MsSqlDbScriptRunnerFactory>()
+          .LifeStyle.Is(LifestyleType.Transient));
     }
 
     private static ISessionFactory CreateNHibernateSessionFactory()
