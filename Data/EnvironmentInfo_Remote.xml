@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <EnvironmentInfoXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Remote</Name>
+  <IsVisibleToClients>true</IsVisibleToClients>
   <ConfigurationTemplateName>Prod</ConfigurationTemplateName>
   <AppServerMachineName>REMOTE</AppServerMachineName>
   <FailoverClusterMachineName>REMOTE_CLUSTER</FailoverClusterMachineName>

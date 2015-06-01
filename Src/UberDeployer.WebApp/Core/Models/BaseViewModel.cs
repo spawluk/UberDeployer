@@ -10,5 +10,7 @@ namespace UberDeployer.WebApp.Core.Models
     }
 
     public AppPage CurrentAppPage { get; set; }
+
+    public bool IsEnvDeployEnabled { get { return false; } }
   }
 }

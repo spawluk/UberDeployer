@@ -1,6 +1,6 @@
 ﻿{
   "TargetEnvironment": "Local",
   "BuildConfigurationName":  "Production",
-  "ProjectsToDeploy": [ "Constance.Database", "Constance" ] 
+  "ProjectsToDeploy": [ "UberDeployer.SampleDb", "UberDeployer.SampleNtService" ] 
 }
 

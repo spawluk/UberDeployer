@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <EnvironmentInfoXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Local</Name>
-  <ConfigurationTemplateName>dev3</ConfigurationTemplateName>
+  <IsVisibleToClients>true</IsVisibleToClients>
+  <ConfigurationTemplateName>local</ConfigurationTemplateName>
   <AppServerMachineName>localhost</AppServerMachineName>
   <FailoverClusterMachineName></FailoverClusterMachineName>
   <WebServerMachineNames>
@@ -25,11 +26,7 @@
     <EnvironmentUserXml>
       <Id>Sample.User</Id>
       <UserName>UberDeployer</UserName>
-    </EnvironmentUserXml>
-    <EnvironmentUserXml>
-      <Id>Constance.User</Id>
-      <UserName>ki-centrala\m.rubin</UserName>
-    </EnvironmentUserXml>
+    </EnvironmentUserXml>    
   </EnvironmentUsers>
   <AppPoolInfos>
     <AppPoolInfoXml>
