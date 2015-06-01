@@ -22,6 +22,20 @@ namespace UberDeployer.Core.Management.Db
       _versionTableInfos = new List<DbVersionTableInfo>(versionTableInfos);
     }
 
+    public bool CheckIfDatabaseExists(string dbName, string sqlServerName)
+    {
+      string connectionString = string.Format(_ConnectionStringPattern, sqlServerName);
+
+      using (var connection = new SqlConnection(connectionString))
+      {
+        connection.Open();
+        
+        string cmdStr = String.Format("SELECT database_id FROM sys.databases WHERE Name ='{0}'", dbName);
+
+        return connection.Query(cmdStr).Any();
+      }
+    }
+
     public IEnumerable<DbVersionInfo> GetVersions(string dbName, string sqlServerName)
     {
       if (string.IsNullOrEmpty(dbName))
