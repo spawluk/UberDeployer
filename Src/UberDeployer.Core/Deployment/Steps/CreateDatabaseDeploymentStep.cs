@@ -55,7 +55,6 @@ namespace UberDeployer.Core.Deployment.Steps
 
       return new CreateDatabaseOptions(_projectInfo.DbName, dataFileOptions, logFileOptions);
     }
-
     public override string Description
     {
       get

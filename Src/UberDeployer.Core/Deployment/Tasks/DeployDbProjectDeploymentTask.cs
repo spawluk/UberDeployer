@@ -7,6 +7,7 @@ using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Management.Db;
+using UberDeployer.Core.Management.Db.DbManager;
 
 namespace UberDeployer.Core.Deployment.Tasks
 {
@@ -18,8 +19,9 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IFileAdapter _fileAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
     private readonly IScriptsToRunWebSelector _createScriptsToRunWebSelector;
+    private readonly IMsSqlDatabasePublisher _databasePublisher;
 
-    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector)
+    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -28,6 +30,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(fileAdapter, "fileAdapter");
       Guard.NotNull(zipFileAdapter, "zipFileAdapter");
       Guard.NotNull(createScriptsToRunWebSelector, "createScriptsToRunWebSelector");
+      Guard.NotNull(databasePublisher, "databasePublisher");
 
       _artifactsRepository = artifactsRepository;
       _dbScriptRunnerFactory = dbScriptRunnerFactory;
@@ -35,6 +38,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _fileAdapter = fileAdapter;
       _zipFileAdapter = zipFileAdapter;
       _createScriptsToRunWebSelector = createScriptsToRunWebSelector;
+      _databasePublisher = databasePublisher;
     }
 
     protected override void DoPrepare()
@@ -49,6 +53,10 @@ namespace UberDeployer.Core.Deployment.Tasks
         environmentInfo.GetDatabaseServer(dbProjectConfiguration.DatabaseServerId);
 
       string databaseServerMachineName = databaseServer.MachineName;
+
+      bool databaseExists = _dbVersionProvider.CheckIfDatabaseExists(
+        projectInfo.DbName,
+        databaseServerMachineName);
 
       // create a step for downloading the artifacts
       var downloadArtifactsDeploymentStep =
@@ -73,9 +81,10 @@ namespace UberDeployer.Core.Deployment.Tasks
 
       AddSubTask(extractArtifactsDeploymentStep);
 
-      // create a step for gathering scripts to run
-      var gatherDbScriptsToRunDeploymentStep =
-        new GatherDbScriptsToRunDeploymentStep(
+      if (databaseExists)
+      {
+        // create a step for gathering scripts to run
+        var gatherDbScriptsToRunDeploymentStep = new GatherDbScriptsToRunDeploymentStep(
           projectInfo.DbName,
           new Lazy<string>(() => extractArtifactsDeploymentStep.BinariesDirPath),
           databaseServerMachineName,
@@ -85,16 +94,30 @@ namespace UberDeployer.Core.Deployment.Tasks
           _createScriptsToRunWebSelector
           );
 
-      AddSubTask(gatherDbScriptsToRunDeploymentStep);
+        AddSubTask(gatherDbScriptsToRunDeploymentStep);
 
-      // create a step for running scripts
-      var runDbScriptsDeploymentStep =
-        new RunDbScriptsDeploymentStep(
-          GetScriptRunner(projectInfo.IsTransactional, databaseServerMachineName, projectInfo.DbName),
-          databaseServerMachineName,
-          new DeferredEnumerable<DbScriptToRun>(() => gatherDbScriptsToRunDeploymentStep.ScriptsToRun));
+        // create a step for running scripts
+        var runDbScriptsDeploymentStep =
+          new RunDbScriptsDeploymentStep(
+            GetScriptRunner(projectInfo.IsTransactional, databaseServerMachineName, projectInfo.DbName),
+            databaseServerMachineName,
+            new DeferredEnumerable<DbScriptToRun>(() => gatherDbScriptsToRunDeploymentStep.ScriptsToRun));
 
-      AddSubTask(runDbScriptsDeploymentStep);
+        AddSubTask(runDbScriptsDeploymentStep);
+      }
+
+      else
+      {
+        // create step for deploying dacpac
+        var publishDatabaseDeploymentStep =
+          new PublishDatabaseDeploymentStep(
+            projectInfo,
+            databaseServer,
+            GetTempDirPath(),
+            _databasePublisher);
+
+        AddSubTask(publishDatabaseDeploymentStep);
+      }
     }
 
     protected override void Simulate()
