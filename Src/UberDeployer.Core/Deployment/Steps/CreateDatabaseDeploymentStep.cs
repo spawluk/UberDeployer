@@ -34,18 +34,27 @@ namespace UberDeployer.Core.Deployment.Steps
 
     private CreateDatabaseOptions BuildCreateDatabaseOptions()
     {
+      if (string.IsNullOrEmpty(_databaseServer.DataDirPath))
+      {
+        return new CreateDatabaseOptions(_projectInfo.DbName);
+      }
+
       string dataFileName = string.Format("{0}.mdf", _projectInfo.DbName);
       string dataFilePath = Path.Combine(_databaseServer.DataDirPath, dataFileName);
       var dataFileOptions = new DbFileOptions(_projectInfo.DbName, dataFilePath);
 
-      string logName = string.Format("{0}_log", _projectInfo.DbName);
-      string logFileName = string.Format("{0}_log.ldf", _projectInfo.DbName);
-      string logFilePath = Path.Combine(_databaseServer.LogDirPath, logFileName);
-      var logFileOptions = new DbFileOptions(logName, logFilePath);
+      DbFileOptions logFileOptions = null;
+
+      if (!string.IsNullOrEmpty(_databaseServer.LogDirPath))
+      {
+        string logName = string.Format("{0}_log", _projectInfo.DbName);
+        string logFileName = string.Format("{0}_log.ldf", _projectInfo.DbName);
+        string logFilePath = Path.Combine(_databaseServer.LogDirPath, logFileName);
+        logFileOptions = new DbFileOptions(logName, logFilePath);
+      }
 
       return new CreateDatabaseOptions(_projectInfo.DbName, dataFileOptions, logFileOptions);
     }
-
     public override string Description
     {
       get
