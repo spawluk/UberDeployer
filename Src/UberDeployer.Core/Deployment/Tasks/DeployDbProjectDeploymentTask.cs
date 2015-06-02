@@ -20,9 +20,8 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IZipFileAdapter _zipFileAdapter;
     private readonly IScriptsToRunWebSelector _createScriptsToRunWebSelector;
     private readonly IMsSqlDatabasePublisher _databasePublisher;
-    private readonly IDbManagerFactory _dbManagerFactory;
 
-    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher, IDbManagerFactory dbManagerFactory)
+    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -32,7 +31,6 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(zipFileAdapter, "zipFileAdapter");
       Guard.NotNull(createScriptsToRunWebSelector, "createScriptsToRunWebSelector");
       Guard.NotNull(databasePublisher, "databasePublisher");
-      Guard.NotNull(dbManagerFactory, "dbManagerFactory");
 
       _artifactsRepository = artifactsRepository;
       _dbScriptRunnerFactory = dbScriptRunnerFactory;
@@ -41,7 +39,6 @@ namespace UberDeployer.Core.Deployment.Tasks
       _zipFileAdapter = zipFileAdapter;
       _createScriptsToRunWebSelector = createScriptsToRunWebSelector;
       _databasePublisher = databasePublisher;
-      _dbManagerFactory = dbManagerFactory;
     }
 
     protected override void DoPrepare()
