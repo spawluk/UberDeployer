@@ -140,7 +140,7 @@ function initializeDeploymentPage(initData) {
         projectConfigBuildsElement.val(valueToSelect);
 
         if (projectConfigBuildsElement.val() === null) {
-          toastr.error('No project configuration build with id \'' + valueToSelect + '\'.');
+          toastr.error('Project configuration has no successful builds.');
           return;
         }
 
@@ -410,11 +410,11 @@ function disableDeployButtonsForCurrentEnvironment() {
     return;
   }
 
-  if (g_userCanDeploy && environment.isDeployable && $.inArray(selectedEnvironmentName, project.allowedEnvironmentNames) > -1) {
-    $('#btn-deploy').removeAttr('disabled');
-  } else {
-    $('#btn-deploy').attr('disabled', 'disabled');
-  }
+  //if (g_userCanDeploy && environment.isDeployable && $.inArray(selectedEnvironmentName, project.allowedEnvironmentNames) > -1) {
+  //  $('#btn-deploy').removeAttr('disabled');
+  //} else {
+  //  $('#btn-deploy').attr('disabled', 'disabled');
+  //}
 }
 
 function loadProjectConfigurations(projectName, onFinishedCallback) {
@@ -429,7 +429,12 @@ function loadProjectConfigurations(projectName, onFinishedCallback) {
 
         $.each(data.projectConfigurations, function (i, val) {
           var $lstProjectConfigs = $('#lst-project-configs');
+
           var projectConfiguration = val.Name;
+          if (val.BranchName) {
+            projectConfiguration = val.BranchName + " [" + val.Name + "]";
+          }
+
           var projectConfigurationUpper = projectConfiguration.toUpperCase();
 
           if (valueToSelect === null && (projectConfigurationUpper === 'TRUNK' || projectConfigurationUpper === 'PRODUCTION' || projectConfigurationUpper === 'DEFAULT' || projectConfigurationUpper === 'MASTER')) {
@@ -481,7 +486,7 @@ function loadProjectConfigurationBuilds(projectName, projectConfigurationName, o
           .append(
             $('<option></option>')
               .attr('value', val.Id)
-              .text(val.StartDate + ' | ' + val.StartTime + ' | ' + val.Number + ' | ' + val.Status));
+              .text(val.StartDate + ' | ' + val.StartTime + ' | ' + val.Number));
       });
 
       if (onFinishedCallback) {
@@ -891,7 +896,7 @@ var CollectScriptsToRunDialog = (function () {
       });
 
     $('#dlg-collect-scripts-cancel')
-      .click(function() {
+      .click(function () {
         var deploymentId = $('#dlg-collect-scripts-deployment-id').val();
 
         $.ajax({
@@ -903,8 +908,8 @@ var CollectScriptsToRunDialog = (function () {
           traditional: true
         });
 
-      self.closeDialog();
-    });
+        self.closeDialog();
+      });
   };
 
   CollectScriptsToRunDialog.prototype.showDialog = function (message) {
