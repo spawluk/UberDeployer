@@ -33,19 +33,26 @@ namespace UberDeployer.Core.TeamCity
 
       _url = teamCityUrl.ToString().TrimEnd('/');
 
+      _isGuestMode = true;
+
+      _basePath = string.Format("{0}/{1}", _guestAuthenticationType, _basePathTemplate);
     }
 
     public TeamCityRestClient(Uri teamCityUrl, string userName, string password)
-      :this(teamCityUrl)
     {
+      Guard.NotNull(teamCityUrl, "teamCityUrl");
       Guard.NotNullNorEmpty(userName, "userName");
       Guard.NotNullNorEmpty(password, "password");
 
+      _url = teamCityUrl.ToString().TrimEnd('/');
+
       _userName = userName;
+
       _password = password;
 
-      _isGuestMode = _userName == null;
-      _basePath = string.Format("{0}/{1}", _userName == null ? _guestAuthenticationType : _httpAuthenticationType, _basePathTemplate);
+      _isGuestMode = false;
+
+      _basePath = string.Format("{0}/{1}", _httpAuthenticationType, _basePathTemplate);
     }
 
     public IEnumerable<TeamCityProject> GetAllProjects()
