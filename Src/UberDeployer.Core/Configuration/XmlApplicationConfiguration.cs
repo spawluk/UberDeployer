@@ -29,6 +29,8 @@ namespace UberDeployer.Core.Configuration
       public string AgentServiceEnvironmentName { get; set; }
       
       public string SqlPackageDirPath { get; set; }
+
+      public bool CheckIfAppPoolExists { get; set; }
     }
 
     private readonly string _xmlFilePath;
@@ -246,6 +248,23 @@ namespace UberDeployer.Core.Configuration
         LoadXmlIfNeeded();
 
         _applicationConfigurationXml.SqlPackageDirPath = value;
+      }
+    }
+
+    public bool CheckIfAppPoolExists
+    {
+      get
+      {
+        LoadXmlIfNeeded();
+
+        return _applicationConfigurationXml.CheckIfAppPoolExists;
+      }
+
+      set
+      {
+        LoadXmlIfNeeded();
+
+        _applicationConfigurationXml.CheckIfAppPoolExists = value;
       }
     }
 

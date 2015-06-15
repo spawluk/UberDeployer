@@ -25,5 +25,7 @@
     string AgentServiceEnvironmentName { get; set; }
     
     string SqlPackageDirPath { get; set; }
+
+    bool CheckIfAppPoolExists { get; set; }
   }
 }

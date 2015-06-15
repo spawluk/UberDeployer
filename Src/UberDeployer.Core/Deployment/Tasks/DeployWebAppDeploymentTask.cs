@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UberDeployer.Common.IO;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Domain.Input;
@@ -19,6 +20,7 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IIisManager _iisManager;
     private readonly IFileAdapter _fileAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
+    private readonly IApplicationConfiguration _applicationConfiguration;
 
     #region Constructor(s)
 
@@ -29,7 +31,8 @@ namespace UberDeployer.Core.Deployment.Tasks
       IArtifactsRepository artifactsRepository,
       IIisManager iisManager,
       IFileAdapter fileAdapter,
-      IZipFileAdapter zipFileAdapter)
+      IZipFileAdapter zipFileAdapter,
+      IApplicationConfiguration applicationConfiguration)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(msDeploy, "msDeploy");
@@ -43,6 +46,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _iisManager = iisManager;
       _fileAdapter = fileAdapter;
       _zipFileAdapter = zipFileAdapter;
+      _applicationConfiguration = applicationConfiguration;
     }
 
     #endregion
@@ -173,7 +177,7 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(deployWebDeployPackageDeploymentStep);
 
         // check if the app pool exists on the target machine
-        if (!_iisManager.AppPoolExists(webServerMachineName, appPoolInfo.Name))
+        if (_applicationConfiguration.CheckIfAppPoolExists && !_iisManager.AppPoolExists(webServerMachineName, appPoolInfo.Name))
         {
           // create a step for creating a new app pool
           var createAppPoolDeploymentStep =

@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 
 using UberDeployer.Common.IO;
+using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
@@ -30,6 +31,7 @@ namespace UberDeployer.Tests.Core.Deployment
     private Mock<IIisManager> _iisManager;
     private Mock<IFileAdapter> _fileAdapterFake;
     private Mock<IZipFileAdapter> _zipFileAdapterFake;
+    private Mock<IApplicationConfiguration> _applicationConfigurationFake;
 
     private WebAppProjectInfo _projectInfo;
     private EnvironmentInfo _environmentInfo;
@@ -44,6 +46,7 @@ namespace UberDeployer.Tests.Core.Deployment
       _iisManager = new Mock<IIisManager>();
       _fileAdapterFake = new Mock<IFileAdapter>(MockBehavior.Loose);
       _zipFileAdapterFake = new Mock<IZipFileAdapter>(MockBehavior.Loose);
+      _applicationConfigurationFake = new Mock<IApplicationConfiguration>();
 
       _projectInfo = ProjectInfoGenerator.GetWebAppProjectInfo();
       _environmentInfo = DeploymentDataGenerator.GetEnvironmentInfo();
@@ -56,7 +59,8 @@ namespace UberDeployer.Tests.Core.Deployment
           _artifactsRepository.Object,
           _iisManager.Object,
           _fileAdapterFake.Object,
-          _zipFileAdapterFake.Object);
+          _zipFileAdapterFake.Object,
+          _applicationConfigurationFake.Object);
 
       _deployWebAppDeploymentTask.Initialize(DeploymentInfoGenerator.GetWebAppDeploymentInfo());
 
@@ -128,16 +132,31 @@ namespace UberDeployer.Tests.Core.Deployment
     }
 
     [Test]
-    public void Prepare_should_create_subTask_AppPoolDeploymentStep_when_app_pool_does_not_exist()
+    public void Prepare_should_create_subTask_AppPoolDeploymentStep_when_app_pool_does_not_exist_and_flag_is_on()
     {
       // Arrange
       _iisManager.Setup(x => x.AppPoolExists(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+      _applicationConfigurationFake.SetupProperty(x => x.CheckIfAppPoolExists, true);
 
       // Act
       _deployWebAppDeploymentTask.Prepare();
 
       // Assert
       Assert.IsTrue(_deployWebAppDeploymentTask.SubTasks.Any(st => st is CreateAppPoolDeploymentStep));
+    }
+
+    [Test]
+    public void Prepare_should_not_create_subTask_AppPoolDeploymentStep_when_the_flag_is_off()
+    {
+      // Arrange
+      _iisManager.Setup(x => x.AppPoolExists(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+      _applicationConfigurationFake.SetupProperty(x => x.CheckIfAppPoolExists, false);
+
+      // Act
+      _deployWebAppDeploymentTask.Prepare();
+
+      // Assert
+      Assert.IsFalse(_deployWebAppDeploymentTask.SubTasks.Any(st => st is CreateAppPoolDeploymentStep));
     }
 
     // ReSharper disable UnusedMethodReturnValue.Local
