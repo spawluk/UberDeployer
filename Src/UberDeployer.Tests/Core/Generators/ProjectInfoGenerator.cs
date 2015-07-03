@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using UberDeployer.Core.DataAccess.Xml;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Tests.Core.Generators
@@ -56,17 +57,17 @@ namespace UberDeployer.Tests.Core.Generators
 
     public static DbProjectInfo GetDbProjectInfo(bool areEnvironmentSpecific = false)
     {
-      return
-        new DbProjectInfo(
-          "dbprj",
-          "artifacts_repository_name",
-          new[] { "env_name" },
-          "artifacts_repository_dir_name",
-          !areEnvironmentSpecific,
-          "database_name",
-          "database_server",
-          false,
-          "dacpacFile");
+      return new DbProjectInfo(
+        "dbprj",
+        "artifacts_repository_name",
+        new[] { "env_name" },
+        "artifacts_repository_dir_name",
+        !areEnvironmentSpecific,
+        "database_name",
+        "database_server",
+        false,
+        "dacpacFile",
+        new List<string>());
     }
 
     public static TerminalAppProjectInfo GetTerminalAppProjectInfo()

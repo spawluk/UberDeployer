@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+
+using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Core.DataAccess.Xml
@@ -56,6 +58,13 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string NtServiceUserId { get; set; }
 
       public string ExtensionsDirName { get; set; }
+
+      public List<DependendProject> DependendProjects { get; set; }
+    }
+
+    public class DependendProject
+    {
+      public string ProjectName { get; set; }
     }
 
     public class WebAppProjectInfoXml : ProjectInfoXml
@@ -127,6 +136,10 @@ namespace UberDeployer.Core.DataAccess.Xml
       public bool IsTransacional { get; set; }
 
       public string DacpacFile { get; set; }
+
+      [XmlArray("Users")]
+      [XmlArrayItem("UserId")]
+      public List<string> Users { get; set; }
     }
 
     public class UberDeployerAgentProjectInfoXml : NtServiceProjectInfoXml
@@ -222,7 +235,8 @@ namespace UberDeployer.Core.DataAccess.Xml
             ntServiceProjectInfoXml.NtServiceDisplayName,
             ntServiceProjectInfoXml.NtServiceExeName,
             ntServiceProjectInfoXml.NtServiceUserId,
-            ntServiceProjectInfoXml.ExtensionsDirName);
+            ntServiceProjectInfoXml.ExtensionsDirName,
+            ntServiceProjectInfoXml.DependendProjects);
       }
 
       var webAppProjectInfoXml = projectInfoXml as WebAppProjectInfoXml;
@@ -303,7 +317,8 @@ namespace UberDeployer.Core.DataAccess.Xml
             dbProjectInfoXml.DbName,
             dbProjectInfoXml.DatabaseServerId,
             dbProjectInfoXml.IsTransacional,
-            dbProjectInfoXml.DacpacFile);
+            dbProjectInfoXml.DacpacFile,
+            dbProjectInfoXml.Users);
       }
 
       var extensionProjectXml = projectInfoXml as ExtensionProjectInfoXml;

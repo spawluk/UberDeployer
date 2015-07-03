@@ -77,6 +77,7 @@
     <Compile Include="Common\CollectionsExtensionsTests.cs" />
     <Compile Include="Common\RetryUtilsTests.cs" />
     <Compile Include="Core\DataAccess\TeamCityArtifactsRepositoryTests.cs" />
+    <Compile Include="Core\DataAccess\XmlProjectInfoRepositoryTests.cs" />
     <Compile Include="Core\Deployment\BackupFilesDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\CopyFilesDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\CtorTester.cs" />
@@ -164,6 +165,9 @@
       <Link>Data\EnvironmentInfo_Remote.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Core\DataAccess\TestProjectInfo.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Core\TestData\NonVersionedScript\01.NonVersionedScript.sql">
       <SubType>Form</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

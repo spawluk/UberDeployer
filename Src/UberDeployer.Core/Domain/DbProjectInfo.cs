@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+
+using UberDeployer.Core.DataAccess.Xml;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain.Input;
@@ -10,13 +12,14 @@ namespace UberDeployer.Core.Domain
   {
     private readonly string _dacpacFile;
 
-    public DbProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string dbName, string databaseServerId, bool isTransactional, string dacpacFile)
+    public DbProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string dbName, string databaseServerId, bool isTransactional, string dacpacFile, List<string> users)
       : base(name, artifactsRepositoryName, allowedEnvironmentNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       _dacpacFile = dacpacFile;
       DbName = dbName;
       DatabaseServerId = databaseServerId;
       IsTransactional = isTransactional;
+      Users = users;
     }
 
     public override ProjectType Type
@@ -74,6 +77,8 @@ namespace UberDeployer.Core.Domain
 
     public string DatabaseServerId { get; set; }
 
-    public bool IsTransactional { get; set; }    
+    public bool IsTransactional { get; set; }
+
+    public List<string> Users { get; set; }
   }
 }
