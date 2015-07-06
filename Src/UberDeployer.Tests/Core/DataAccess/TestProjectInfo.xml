@@ -80,5 +80,46 @@
       </Users>
     </ProjectInfoXml>
 
+    
+    <!-- NTProjects With depenendences-->
+    <ProjectInfoXml xsi:type="NtServiceProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleNtServiceWithDependences</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleNtService</ArtifactsRepositoryDirName>
+      <NtServiceName>UberDeployer.SampleNtService</NtServiceName>
+      <NtServiceDirName>UberDeployer.SampleNtService</NtServiceDirName>
+      <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
+      <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
+      <NtServiceUserId>Sample.User</NtServiceUserId>
+      <DependendProjects>
+        <DependendProject>
+          <ProjectName>UberDeployer.SampleNtDependendService</ProjectName>
+        </DependendProject>
+        <DependendProject>
+          <ProjectName>UberDeployer.SampleDb</ProjectName>
+        </DependendProject>
+        <DependendProject>
+          <ProjectName>UberDeployer.SampleWebApp</ProjectName>
+        </DependendProject>
+      </DependendProjects>
+    </ProjectInfoXml>
+
+
+    <ProjectInfoXml xsi:type="NtServiceProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleNtDependendService</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleNtService</ArtifactsRepositoryDirName>
+      <NtServiceName>UberDeployer.SampleNtService</NtServiceName>
+      <NtServiceDirName>UberDeployer.SampleNtService</NtServiceDirName>
+      <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
+      <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
+      <NtServiceUserId>Sample.User</NtServiceUserId>
+      <DependendProjects>
+        <DependendProject>
+          <ProjectName>UberDeployer.SampleDb</ProjectName>
+        </DependendProject>
+      </DependendProjects>
+    </ProjectInfoXml>
+    
   </ProjectInfos>
 </ProjectInfosXml>

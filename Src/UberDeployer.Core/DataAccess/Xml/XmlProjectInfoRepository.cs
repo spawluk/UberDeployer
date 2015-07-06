@@ -194,6 +194,30 @@ namespace UberDeployer.Core.DataAccess.Xml
       return projectInfo;
     }
 
+    public List<ProjectInfo> FindProjectNameWithDependencies(string name)
+    {
+      return FindProjectNameWithDependencies(FindByName(name));
+    }
+
+    public List<ProjectInfo> FindProjectNameWithDependencies(ProjectInfo projectInfo)
+    {
+      if (!(projectInfo is NtServiceProjectInfo))
+      {
+        return new List<ProjectInfo>(){ projectInfo };
+      }
+
+      List<ProjectInfo> output = new List<ProjectInfo>();
+
+      foreach (var project in ((NtServiceProjectInfo)projectInfo).DependendProjects)
+      {
+        output.AddRange(FindProjectNameWithDependencies(project.ProjectName));
+      }
+
+      output.Add(projectInfo);
+
+      return output.Distinct().ToList();
+    }
+
     private static ProjectInfo CreateProjectInfo(ProjectInfoXml projectInfoXml)
     {
       List<string> allowedEnvironmentNames =

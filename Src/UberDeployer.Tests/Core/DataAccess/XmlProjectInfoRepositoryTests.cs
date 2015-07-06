@@ -32,8 +32,7 @@ namespace UberDeployer.Tests.Core.DataAccess
     [Test]
     public void DbSettingsLoadUsersCorrectly()
     {
-      const string dbProjectName = "UberDeployer.SampleDb";
-      ProjectInfo info = _projectInfoRepository.FindByName(dbProjectName);
+      ProjectInfo info = _projectInfoRepository.FindByName("UberDeployer.SampleDb");
       
       DbProjectInfo dbInfo = (DbProjectInfo)info;
 
@@ -44,13 +43,31 @@ namespace UberDeployer.Tests.Core.DataAccess
     [Test]
     public void NtSettingsLoadDependendProjectsCorrectly()
     {
-      const string ntServiceProjectName = "UberDeployer.SampleNtService";
-      ProjectInfo info = _projectInfoRepository.FindByName(ntServiceProjectName);
+      ProjectInfo info = _projectInfoRepository.FindByName("UberDeployer.SampleNtService");
       
       NtServiceProjectInfo ntServiceProjectInfo = (NtServiceProjectInfo)info;
 
       Assert.AreEqual(1, ntServiceProjectInfo.DependendProjects.Count);
       Assert.IsTrue(string.Equals("UberDeployer.SampleDependendNtService", ntServiceProjectInfo.DependendProjects.First().ProjectName));
+    }
+
+    [Test]
+    public void FindProjectNameWithDependencies_throws_exception_when_configuration_not_found()
+    {
+      var output = _projectInfoRepository.FindProjectNameWithDependencies("xyz");
+      Assert.AreEqual(1, output.Count);
+      Assert.AreEqual(null, output.First());
+    }
+
+    [Test]
+    public void FindProjectNameWithDependencies_find_district_dependencies()
+    {
+      var dependencyList = _projectInfoRepository.FindProjectNameWithDependencies("UberDeployer.SampleNtServiceWithDependences");
+      Assert.AreEqual(4, dependencyList.Count);
+      Assert.AreEqual("UberDeployer.SampleDb", dependencyList[0].Name);
+      Assert.AreEqual("UberDeployer.SampleNtDependendService", dependencyList[1].Name);
+      Assert.AreEqual("UberDeployer.SampleWebApp", dependencyList[2].Name);
+      Assert.AreEqual("UberDeployer.SampleNtServiceWithDependences", dependencyList[3].Name);
     }
   }
 }
