@@ -12,37 +12,8 @@ namespace UberDeployer.Core.Domain
 {
   public class NtServiceProjectInfo : ProjectInfo
   {
-    public NtServiceProjectInfo(
-      string name,
-      string artifactsRepositoryName,
-      IEnumerable<string> allowedEnvironmentNames,
-      string artifactsRepositoryDirName,
-      bool artifactsAreNotEnvironmentSpecific,
-      string ntServiceName,
-      string ntServiceDirName,
-      string ntServiceDisplayName,
-      string ntServiceExeName,
-      string ntServiceUserId,
-      string extensionsDirName)
-      : this(
-        name,
-        artifactsRepositoryName,
-        allowedEnvironmentNames,
-        artifactsRepositoryDirName,
-        artifactsAreNotEnvironmentSpecific,
-        ntServiceName,
-        ntServiceDirName,
-        ntServiceDisplayName,
-        ntServiceExeName,
-        ntServiceUserId,
-        extensionsDirName,
-        new List<XmlProjectInfoRepository.DependendProject>())
-    {
-    }
-
-
-    public NtServiceProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string ntServiceName, string ntServiceDirName, string ntServiceDisplayName, string ntServiceExeName, string ntServiceUserId, string extensionsDirName, List<XmlProjectInfoRepository.DependendProject> dependendProjects)
-      : base(name, artifactsRepositoryName, allowedEnvironmentNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
+    public NtServiceProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string ntServiceName, string ntServiceDirName, string ntServiceDisplayName, string ntServiceExeName, string ntServiceUserId, string extensionsDirName, List<XmlProjectInfoRepository.DependendProject> dependendProjects = null)
+      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjects, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       Guard.NotNullNorEmpty(ntServiceName, "ntServiceName");
       Guard.NotNullNorEmpty(ntServiceDirName, "ntServiceDirName");
@@ -55,7 +26,6 @@ namespace UberDeployer.Core.Domain
       NtServiceExeName = ntServiceExeName;
       NtServiceUserId = ntServiceUserId;
       ExtensionsDirName = extensionsDirName;
-      DependendProjects = dependendProjects;
     }
 
     public override ProjectType Type
@@ -136,7 +106,5 @@ namespace UberDeployer.Core.Domain
     public string NtServiceUserId { get; private set; }
 
     public string ExtensionsDirName { get; private set; }
-
-    public List<XmlProjectInfoRepository.DependendProject> DependendProjects { get; set; }
   }
 }

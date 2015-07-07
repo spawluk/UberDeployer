@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.DataAccess.Xml;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain.Input;
@@ -17,9 +18,9 @@ namespace UberDeployer.Core.Domain
       string artifactsRepositoryName, 
       IEnumerable<string> allowedEnvironmentNames, 
       string artifactsRepositoryDirName, 
-      bool artifactsAreNotEnvironmentSpecific, 
-      string extendedProjectName)
-      : base(name, artifactsRepositoryName, allowedEnvironmentNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
+      bool artifactsAreNotEnvironmentSpecific,
+      string extendedProjectName, List<XmlProjectInfoRepository.DependendProject> dependendProjects = null)
+      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjects, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       Guard.NotNullNorEmpty(extendedProjectName, "extendedProjectName");
 

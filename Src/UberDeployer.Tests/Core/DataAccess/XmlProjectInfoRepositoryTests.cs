@@ -55,8 +55,7 @@ namespace UberDeployer.Tests.Core.DataAccess
     public void FindProjectNameWithDependencies_throws_exception_when_configuration_not_found()
     {
       var output = _projectInfoRepository.FindProjectNameWithDependencies("xyz");
-      Assert.AreEqual(1, output.Count);
-      Assert.AreEqual(null, output.First());
+      Assert.AreEqual(0, output.Count);
     }
 
     [Test]

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.DataAccess.Xml;
 using UberDeployer.Core.Deployment;
 using System.IO;
 using UberDeployer.Core.Deployment.Tasks;
@@ -15,8 +16,8 @@ namespace UberDeployer.Core.Domain
 
     #region Constructor(s)
 
-    public SchedulerAppProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string schedulerAppDirName, string schedulerAppExeName, IEnumerable<SchedulerAppTask> schedulerAppTasks)
-      : base(name, artifactsRepositoryName, allowedEnvironmentNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
+    public SchedulerAppProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string schedulerAppDirName, string schedulerAppExeName, IEnumerable<SchedulerAppTask> schedulerAppTasks, List<XmlProjectInfoRepository.DependendProject> dependendProjects = null)
+      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjects, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       Guard.NotNullNorEmpty(schedulerAppDirName, "schedulerAppDirName");
       Guard.NotNullNorEmpty(schedulerAppExeName, "schedulerAppExeName");

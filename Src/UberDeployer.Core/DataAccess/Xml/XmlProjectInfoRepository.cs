@@ -43,6 +43,8 @@ namespace UberDeployer.Core.DataAccess.Xml
         get { return _allowedEnvironments; }
         set { _allowedEnvironments = value; }
       }
+
+      public List<DependendProject> DependendProjects { get; set; }
     }
 
     public class NtServiceProjectInfoXml : ProjectInfoXml
@@ -59,7 +61,6 @@ namespace UberDeployer.Core.DataAccess.Xml
 
       public string ExtensionsDirName { get; set; }
 
-      public List<DependendProject> DependendProjects { get; set; }
     }
 
     public class DependendProject
@@ -201,16 +202,12 @@ namespace UberDeployer.Core.DataAccess.Xml
 
     public List<ProjectInfo> FindProjectNameWithDependencies(ProjectInfo projectInfo)
     {
-      var ntServiceProjectInfo = projectInfo as NtServiceProjectInfo;
-
-      if (ntServiceProjectInfo == null)
-      {
-        return new List<ProjectInfo>() { projectInfo };
-      }
+      if(projectInfo == null)
+        return new List<ProjectInfo>();
 
       var output = new List<ProjectInfo>();
 
-      foreach (var project in ntServiceProjectInfo.DependendProjects)
+      foreach (var project in projectInfo.DependendProjects)
       {
         output.AddRange(FindProjectNameWithDependencies(project.ProjectName));
       }
@@ -279,7 +276,8 @@ namespace UberDeployer.Core.DataAccess.Xml
             webAppProjectInfoXml.AppPoolId,
             webAppProjectInfoXml.WebSiteName,
             webAppProjectInfoXml.WebAppDirName,
-            webAppProjectInfoXml.WebAppName);
+            webAppProjectInfoXml.WebAppName,
+            webAppProjectInfoXml.DependendProjects);
       }
 
       var schedulerAppProjectInfoXml = projectInfoXml as SchedulerAppProjectInfoXml;
@@ -310,7 +308,8 @@ namespace UberDeployer.Core.DataAccess.Xml
                         TimeSpan.Parse(x.Repetition.Interval),
                         TimeSpan.Parse(x.Repetition.Duration),
                         x.Repetition.StopAtDurationEnd)
-                      : Repetition.CreatedDisabled())));
+                      : Repetition.CreatedDisabled())),
+                      schedulerAppProjectInfoXml.DependendProjects);
       }
 
       var terminalAppProjectInfoXml = projectInfoXml as TerminalAppProjectInfoXml;
@@ -326,7 +325,8 @@ namespace UberDeployer.Core.DataAccess.Xml
             terminalAppProjectInfoXml.ArtifactsAreNotEnvironmentSpecific,
             terminalAppProjectInfoXml.TerminalAppName,
             terminalAppProjectInfoXml.TerminalAppDirName,
-            terminalAppProjectInfoXml.TerminalAppExeName);
+            terminalAppProjectInfoXml.TerminalAppExeName,
+            terminalAppProjectInfoXml.DependendProjects);
       }
 
       var dbProjectInfoXml = projectInfoXml as DbProjectInfoXml;
@@ -344,7 +344,8 @@ namespace UberDeployer.Core.DataAccess.Xml
             dbProjectInfoXml.DatabaseServerId,
             dbProjectInfoXml.IsTransacional,
             dbProjectInfoXml.DacpacFile,
-            dbProjectInfoXml.Users);
+            dbProjectInfoXml.Users,
+            dbProjectInfoXml.DependendProjects);
       }
 
       var extensionProjectXml = projectInfoXml as ExtensionProjectInfoXml;
@@ -358,7 +359,8 @@ namespace UberDeployer.Core.DataAccess.Xml
             allowedEnvironmentNames,
             extensionProjectXml.ArtifactsRepositoryDirName,
             true,
-            extensionProjectXml.ExtendedProjectName);
+            extensionProjectXml.ExtendedProjectName,
+            extensionProjectXml.DependendProjects);
       }
 
       throw new NotSupportedException(string.Format("Project type '{0}' is not supported.", projectInfoXml.GetType()));

@@ -12,8 +12,8 @@ namespace UberDeployer.Core.Domain
   {
     private readonly string _dacpacFile;
 
-    public DbProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string dbName, string databaseServerId, bool isTransactional, string dacpacFile, List<string> users)
-      : base(name, artifactsRepositoryName, allowedEnvironmentNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
+    public DbProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string dbName, string databaseServerId, bool isTransactional, string dacpacFile, List<string> users, List<XmlProjectInfoRepository.DependendProject> dependendProjects = null)
+      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjects, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       _dacpacFile = dacpacFile;
       DbName = dbName;
