@@ -2,8 +2,6 @@
 {
   public interface IApplicationConfiguration
   {
-    void Save();
-
     string TeamCityHostName { get; set; }
 
     int TeamCityPort { get; set; }

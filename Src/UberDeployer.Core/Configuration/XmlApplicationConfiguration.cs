@@ -51,21 +51,6 @@ namespace UberDeployer.Core.Configuration
 
     #region IApplicationConfiguration Members
 
-    public void Save()
-    {
-      if (_applicationConfigurationXml == null)
-      {
-        throw new InvalidOperationException("The XML file has not been loaded yet. Call LoadXmlIfNeeded() first.");
-      }
-
-      XmlSerializer xmlSerializer = CreateXmlSerializer();
-
-      using (var fs = File.OpenWrite(_xmlFilePath))
-      {
-        xmlSerializer.Serialize(fs, _applicationConfigurationXml);
-      }
-    }
-
     public string TeamCityHostName
     {
       get
