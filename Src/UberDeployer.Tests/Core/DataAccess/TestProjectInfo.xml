@@ -120,6 +120,38 @@
         </DependendProject>
       </DependendProjects>
     </ProjectInfoXml>
+
+    <ProjectInfoXml xsi:type="NtServiceProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleNtDependendServiceWithCycle1</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleNtService</ArtifactsRepositoryDirName>
+      <NtServiceName>UberDeployer.SampleNtService</NtServiceName>
+      <NtServiceDirName>UberDeployer.SampleNtService</NtServiceDirName>
+      <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
+      <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
+      <NtServiceUserId>Sample.User</NtServiceUserId>
+      <DependendProjects>
+        <DependendProject>
+          <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle2</ProjectName>
+        </DependendProject>
+      </DependendProjects>
+    </ProjectInfoXml>
+
+    <ProjectInfoXml xsi:type="NtServiceProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleNtDependendServiceWithCycle2</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleNtService</ArtifactsRepositoryDirName>
+      <NtServiceName>UberDeployer.SampleNtService</NtServiceName>
+      <NtServiceDirName>UberDeployer.SampleNtService</NtServiceDirName>
+      <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
+      <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
+      <NtServiceUserId>Sample.User</NtServiceUserId>
+      <DependendProjects>
+        <DependendProject>
+          <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+        </DependendProject>
+      </DependendProjects>
+    </ProjectInfoXml>
     
   </ProjectInfos>
 </ProjectInfosXml>

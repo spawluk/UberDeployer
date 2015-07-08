@@ -68,5 +68,14 @@ namespace UberDeployer.Tests.Core.DataAccess
       Assert.AreEqual("UberDeployer.SampleWebApp", dependencyList[2].Name);
       Assert.AreEqual("UberDeployer.SampleNtServiceWithDependences", dependencyList[3].Name);
     }
+
+    [Test]
+    public void FindProjectNameWithDependencies_detects_cycles_in_dependencies()
+    {
+      var dependencyList = _projectInfoRepository.FindProjectNameWithDependencies("UberDeployer.SampleNtDependendServiceWithCycle1");
+      Assert.AreEqual(2, dependencyList.Count);
+      Assert.IsTrue(dependencyList.Any(x => x.Name == "UberDeployer.SampleNtDependendServiceWithCycle1"));
+      Assert.IsTrue(dependencyList.Any(x => x.Name == "UberDeployer.SampleNtDependendServiceWithCycle2"));
+    }
   }
 }

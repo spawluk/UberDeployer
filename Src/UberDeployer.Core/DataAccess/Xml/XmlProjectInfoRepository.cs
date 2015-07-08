@@ -202,19 +202,29 @@ namespace UberDeployer.Core.DataAccess.Xml
 
     public List<ProjectInfo> FindProjectNameWithDependencies(ProjectInfo projectInfo)
     {
-      if(projectInfo == null)
+      return FindProjectNameWithDependencies(projectInfo, new List<string>());
+    }
+
+    private List<ProjectInfo> FindProjectNameWithDependencies(ProjectInfo projectInfo, List<string> usedProjectNames)
+    {
+      if (projectInfo == null)
         return new List<ProjectInfo>();
 
       var output = new List<ProjectInfo>();
 
-      foreach (var project in projectInfo.DependendProjects)
+      foreach (var project in projectInfo.DependendProjects.Where(x => !usedProjectNames.Contains(x.ProjectName)))
       {
-        output.AddRange(FindProjectNameWithDependencies(project.ProjectName));
+        usedProjectNames.Add(project.ProjectName);
+        output.AddRange(FindProjectNameWithDependencies(FindByName(project.ProjectName), usedProjectNames));
       }
 
-      output.Add(projectInfo);
+      if (!output.Contains(projectInfo))
+      {
+        output.Add(projectInfo);
+        usedProjectNames.Add(projectInfo.Name);
+      }
 
-      return output.Distinct().ToList();
+      return output.ToList();
     }
 
     private static ProjectInfo CreateProjectInfo(ProjectInfoXml projectInfoXml)
