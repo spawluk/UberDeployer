@@ -136,7 +136,7 @@ namespace UberDeployer.Tests.Core.Deployment
     {
       // Arrange
       _iisManager.Setup(x => x.AppPoolExists(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
-      _applicationConfigurationFake.SetupProperty(x => x.CheckIfAppPoolExists, true);
+      _applicationConfigurationFake.SetupGet(x => x.CheckIfAppPoolExists).Returns(true);
 
       // Act
       _deployWebAppDeploymentTask.Prepare();
@@ -150,7 +150,7 @@ namespace UberDeployer.Tests.Core.Deployment
     {
       // Arrange
       _iisManager.Setup(x => x.AppPoolExists(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
-      _applicationConfigurationFake.SetupProperty(x => x.CheckIfAppPoolExists, false);
+      _applicationConfigurationFake.SetupGet(x => x.CheckIfAppPoolExists).Returns(false);
 
       // Act
       _deployWebAppDeploymentTask.Prepare();

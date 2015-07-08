@@ -47,8 +47,12 @@ namespace UberDeployer.CommonConfiguration
       var container = ObjectFactory.Container;
 
       container.Register(
+        Component.For<IApplicationConfigurationRepository>()
+          .UsingFactoryMethod(() => new XmlApplicationConfigurationRepository(_ApplicationConfigPath))
+          .LifeStyle.Transient,
+
         Component.For<IApplicationConfiguration>()
-          .UsingFactoryMethod(() => new XmlApplicationConfiguration(_ApplicationConfigPath))
+          .UsingFactoryMethod((kernel) => kernel.Resolve<IApplicationConfigurationRepository>().LoadConfiguration())
           .LifeStyle.Singleton,
 
         Component.For<IProjectInfoRepository>()

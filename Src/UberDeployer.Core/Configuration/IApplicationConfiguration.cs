@@ -2,28 +2,28 @@
 {
   public interface IApplicationConfiguration
   {
-    string TeamCityHostName { get; set; }
+    string TeamCityHostName { get; }
 
-    int TeamCityPort { get; set; }
+    int TeamCityPort { get; }
 
-    string TeamCityUserName { get; set; }
+    string TeamCityUserName { get; }
 
-    string TeamCityPassword { get; set; }
+    string TeamCityPassword { get; }
 
-    string ScExePath { get; set; }
+    string ScExePath { get; }
 
-    string ConnectionString { get; set; }
+    string ConnectionString { get; }
     
-    string WebAppInternalApiEndpointUrl { get; set; }
+    string WebAppInternalApiEndpointUrl { get; }
     
-    int WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds { get; set; }
+    int WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds { get; }
     
-    string ManualDeploymentPackageCurrentDateFormat { get; set; }
+    string ManualDeploymentPackageCurrentDateFormat { get; }
 
-    string AgentServiceEnvironmentName { get; set; }
+    string AgentServiceEnvironmentName { get; }
     
-    string SqlPackageDirPath { get; set; }
+    string SqlPackageDirPath { get; }
 
-    bool CheckIfAppPoolExists { get; set; }
+    bool CheckIfAppPoolExists { get; }
   }
 }

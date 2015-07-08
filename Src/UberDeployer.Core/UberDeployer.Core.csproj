@@ -81,7 +81,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\IApplicationConfigurationRepository.cs" />
     <Compile Include="DataAccess\Dapper\SqlMapper.cs" />
+    <Compile Include="DataAccess\Xml\ApplicationConfigurationXml.cs" />
+    <Compile Include="DataAccess\Xml\XmlApplicationConfigurationRepository.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Pipeline\IEnvDeploymentPipeline.cs" />
     <Compile Include="Domain\ProjectDeploymentData.cs" />
@@ -200,7 +203,6 @@
     <Compile Include="Deployment\Pipeline\Modules\AuditingModule.cs" />
     <Compile Include="Deployment\Pipeline\Modules\DeploymentRequest.cs" />
     <Compile Include="Configuration\IApplicationConfiguration.cs" />
-    <Compile Include="Configuration\XmlApplicationConfiguration.cs" />
     <Compile Include="Deployment\Steps\CreateWebDeployPackageDeploymentStep.cs" />
     <Compile Include="Deployment\Tasks\DeployTerminalAppDeploymentTask.cs" />
     <Compile Include="Deployment\Tasks\DeployWebDeployPackageDeploymentStep.cs" />
