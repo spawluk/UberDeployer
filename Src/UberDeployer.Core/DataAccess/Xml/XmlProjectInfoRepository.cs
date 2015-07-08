@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
-using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Core.DataAccess.Xml

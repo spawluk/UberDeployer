@@ -12,4 +12,5 @@
   <ManualDeploymentPackageCurrentDateFormat>yyyy.MM.dd</ManualDeploymentPackageCurrentDateFormat>
   <AgentServiceEnvironmentName>server</AgentServiceEnvironmentName>
   <SqlPackageDirPath></SqlPackageDirPath>
+  <DeployDependentProjects>true</DeployDependentProjects>
 </ApplicationConfigurationXml>

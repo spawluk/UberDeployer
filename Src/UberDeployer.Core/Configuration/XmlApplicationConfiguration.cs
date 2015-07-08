@@ -31,6 +31,8 @@ namespace UberDeployer.Core.Configuration
       public string SqlPackageDirPath { get; set; }
 
       public bool CheckIfAppPoolExists { get; set; }
+
+      public bool DeployDependentProjects { get; set; }
     }
 
     private readonly string _xmlFilePath;
@@ -265,6 +267,23 @@ namespace UberDeployer.Core.Configuration
         LoadXmlIfNeeded();
 
         _applicationConfigurationXml.CheckIfAppPoolExists = value;
+      }
+    }
+
+    public bool DeployDependentProjects
+    {
+      get
+      {
+        LoadXmlIfNeeded();
+
+        return _applicationConfigurationXml.DeployDependentProjects;
+      }
+
+      set
+      {
+        LoadXmlIfNeeded();
+
+        _applicationConfigurationXml.DeployDependentProjects = value;
       }
     }
 
