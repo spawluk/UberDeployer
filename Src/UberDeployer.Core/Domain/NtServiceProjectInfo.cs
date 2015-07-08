@@ -12,8 +12,8 @@ namespace UberDeployer.Core.Domain
 {
   public class NtServiceProjectInfo : ProjectInfo
   {
-    public NtServiceProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string ntServiceName, string ntServiceDirName, string ntServiceDisplayName, string ntServiceExeName, string ntServiceUserId, string extensionsDirName, List<XmlProjectInfoRepository.DependendProject> dependendProjects = null)
-      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjects, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
+    public NtServiceProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string ntServiceName, string ntServiceDirName, string ntServiceDisplayName, string ntServiceExeName, string ntServiceUserId, string extensionsDirName, List<string> dependendProjectNames = null)
+      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjectNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       Guard.NotNullNorEmpty(ntServiceName, "ntServiceName");
       Guard.NotNullNorEmpty(ntServiceDirName, "ntServiceDirName");

@@ -47,8 +47,8 @@ namespace UberDeployer.Tests.Core.DataAccess
       
       NtServiceProjectInfo ntServiceProjectInfo = (NtServiceProjectInfo)info;
 
-      Assert.AreEqual(1, ntServiceProjectInfo.DependendProjects.Count);
-      Assert.IsTrue(string.Equals("UberDeployer.SampleDependendNtService", ntServiceProjectInfo.DependendProjects.First().ProjectName));
+      Assert.AreEqual(1, ntServiceProjectInfo.DependendProjectNames.Count);
+      Assert.IsTrue(string.Equals("UberDeployer.SampleDependendNtService", ntServiceProjectInfo.DependendProjectNames.First()));
     }
 
     [Test]

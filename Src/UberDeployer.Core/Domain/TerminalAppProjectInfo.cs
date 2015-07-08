@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using UberDeployer.Common.IO;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.DataAccess.Xml;
-using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Domain.Input;
 using System.Linq;
 using UberDeployer.Core.Deployment.Tasks;
@@ -90,8 +89,8 @@ namespace UberDeployer.Core.Domain
 
     #region Constructor(s)
 
-    public TerminalAppProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string terminalAppName, string terminalAppDirName, string terminalAppExeName, List<XmlProjectInfoRepository.DependendProject> dependendProjects = null)
-      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjects, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
+    public TerminalAppProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string terminalAppName, string terminalAppDirName, string terminalAppExeName, List<string> dependendProjectNames = null)
+      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjectNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       Guard.NotNullNorEmpty(terminalAppName, "terminalAppName");
       Guard.NotNullNorEmpty(terminalAppDirName, "terminalAppDirName");

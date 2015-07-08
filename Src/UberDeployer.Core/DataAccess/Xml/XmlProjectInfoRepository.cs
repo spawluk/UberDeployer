@@ -43,8 +43,9 @@ namespace UberDeployer.Core.DataAccess.Xml
         get { return _allowedEnvironments; }
         set { _allowedEnvironments = value; }
       }
-
-      public List<DependendProject> DependendProjects { get; set; }
+      
+      [XmlArrayItem("ProjectName")]
+      public List<string> DependentProjects { get; set; }
     }
 
     public class NtServiceProjectInfoXml : ProjectInfoXml
@@ -60,13 +61,7 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string NtServiceUserId { get; set; }
 
       public string ExtensionsDirName { get; set; }
-
-    }
-
-    public class DependendProject
-    {
-      public string ProjectName { get; set; }
-    }
+    }    
 
     public class WebAppProjectInfoXml : ProjectInfoXml
     {
@@ -212,10 +207,10 @@ namespace UberDeployer.Core.DataAccess.Xml
 
       var output = new List<ProjectInfo>();
 
-      foreach (var project in projectInfo.DependendProjects.Where(x => !usedProjectNames.Contains(x.ProjectName)))
+      foreach (var project in projectInfo.DependendProjectNames.Where(x => !usedProjectNames.Contains(x)))
       {
-        usedProjectNames.Add(project.ProjectName);
-        output.AddRange(FindProjectNameWithDependencies(FindByName(project.ProjectName), usedProjectNames));
+        usedProjectNames.Add(project);
+        output.AddRange(FindProjectNameWithDependencies(FindByName(project), usedProjectNames));
       }
 
       if (!output.Contains(projectInfo))
@@ -269,7 +264,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             ntServiceProjectInfoXml.NtServiceExeName,
             ntServiceProjectInfoXml.NtServiceUserId,
             ntServiceProjectInfoXml.ExtensionsDirName,
-            ntServiceProjectInfoXml.DependendProjects);
+            ntServiceProjectInfoXml.DependentProjects);
       }
 
       var webAppProjectInfoXml = projectInfoXml as WebAppProjectInfoXml;
@@ -287,7 +282,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             webAppProjectInfoXml.WebSiteName,
             webAppProjectInfoXml.WebAppDirName,
             webAppProjectInfoXml.WebAppName,
-            webAppProjectInfoXml.DependendProjects);
+            webAppProjectInfoXml.DependentProjects);
       }
 
       var schedulerAppProjectInfoXml = projectInfoXml as SchedulerAppProjectInfoXml;
@@ -319,7 +314,7 @@ namespace UberDeployer.Core.DataAccess.Xml
                         TimeSpan.Parse(x.Repetition.Duration),
                         x.Repetition.StopAtDurationEnd)
                       : Repetition.CreatedDisabled())),
-                      schedulerAppProjectInfoXml.DependendProjects);
+                      schedulerAppProjectInfoXml.DependentProjects);
       }
 
       var terminalAppProjectInfoXml = projectInfoXml as TerminalAppProjectInfoXml;
@@ -336,7 +331,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             terminalAppProjectInfoXml.TerminalAppName,
             terminalAppProjectInfoXml.TerminalAppDirName,
             terminalAppProjectInfoXml.TerminalAppExeName,
-            terminalAppProjectInfoXml.DependendProjects);
+            terminalAppProjectInfoXml.DependentProjects);
       }
 
       var dbProjectInfoXml = projectInfoXml as DbProjectInfoXml;
@@ -355,7 +350,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             dbProjectInfoXml.IsTransacional,
             dbProjectInfoXml.DacpacFile,
             dbProjectInfoXml.Users,
-            dbProjectInfoXml.DependendProjects);
+            dbProjectInfoXml.DependentProjects);
       }
 
       var extensionProjectXml = projectInfoXml as ExtensionProjectInfoXml;
@@ -370,7 +365,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             extensionProjectXml.ArtifactsRepositoryDirName,
             true,
             extensionProjectXml.ExtendedProjectName,
-            extensionProjectXml.DependendProjects);
+            extensionProjectXml.DependentProjects);
       }
 
       throw new NotSupportedException(string.Format("Project type '{0}' is not supported.", projectInfoXml.GetType()));

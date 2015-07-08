@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UberDeployer.Common.SyntaxSugar;
-using UberDeployer.Core.DataAccess.Xml;
-using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain.Input;
 
@@ -12,8 +10,8 @@ namespace UberDeployer.Core.Domain
 {
   public class WebAppProjectInfo : ProjectInfo
   {
-    public WebAppProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string appPoolId, string webSiteName, string webAppDirName, string webAppName = null, List<XmlProjectInfoRepository.DependendProject> dependendProjects = null)
-      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjects, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
+    public WebAppProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string appPoolId, string webSiteName, string webAppDirName, string webAppName = null, List<string> dependendProjectNames = null)
+      : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjectNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       Guard.NotNullNorEmpty(appPoolId, "appPoolId");
       Guard.NotNullNorEmpty(webSiteName, "webSiteName");

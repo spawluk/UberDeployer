@@ -12,11 +12,9 @@
       <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
       <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
       <NtServiceUserId>Sample.User</NtServiceUserId>
-      <DependendProjects>
-        <DependendProject>
-          <ProjectName>UberDeployer.SampleDependendNtService</ProjectName>
-        </DependendProject>
-      </DependendProjects>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleDependendNtService</ProjectName>        
+      </DependentProjects>
     </ProjectInfoXml>
 
     <!-- Web apps -->
@@ -91,17 +89,11 @@
       <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
       <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
       <NtServiceUserId>Sample.User</NtServiceUserId>
-      <DependendProjects>
-        <DependendProject>
-          <ProjectName>UberDeployer.SampleNtDependendService</ProjectName>
-        </DependendProject>
-        <DependendProject>
-          <ProjectName>UberDeployer.SampleDb</ProjectName>
-        </DependendProject>
-        <DependendProject>
-          <ProjectName>UberDeployer.SampleWebApp</ProjectName>
-        </DependendProject>
-      </DependendProjects>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendService</ProjectName>
+        <ProjectName>UberDeployer.SampleDb</ProjectName>
+        <ProjectName>UberDeployer.SampleWebApp</ProjectName>       
+      </DependentProjects>
     </ProjectInfoXml>
 
 
@@ -114,11 +106,9 @@
       <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
       <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
       <NtServiceUserId>Sample.User</NtServiceUserId>
-      <DependendProjects>
-        <DependendProject>
-          <ProjectName>UberDeployer.SampleDb</ProjectName>
-        </DependendProject>
-      </DependendProjects>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleDb</ProjectName>        
+      </DependentProjects>
     </ProjectInfoXml>
 
     <ProjectInfoXml xsi:type="NtServiceProjectInfoXml" allowedEnvironments="Local,Remote">
@@ -130,11 +120,9 @@
       <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
       <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
       <NtServiceUserId>Sample.User</NtServiceUserId>
-      <DependendProjects>
-        <DependendProject>
-          <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle2</ProjectName>
-        </DependendProject>
-      </DependendProjects>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle2</ProjectName>        
+      </DependentProjects>
     </ProjectInfoXml>
 
     <ProjectInfoXml xsi:type="NtServiceProjectInfoXml" allowedEnvironments="Local,Remote">
@@ -146,11 +134,9 @@
       <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
       <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
       <NtServiceUserId>Sample.User</NtServiceUserId>
-      <DependendProjects>
-        <DependendProject>
-          <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
-        </DependendProject>
-      </DependendProjects>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+      </DependentProjects>
     </ProjectInfoXml>
     
   </ProjectInfos>

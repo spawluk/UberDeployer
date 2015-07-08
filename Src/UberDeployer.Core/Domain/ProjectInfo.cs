@@ -10,7 +10,7 @@ namespace UberDeployer.Core.Domain
 {
   public abstract class ProjectInfo
   {
-    protected ProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, List<XmlProjectInfoRepository.DependendProject> dependendProjects, string artifactsRepositoryDirName = null, bool artifactsAreNotEnvironmentSpecific = false)
+    protected ProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, List<string> dependendProjectNames, string artifactsRepositoryDirName = null, bool artifactsAreNotEnvironmentSpecific = false)
     {
       Guard.NotNullNorEmpty(name, "name");
       Guard.NotNullNorEmpty(artifactsRepositoryName, "artifactsRepositoryName");
@@ -26,7 +26,7 @@ namespace UberDeployer.Core.Domain
       ArtifactsAreEnvironmentSpecific = !artifactsAreNotEnvironmentSpecific;
       AllowedEnvironmentNames = new List<string>(allowedEnvironmentNames);
 
-      DependendProjects = dependendProjects ?? new List<XmlProjectInfoRepository.DependendProject>();
+      DependendProjectNames = dependendProjectNames ?? new List<string>();
     }
 
     public abstract ProjectType Type { get; }
@@ -49,6 +49,6 @@ namespace UberDeployer.Core.Domain
 
     public IEnumerable<string> AllowedEnvironmentNames { get; private set; }
 
-    public List<XmlProjectInfoRepository.DependendProject> DependendProjects { get; set; }
+    public List<string> DependendProjectNames { get; set; }
   }
 }

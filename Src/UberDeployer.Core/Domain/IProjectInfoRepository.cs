@@ -7,5 +7,9 @@ namespace UberDeployer.Core.Domain
     IEnumerable<ProjectInfo> GetAll();
 
     ProjectInfo FindByName(string name);
+
+    List<ProjectInfo> FindProjectNameWithDependencies(string name);
+
+    List<ProjectInfo> FindProjectNameWithDependencies(ProjectInfo projectInfo);
   }
 }
