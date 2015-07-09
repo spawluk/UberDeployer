@@ -118,6 +118,8 @@ namespace UberDeployer.Core.Deployment.Tasks
 
         AddSubTask(publishDatabaseDeploymentStep);
       }
+
+
     }
 
     protected override void Simulate()

@@ -123,6 +123,7 @@
     <Compile Include="Core\TestData.cs" />
     <Compile Include="Core\TestUtils\ReflectionTools.cs" />
     <Compile Include="DbDiff\DbVersionTests.cs" />
+    <Compile Include="Domain\Management\Db\DbManager\MsSqlDbManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebApp\ApiControllerTests.cs" />
   </ItemGroup>
