@@ -1006,7 +1006,7 @@ var CollectProjectDependenciesDialog = (function () {
 
     var ulist = $('#dlg-collect-dependencies-ulist');
 
-    $.each(message.Dependencies, function (index, dependency) {
+    $.each(message.dependentProjects, function (index, dependency) {
       ulist.append(
         '<li>' +
         '<label for="' + dependency.ProjectName + '">' +

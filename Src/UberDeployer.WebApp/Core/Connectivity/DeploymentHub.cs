@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.WebApp.Core.Models.Api;
 using UberDeployer.WebApp.Core.Services;
 
 namespace UberDeployer.WebApp.Core.Connectivity
@@ -103,9 +104,16 @@ namespace UberDeployer.WebApp.Core.Connectivity
       client.cancelPromptForScriptsToRun(new object());
     }
 
-    public static void PromptForProjectDependencies()
+    public static void PromptForProjectDependencies(Guid? deploymentId, string userIdentity, List<DependentProject> dependentProjects)
     {
-      
+      dynamic client = GetClient(userIdentity);
+
+      client.promptForProjectDependencies(
+        new
+        {
+          deploymentId,
+          dependentProjects
+        });
     }
 
     private static dynamic GetClient(string userIdentity)

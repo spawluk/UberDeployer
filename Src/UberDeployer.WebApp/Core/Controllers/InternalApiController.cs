@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using UberDeployer.Agent.Proxy;
 using UberDeployer.Agent.Proxy.Dto;
@@ -182,7 +183,25 @@ namespace UberDeployer.WebApp.Core.Controllers
     /* Project Dependencies */
 
     [HttpPost]
-    public ActionResult OnDependenciesToRunCollected(CollectProjectDependenciesToRunResponse response)
+    public ActionResult CollectDependenciesToDeploy(Guid? deploymentId, string userName, List<DependentProject> dependentProjects)
+    {
+      if (!deploymentId.HasValue)
+      {
+        return BadRequest();
+      }
+
+      if (string.IsNullOrEmpty(userName))
+      {
+        return BadRequest();
+      }
+
+      DeploymentHub.PromptForProjectDependencies(deploymentId, userName, dependentProjects);
+
+      return Content("OK");
+    }
+
+    [HttpPost]
+    public ActionResult OnDependenciesToRunCollected(CollectProjectDependenciesToDeployResponse response)
     {
       if (response == null || !response.DeploymentId.HasValue )
       {

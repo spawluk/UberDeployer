@@ -92,6 +92,7 @@
     <Compile Include="Core\Models\Api\CollectProjectDependenciesToRunResponse.cs" />
     <Compile Include="Core\Models\Api\CollectScriptsToRunRequest.cs" />
     <Compile Include="Core\Models\Api\CollectScriptsToRunResponse.cs" />
+    <Compile Include="Core\Models\Api\DependentProject.cs" />
     <Compile Include="Core\Models\Api\MachineSpecificProjectVersionViewModel.cs" />
     <Compile Include="Core\Models\Api\ProjectConfigurationModel.cs" />
     <Compile Include="Core\Models\Api\ProjectMetadataViewModel.cs" />
