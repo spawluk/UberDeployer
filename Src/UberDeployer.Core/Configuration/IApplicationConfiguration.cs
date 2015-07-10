@@ -25,5 +25,7 @@
     string SqlPackageDirPath { get; }
 
     bool CheckIfAppPoolExists { get; }
+
+    bool DeployDependentProjects { get; }
   }
 }

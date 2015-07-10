@@ -12,7 +12,7 @@ namespace UberDeployer.Core.Deployment.Tasks
   {
     private readonly IProjectInfoRepository _projectInfoRepository;
     private readonly IEnvironmentInfoRepository _environmentInfoRepository;
-
+    
     private readonly List<DeploymentTaskBase> _subTasks;
 
     private DeploymentInfo _deploymentInfo;
@@ -34,6 +34,12 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(deploymentInfo, "deploymentInfo");
 
       _deploymentInfo = deploymentInfo;
+
+      if (deploymentInfo.DeployDependencies)
+      {
+        // TODO MARIO: create task
+        //AddSubTask(new DeployDependenciesTask(deploymentInfo.ProjectName));
+      }
     }
 
     protected override void DoPrepare()
@@ -48,7 +54,7 @@ namespace UberDeployer.Core.Deployment.Tasks
         if (!DeploymentInfo.IsSimulation)
         {
           PostDiagnosticMessage(string.Format("Executing: {0}", Description), DiagnosticMessageType.Info);
-        }
+        }                
 
         foreach (DeploymentTaskBase subTask in _subTasks)
         {
