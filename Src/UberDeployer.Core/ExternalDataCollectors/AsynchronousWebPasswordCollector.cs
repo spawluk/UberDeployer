@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.DataAccess.WebClient;
+using UberDeployer.Core.Deployment;
 
-namespace UberDeployer.Core.Deployment
+namespace UberDeployer.Core.ExternalDataCollectors
 {
   public class AsynchronousWebPasswordCollector : IPasswordCollector
   {
@@ -12,15 +13,16 @@ namespace UberDeployer.Core.Deployment
 
     private static readonly Dictionary<Guid, string> _collectedPasswordByDeploymentId = new Dictionary<Guid, string>();
 
-    private readonly string _internalApiEndpointUrl;
+    private readonly IInternalApiWebClient _internalApiWebClient;
+
     private readonly int _maxWaitTimeInSeconds;
 
-    public AsynchronousWebPasswordCollector(string internalApiEndpointUrl, int maxWaitTimeInSeconds)
+    public AsynchronousWebPasswordCollector(IInternalApiWebClient internalApiWebClient, int maxWaitTimeInSeconds)
     {
-      Guard.NotNullNorEmpty(internalApiEndpointUrl, "internalApiEndpointUrl");
+      Guard.NotNull(internalApiWebClient, "internalApiWebClient");
 
-      _internalApiEndpointUrl = internalApiEndpointUrl.TrimEnd('/');
       _maxWaitTimeInSeconds = maxWaitTimeInSeconds;
+      _internalApiWebClient = internalApiWebClient;
     }
 
     public static void SetCollectedCredentials(Guid deploymentId, string password)
@@ -40,17 +42,7 @@ namespace UberDeployer.Core.Deployment
       Guard.NotNullNorEmpty(machineName, "machineName");
       Guard.NotNullNorEmpty(userName, "userName");
 
-      using (var webClient = CreateWebClient())
-      {
-        string result =
-          webClient.DownloadString(
-            string.Format("{0}/CollectCredentials?deploymentId={1}&environmentName={2}&machineName={3}&username={4}", _internalApiEndpointUrl, deploymentId, environmentName, machineName, userName));
-
-        if (!string.Equals(result, "OK", StringComparison.OrdinalIgnoreCase))
-        {
-          throw new InternalException("Something went wrong while requesting for credentials collection.");
-        }
-      }
+      _internalApiWebClient.CollectCredentials(deploymentId, environmentName, machineName, userName);
 
       DateTime pollStartTime = DateTime.UtcNow;
       string password;
@@ -79,26 +71,14 @@ namespace UberDeployer.Core.Deployment
 
       if (string.IsNullOrEmpty(password))
       {
-        using (var webClient = CreateWebClient())
-        {
-          webClient.DownloadString(string.Format("{0}/OnCollectCredentialsTimedOut?deploymentId={1}", _internalApiEndpointUrl, deploymentId));
-        }
-
+        _internalApiWebClient.OnCollectCredentialsTimedOut(deploymentId);
+        
         throw new TimeoutException("Given up waiting for credentials.");
       }
 
       PostDiagnosticMessage("Credentials were provided - we'll continue.", DiagnosticMessageType.Trace);
 
       return password;
-    }
-
-    private static WebClient CreateWebClient()
-    {
-      var webClient = new WebClient();
-
-      webClient.UseDefaultCredentials = true;
-
-      return webClient;
     }
 
     private void PostDiagnosticMessage(string message, DiagnosticMessageType diagnosticMessageType)

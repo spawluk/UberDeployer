@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using UberDeployer.Agent.Proxy;
 using UberDeployer.Agent.Proxy.Dto;
@@ -183,19 +182,19 @@ namespace UberDeployer.WebApp.Core.Controllers
     /* Project Dependencies */
 
     [HttpPost]
-    public ActionResult CollectDependenciesToDeploy(Guid? deploymentId, string userName, List<DependentProject> dependentProjects)
+    public ActionResult CollectDependenciesToDeploy(CollectProjectDependenciesToDeployRequest request)     
     {
-      if (!deploymentId.HasValue)
+      if (!request.DeploymentId.HasValue)
       {
         return BadRequest();
       }
 
-      if (string.IsNullOrEmpty(userName))
+      if (string.IsNullOrEmpty(request.UserName))
       {
         return BadRequest();
       }
 
-      DeploymentHub.PromptForProjectDependencies(deploymentId, userName, dependentProjects);
+      DeploymentHub.PromptForProjectDependencies(request.DeploymentId, request.UserName, request.DependentProjects);
 
       return Content("OK");
     }
@@ -222,6 +221,27 @@ namespace UberDeployer.WebApp.Core.Controllers
       }
 
       //todo: Implement method
+
+      return Content("OK");
+    }
+
+    [HttpGet]
+    public ActionResult OnCollectDependenciesToDeployTimedOut(Guid? deploymentId)
+    {
+      if (!deploymentId.HasValue)
+      {
+        return BadRequest();
+      }
+
+      DeploymentState deploymentState =
+        _deploymentStateProvider.FindDeploymentState(deploymentId.Value);
+
+      if (deploymentState == null)
+      {
+        return Content("FAIL");
+      }
+
+      DeploymentHub.CancelPromptForProjectDependencies(deploymentState.UserIdentity);
 
       return Content("OK");
     }

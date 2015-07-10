@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
-using Newtonsoft.Json;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.DataAccess.WebClient;
+using UberDeployer.Core.Deployment;
+using UberDeployer.Core.Deployment.Steps;
 
-namespace UberDeployer.Core.Deployment.Steps
+namespace UberDeployer.Core.ExternalDataCollectors
 {
   internal class DbScriptsToRunSelectionResult
   {
@@ -17,16 +18,18 @@ namespace UberDeployer.Core.Deployment.Steps
   public class ScriptsToRunSelector : IScriptsToRunSelector
   {
     private static readonly Dictionary<Guid, DbScriptsToRunSelectionResult> _collectedScriptsByDeploymentId = new Dictionary<Guid, DbScriptsToRunSelectionResult>();
-    private readonly string _internalApiEndpointUrl;
+
+    private readonly IInternalApiWebClient _internalApiWebClient;
+    
     private readonly int _maxWaitTimeInSeconds;
 
     public event EventHandler<DiagnosticMessageEventArgs> DiagnosticMessagePosted;
 
-    public ScriptsToRunSelector(string internalApiEndpointUrl, int maxWaitTimeInSeconds)
+    public ScriptsToRunSelector(IInternalApiWebClient internalApiWebClient, int maxWaitTimeInSeconds)
     {
-      Guard.NotNullNorEmpty(internalApiEndpointUrl, "internalApiEndpointUrl");
+      Guard.NotNull(internalApiWebClient, "internalApiWebClient");
 
-      _internalApiEndpointUrl = internalApiEndpointUrl.TrimEnd('/');
+      _internalApiWebClient = internalApiWebClient;
       _maxWaitTimeInSeconds = maxWaitTimeInSeconds;
     }
 
@@ -43,25 +46,7 @@ namespace UberDeployer.Core.Deployment.Steps
 
     public DbScriptsToRunSelection GetSelectedScriptsToRun(Guid deploymentId, string[] sourceScriptsList)
     {
-      using (var webClient = CreateWebClient())
-      {
-        webClient.Headers.Add(HttpRequestHeader.ContentType, "application/json");
-
-        var data = new
-        {
-          DeploymentId = deploymentId,
-          ScriptsToRun = sourceScriptsList
-        };
-
-        var jsonData = JsonConvert.SerializeObject(data);
-
-        var result = webClient.UploadString(string.Format("{0}/CollectScriptsToRun", _internalApiEndpointUrl), jsonData);
-
-        if (!string.Equals(result, "OK", StringComparison.OrdinalIgnoreCase))
-        {
-          throw new InternalException("Something went wrong while requesting for database scripts to run.");
-        }
-      }
+      _internalApiWebClient.CollectScriptsToRun(deploymentId, sourceScriptsList);
 
       var pollStartTime = DateTime.UtcNow;
       DbScriptsToRunSelectionResult scriptsToRunSelection;
@@ -97,25 +82,14 @@ namespace UberDeployer.Core.Deployment.Steps
 
       if (scriptsToRunSelection == null || scriptsToRunSelection.DbScriptsToRunSelection.SelectedScripts == null || scriptsToRunSelection.DbScriptsToRunSelection.SelectedScripts.Length == 0)
       {
-        using (var webClient = CreateWebClient())
-        {
-          webClient.DownloadString(string.Format("{0}/OnCollectScriptsToRunTimedOut?deploymentId={1}", _internalApiEndpointUrl, deploymentId));
-        }
-
+        _internalApiWebClient.OnCollectScriptsToRunTimedOut(deploymentId);
+        
         throw new TimeoutException("Given up waiting for scripts selection.");
       }
 
       PostDiagnosticMessage("Scripts to run were provided - we'll continue.", DiagnosticMessageType.Trace);
 
       return scriptsToRunSelection.DbScriptsToRunSelection;
-    }
-
-    private static WebClient CreateWebClient()
-    {
-      return new WebClient
-      {
-        UseDefaultCredentials = true
-      };
     }
 
     private void PostDiagnosticMessage(string message, DiagnosticMessageType diagnosticMessageType)
@@ -149,4 +123,4 @@ namespace UberDeployer.Core.Deployment.Steps
       }
     }
   }
-}
+} 

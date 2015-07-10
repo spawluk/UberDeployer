@@ -83,6 +83,8 @@
   <ItemGroup>
     <Compile Include="Configuration\IApplicationConfigurationRepository.cs" />
     <Compile Include="DataAccess\Dapper\SqlMapper.cs" />
+    <Compile Include="DataAccess\WebClient\IInternalApiWebClient.cs" />
+    <Compile Include="DataAccess\WebClient\InternalApiWebClient.cs" />
     <Compile Include="DataAccess\Xml\ApplicationConfigurationXml.cs" />
     <Compile Include="DataAccess\Xml\XmlApplicationConfigurationRepository.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
@@ -94,14 +96,13 @@
     <Compile Include="Domain\IEnvironmentDeployInfoRepository.cs" />
     <Compile Include="Domain\EnvironmentDeployInfo.cs" />
     <Compile Include="DataAccess\Json\JsonEnvironmentDeployInfoRepository.cs" />
-    <Compile Include="DataAccess\WebClient\AsynchronousWebPasswordCollector.cs" />
+    <Compile Include="ExternalDataCollectors\AsynchronousWebPasswordCollector.cs" />
     <Compile Include="Deployment\ScriptsToRunSelection.cs" />
     <Compile Include="Deployment\Steps\CleanDirectoryDeploymentStep.cs" />
     <Compile Include="Deployment\Steps\ConfigureBinariesStep.cs" />
     <Compile Include="Deployment\Converter.cs" />
     <Compile Include="Deployment\Steps\CreateDatabaseDeploymentStep.cs" />
     <Compile Include="Deployment\Steps\IScriptsToRunWebSelector.cs" />
-    <Compile Include="DataAccess\WebClient\ScriptsToRunWebSelector.cs" />
     <Compile Include="Deployment\Tasks\CreateManualDeploymentPackageDeploymentTask.cs" />
     <Compile Include="Deployment\DbScriptToRun.cs" />
     <Compile Include="Deployment\Steps\DeployUberDeployerAgentUsingConsoleAppDeploymentStep.cs" />
@@ -145,6 +146,12 @@
     <Compile Include="Domain\Input\WebServiceInputParams.cs" />
     <Compile Include="Domain\ProjectToFailoverClusterGroupMapping.cs" />
     <Compile Include="Domain\ProjectType.cs" />
+    <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProject.cs" />
+    <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProjectsToDeploySelection.cs" />
+    <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProjectsToDeploySelectionResult.cs" />
+    <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProjectsToDeployWebSelector.cs" />
+    <Compile Include="ExternalDataCollectors\DependentProjectsSelection\IDependentProjectsToDeployWebSelector.cs" />
+    <Compile Include="ExternalDataCollectors\ScriptsToRunWebSelector.cs" />
     <Compile Include="InternalException.cs" />
     <Compile Include="Management\Db\DbVersionInfo.cs" />
     <Compile Include="Management\Cmd\CmdExecutor.cs" />

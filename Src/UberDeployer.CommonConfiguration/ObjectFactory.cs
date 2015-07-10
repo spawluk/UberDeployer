@@ -2,13 +2,13 @@
 using UberDeployer.Common.IO;
 using UberDeployer.Core;
 using UberDeployer.Core.Configuration;
-using UberDeployer.Core.DataAccess.Json;
+using UberDeployer.Core.DataAccess.WebClient;
 using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Pipeline;
 using UberDeployer.Core.Deployment.Pipeline.Modules;
-using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
+using UberDeployer.Core.ExternalDataCollectors;
 using UberDeployer.Core.Management.Db;
 using UberDeployer.Core.Management.Db.DbManager;
 using UberDeployer.Core.Management.FailoverCluster;
@@ -25,9 +25,6 @@ namespace UberDeployer.CommonConfiguration
   {
     private static WindsorContainer _container;
     private static IObjectFactory _instance;
-
-    private static string _webAppInternalApiEndpointUrl;
-    private static int _webAsynchronousPasswordCollectorMaxWaitTimeInSeconds;
 
     private ObjectFactory()
     {
@@ -91,36 +88,22 @@ namespace UberDeployer.CommonConfiguration
 
     public IPasswordCollector CreatePasswordCollector()
     {
-      if (string.IsNullOrEmpty(_webAppInternalApiEndpointUrl))
-      {
-        IApplicationConfiguration applicationConfiguration =
-          CreateApplicationConfiguration();
-
-        _webAppInternalApiEndpointUrl = applicationConfiguration.WebAppInternalApiEndpointUrl;
-        _webAsynchronousPasswordCollectorMaxWaitTimeInSeconds = applicationConfiguration.WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds;
-      }
-
+      IApplicationConfiguration applicationConfiguration = CreateApplicationConfiguration();
+      
       return
         new AsynchronousWebPasswordCollector(
-          _webAppInternalApiEndpointUrl,
-          _webAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
+          CreateInternalApiWebClient(),
+          applicationConfiguration.WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
     }
 
     public IScriptsToRunSelector CreateScriptsToRunWebSelector()
     {
-      if (string.IsNullOrEmpty(_webAppInternalApiEndpointUrl))
-      {
-        IApplicationConfiguration applicationConfiguration =
-          CreateApplicationConfiguration();
-
-        _webAppInternalApiEndpointUrl = applicationConfiguration.WebAppInternalApiEndpointUrl;
-        _webAsynchronousPasswordCollectorMaxWaitTimeInSeconds = applicationConfiguration.WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds;
-      }
+      IApplicationConfiguration applicationConfiguration = CreateApplicationConfiguration();
 
       return
         new ScriptsToRunSelector(
-          _webAppInternalApiEndpointUrl,
-          _webAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
+          CreateInternalApiWebClient(),
+          applicationConfiguration.WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
     }
 
     public IDbScriptRunnerFactory CreateDbScriptRunnerFactory()
@@ -186,6 +169,13 @@ namespace UberDeployer.CommonConfiguration
     public ITeamCityRestClient CreateTeamCityRestClient()
     {
       return _container.Resolve<ITeamCityRestClient>();
+    }
+
+    public IInternalApiWebClient CreateInternalApiWebClient()
+    {
+      IApplicationConfiguration applicationConfiguration = CreateApplicationConfiguration();
+
+      return new InternalApiWebClient(applicationConfiguration.WebAppInternalApiEndpointUrl);
     }
 
     public static IObjectFactory Instance

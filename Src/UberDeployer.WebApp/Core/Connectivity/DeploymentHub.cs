@@ -116,6 +116,15 @@ namespace UberDeployer.WebApp.Core.Connectivity
         });
     }
 
+    public static void CancelPromptForProjectDependencies(string userIdentity)
+    {
+      Guard.NotNullNorEmpty(userIdentity, "userIdentity");
+
+      dynamic client = GetClient(userIdentity);
+
+      client.CancelPromptForProjectDependencies(new object());
+    }
+
     private static dynamic GetClient(string userIdentity)
     {
       Guard.NotNullNorEmpty(userIdentity, "userIdentity");

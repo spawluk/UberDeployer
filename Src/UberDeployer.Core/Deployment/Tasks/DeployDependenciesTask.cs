@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Domain;
+using UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection;
 using UberDeployer.Core.TeamCity;
 using UberDeployer.Core.TeamCity.ApiModels;
 
@@ -17,6 +18,7 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IProjectInfoRepository _projectInfoRepository;
     private readonly IObjectFactory _objectFactory;
     private readonly ITeamCityRestClient _temCityRestClient;
+    private readonly IDependentProjectsToDeployWebSelector _dependentProjectsToDeploySelector;
 
     private readonly List<DeploymentTaskBase> _subTasks;
     private readonly Guid _deploymentId;
@@ -28,7 +30,8 @@ namespace UberDeployer.Core.Deployment.Tasks
       string defaultTeamCityProjectConfiguration,
       IProjectInfoRepository projectInfoRepository,
       IObjectFactory objectFactory,
-      ITeamCityRestClient temCityRestClient)
+      ITeamCityRestClient temCityRestClient,
+      IDependentProjectsToDeployWebSelector dependentProjectsToDeploySelector)
     {
       Guard.NotNullNorEmpty(projectName, "projectName");
       Guard.NotNullNorEmpty(targetEnvironment, "targetEnvironment");
@@ -37,6 +40,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(projectInfoRepository, "projectInfoRepository");
       Guard.NotNull(objectFactory, "objectFactory");
       Guard.NotNull(temCityRestClient, "temCityRestClient");
+      Guard.NotNull(dependentProjectsToDeploySelector, "dependentProjectsToDeploySelector");
       
       _projectName = projectName;
       _targetEnvironment = targetEnvironment;
@@ -45,6 +49,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _projectInfoRepository = projectInfoRepository;
       _objectFactory = objectFactory;
       _temCityRestClient = temCityRestClient;
+      _dependentProjectsToDeploySelector = dependentProjectsToDeploySelector;
 
       _subTasks = new List<DeploymentTaskBase>();
     }
