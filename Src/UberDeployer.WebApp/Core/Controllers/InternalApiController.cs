@@ -178,5 +178,33 @@ namespace UberDeployer.WebApp.Core.Controllers
 
       return Content("OK");
     }
+
+    /* Project Dependencies */
+
+    [HttpPost]
+    public ActionResult OnDependenciesToRunCollected(CollectProjectDependenciesToRunResponse response)
+    {
+      if (response == null || !response.DeploymentId.HasValue )
+      {
+        return BadRequest();
+      }
+
+      //todo: implement
+
+      return Content("OK");
+    }
+
+    [HttpPost]
+    public ActionResult OnDependenciesToRunCanceled(Guid? deploymentId)
+    {
+      if (!deploymentId.HasValue)
+      {
+        return BadRequest();
+      }
+
+      //todo: Implement method
+
+      return Content("OK");
+    }
   }
 }

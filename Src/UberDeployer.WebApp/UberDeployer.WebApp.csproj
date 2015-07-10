@@ -89,6 +89,7 @@
     <Compile Include="Core\Controllers\ApiController.cs" />
     <Compile Include="Core\Controllers\EnvDeploymentController.cs" />
     <Compile Include="Core\Controllers\InternalApiController.cs" />
+    <Compile Include="Core\Models\Api\CollectProjectDependenciesToRunResponse.cs" />
     <Compile Include="Core\Models\Api\CollectScriptsToRunRequest.cs" />
     <Compile Include="Core\Models\Api\CollectScriptsToRunResponse.cs" />
     <Compile Include="Core\Models\Api\MachineSpecificProjectVersionViewModel.cs" />
@@ -293,9 +294,7 @@
     <Content Include="Static\fonts\lato\lato-regular-webfont.ttf" />
     <Content Include="Static\fonts\lato\lato-regular-webfont.woff" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Static\js\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

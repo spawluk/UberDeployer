@@ -103,6 +103,11 @@ namespace UberDeployer.WebApp.Core.Connectivity
       client.cancelPromptForScriptsToRun(new object());
     }
 
+    public static void PromptForProjectDependencies()
+    {
+      
+    }
+
     private static dynamic GetClient(string userIdentity)
     {
       Guard.NotNullNorEmpty(userIdentity, "userIdentity");

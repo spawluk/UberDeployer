@@ -58,8 +58,9 @@ function initializeDeploymentPage(initData) {
 
   var collectCredentialsDialog = new CollectCredentialsDialog();
   var collectScriptsToRunDialog = new CollectScriptsToRunDialog(false);
+  var collectProjectDependenciesDialog = new CollectProjectDependenciesDialog();
 
-  setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog);
+  setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog, collectProjectDependenciesDialog);
 
   $.ajaxSetup({
     'error': function (xhr) {
@@ -778,7 +779,7 @@ function kickAss() {
   return false;
 }
 
-function setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog) {
+function setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog, collectProjectDependenciesDialog) {
   var deploymentHub = $.connection.deploymentHub;
 
   deploymentHub.client.connected = function () { };
@@ -798,6 +799,14 @@ function setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog) {
 
   deploymentHub.client.cancelPromptForScriptsToRun = function () {
     collectScriptsToRunDialog.cancel();
+  };
+
+  deploymentHub.client.promptForProjectDependencies = function (message) {
+    collectProjectDependenciesDialog.showDialog(message);
+  };
+
+  deploymentHub.client.cancelPromptForProjectDependencies = function () {
+    collectProjectDependenciesDialog.cancel();
   };
 
   $.connection.hub.start();
@@ -943,6 +952,83 @@ var CollectScriptsToRunDialog = (function () {
 
   return CollectScriptsToRunDialog;
 })();
+
+
+/* Project dependencies */
+
+var CollectProjectDependenciesDialog = (function () {
+  function CollectProjectDependenciesDialog() {
+    var self = this;
+
+    //self.isMultiple = isMultiple;
+
+    // TODO LK: add click handler for cancel button. We should send cancel command to service asap and not wait for timeout.
+    $('#dlg-collect-dependencies-ok')
+      .click(function () {
+        var deploymentId = $('#dlg-collect-dependencies-deployment-id').val();
+        
+        var selectedDependencies = $('#dlg-collect-dependencies-ulist').find("input:checked").map(function() {
+            return this.name;
+          });
+
+        $.ajax({
+          url: g_AppPrefix + 'InternalApi/OnDependenciesToRunCollected',
+          type: "POST",
+          data: {
+            deploymentId: deploymentId,
+            selectedDependencies: selectedDependencies
+          },
+          traditional: true
+        });
+
+        self.closeDialog();
+      });
+
+    $('#dlg-collect-dependencies-cancel')
+      .click(function () {
+        var deploymentId = $('#dlg-collect-dependencies-deployment-id').val();
+
+        $.ajax({
+          url: g_AppPrefix + 'InternalApi/OnDependenciesToRunCanceled',
+          type: "POST",
+          data: {
+            deploymentId: deploymentId
+          },
+          traditional: true
+        });
+
+        self.closeDialog();
+      });
+  };
+
+  CollectProjectDependenciesDialog.prototype.showDialog = function (message) {
+    $('#dlg-collect-dependencies-deployment-id').val(message.deploymentId);
+
+    var ulist = $('#dlg-collect-dependencies-ulist');
+
+    $.each(message.Dependencies, function (index, dependency) {
+      ulist.append(
+        '<li>' +
+        '<label for="' + dependency.ProjectName + '">' +
+        '<input type="checkbox" id="dlg-collect-dependencies-' + dependency.ProjectName + '" name="' + dependency.ProjectName + '">' +
+        dependency.ProjectName +
+        '</label>' +
+        '</li>');
+    });
+    
+    $('#dlg-collect-dependencies').modal('show');
+  };
+
+  CollectProjectDependenciesDialog.prototype.closeDialog = function () {
+    $('#dlg-collect-dependencies-deployment-id').val('');
+    $('#dlg-collect-dependencies-ulist').empty();
+
+    $('#dlg-collect-dependencies').modal('hide');
+  };
+
+  return CollectProjectDependenciesDialog;
+})();
+
 
 $(document).ready(function () {
   // do nothing
