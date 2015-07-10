@@ -209,6 +209,33 @@
   </div>
 </div>
 
+<!-- Package dependencies Dialog -->
+<div id="dlg-collect-dependencies" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="package-dir-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="dlg-collect-dependencies-label">Dependencies of project is being deployed.</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="dlg-collect-dependencies-ulist" class="col-sm-2 control-label">Project dependencies:</label>
+            <div class="col-sm-12">
+              <ul id="dlg-collect-dependencies-ulist">
+                
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="dlg-collect-dependencies-ok" class="btn btn-primary">OK</button>
+          <button id="dlg-collect-dependencies-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 @section OptionalScripts {
   <script type="text/javascript">
     $(document).ready(function() {
