@@ -20,8 +20,6 @@ namespace UberDeployer.Core.Management.Db.DbManager
 
     private const string _DbAddRoleToUser = "USE {0}; EXEC sp_addrolemember N'{1}', N'{2}'";
 
-    private readonly string[] _dbUserRoles = { "db_datareader", "db_datawriter" };
-
     private readonly string _databaseServer;
 
     public MsSqlDbManager(string databaseServer)
@@ -109,25 +107,17 @@ namespace UberDeployer.Core.Management.Db.DbManager
       }
     }
 
-    public void AddReadWriteRolesToUser(string databaseName, string username)
+    public void AddUserRole(string databaseName, string username, string roleName)
     {
-      this.AddUserRoles(databaseName, username, this._dbUserRoles);
-    }
-
-    public void AddUserRoles(string databaseName, string username, params string[] roles)
-    {
-      foreach (string role in roles)
+      try
       {
-        try
-        {
-          string addMembershipQuery = BuildAddMembershipQuery(databaseName, username, role);
+        string addMembershipQuery = BuildAddMembershipQuery(databaseName, username, roleName);
 
-          ExecuteNonQuery(addMembershipQuery);
-        }
-        catch (Exception exc)
-        {
-          throw new MsSqlDbManagementException(string.Format("Failed adding membership {0} to user {1}.", role, username), exc);
-        }
+        ExecuteNonQuery(addMembershipQuery);
+      }
+      catch (Exception exc)
+      {
+        throw new MsSqlDbManagementException(string.Format("Failed adding membership {0} to user {1}.", roleName, username), exc);
       }
     }
 
@@ -145,11 +135,6 @@ namespace UberDeployer.Core.Management.Db.DbManager
       {
         throw new MsSqlDbManagementException(string.Format("Failed adding membership {0} to user {1}.", roleName, username), exc);
       }
-    }
-
-    public bool CheckIfUserIsInReadWriteRoles(string databaseName, string username)
-    {
-      return _dbUserRoles.All(x => CheckIfUserIsInRole(databaseName, username, x));
     }
 
     private void ExecuteNonQuery(string commandString)

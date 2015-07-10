@@ -21,7 +21,11 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IScriptsToRunWebSelector _createScriptsToRunWebSelector;
     private readonly IMsSqlDatabasePublisher _databasePublisher;
 
-    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher)
+    private readonly string[] _dbUserRoles = { "db_datareader", "db_datawriter" };
+
+    private readonly IDbManager _dbManager;
+
+    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher, IDbManager dbManager)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -39,6 +43,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _zipFileAdapter = zipFileAdapter;
       _createScriptsToRunWebSelector = createScriptsToRunWebSelector;
       _databasePublisher = databasePublisher;
+      _dbManager = dbManager;
     }
 
     protected override void DoPrepare()
@@ -119,7 +124,27 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(publishDatabaseDeploymentStep);
       }
 
-
+      foreach (string user in projectInfo.Users)
+      {
+        if (_dbManager.UserExists(projectInfo.DbName, user))
+        {
+          foreach (string dbUserRole in _dbUserRoles)
+          {
+            if (!_dbManager.CheckIfUserIsInRole(projectInfo.DbName, user, dbUserRole))
+            {
+              AddSubTask(new AddRoleToUserStep(_dbManager, projectInfo.DbName, user, dbUserRole));
+            }
+          }
+        }
+        else
+        {
+          AddSubTask(new AddUserToDatabaseStep(_dbManager, projectInfo.DbName, user));
+          foreach (string dbUserRole in _dbUserRoles)
+          {
+            AddSubTask(new AddRoleToUserStep(_dbManager, projectInfo.DbName, user, dbUserRole));
+          }
+        }
+      }
     }
 
     protected override void Simulate()

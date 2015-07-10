@@ -1,4 +1,8 @@
-﻿namespace UberDeployer.Core.Management.Db.DbManager
+﻿using System.Collections.Generic;
+
+using NHibernate.Mapping;
+
+namespace UberDeployer.Core.Management.Db.DbManager
 {
   public interface IDbManager
   {
@@ -12,12 +16,8 @@
 
     void AddUser(string databaseName, string username);
 
-    void AddUserRoles(string databaseName, string username, params string[] roles);
-
-    void AddReadWriteRolesToUser(string databaseName, string username);
+    void AddUserRole(string databaseName, string username, string roleName);
 
     bool CheckIfUserIsInRole(string databaseName, string username, string roleName);
-
-    bool CheckIfUserIsInReadWriteRoles(string databaseName, string username);
   }
 }

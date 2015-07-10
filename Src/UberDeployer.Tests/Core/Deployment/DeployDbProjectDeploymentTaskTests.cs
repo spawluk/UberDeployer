@@ -11,6 +11,7 @@ using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Management.Db;
+using UberDeployer.Core.Management.Db.DbManager;
 using UberDeployer.Tests.Core.Generators;
 
 namespace UberDeployer.Tests.Core.Deployment
@@ -29,6 +30,8 @@ namespace UberDeployer.Tests.Core.Deployment
     private Mock<IMsSqlDatabasePublisher> _databasePublisherFake;
     private DeployDbProjectDeploymentTask _deploymentTask;
 
+    private Mock<IDbManager> _dbManagerFake;
+
     [SetUp]
     public void SetUp()
     {
@@ -41,6 +44,8 @@ namespace UberDeployer.Tests.Core.Deployment
       _zipFileAdapterFake = new Mock<IZipFileAdapter>();
       _scriptsToRunWebSelectorFake = new Mock<IScriptsToRunWebSelector>();
       _databasePublisherFake = new Mock<IMsSqlDatabasePublisher>();
+      _dbManagerFake = new Mock<IDbManager>();
+      
 
       _projectInfoRepositoryFake
         .Setup(x => x.FindByName(It.IsAny<string>()))
@@ -64,7 +69,8 @@ namespace UberDeployer.Tests.Core.Deployment
           _fileAdapterFake.Object,
           _zipFileAdapterFake.Object,
           _scriptsToRunWebSelectorFake.Object,
-          _databasePublisherFake.Object
+          _databasePublisherFake.Object,
+          _dbManagerFake.Object
           );
 
       _deploymentTask.Initialize(DeploymentInfoGenerator.GetDbDeploymentInfo());

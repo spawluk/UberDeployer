@@ -35,15 +35,16 @@ namespace UberDeployer.Tests.Domain.Management.Db.DbManager
       _msSqlDbManager.CreateDatabase(new CreateDatabaseOptions(dbName));
 
       const string username = "NT AUTHORITY\\SYSTEM";
+      const string roleName = "db_datareader";
       _msSqlDbManager.AddUser(dbName, username);
 
       if (_msSqlDbManager.UserExists(dbName, username))
       {
-        _msSqlDbManager.AddReadWriteRolesToUser(dbName, username);
+        _msSqlDbManager.AddUserRole(dbName, username, roleName);
       }
 
       Assert.IsTrue(_msSqlDbManager.DatabaseExist(dbName));
-      Assert.IsTrue(_msSqlDbManager.CheckIfUserIsInReadWriteRoles(dbName, username));
+      Assert.IsTrue(_msSqlDbManager.CheckIfUserIsInRole(dbName, username, roleName));
 
       _msSqlDbManager.DropDatabase(dbName);
 
