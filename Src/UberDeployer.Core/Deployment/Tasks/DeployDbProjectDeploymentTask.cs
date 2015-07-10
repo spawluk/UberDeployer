@@ -23,9 +23,9 @@ namespace UberDeployer.Core.Deployment.Tasks
 
     private readonly string[] _dbUserRoles = { "db_datareader", "db_datawriter" };
 
-    private readonly IDbManager _dbManager;
+    private readonly IDbManagerFactory _dbManagerFactory;
 
-    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher, IDbManager dbManager)
+    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher, IDbManagerFactory dbManagerFactory)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -43,7 +43,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _zipFileAdapter = zipFileAdapter;
       _createScriptsToRunWebSelector = createScriptsToRunWebSelector;
       _databasePublisher = databasePublisher;
-      _dbManager = dbManager;
+      _dbManagerFactory = dbManagerFactory;
     }
 
     protected override void DoPrepare()
@@ -124,24 +124,35 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(publishDatabaseDeploymentStep);
       }
 
-      foreach (string user in projectInfo.Users)
+      foreach (string userId in projectInfo.Users)
       {
-        if (_dbManager.UserExists(projectInfo.DbName, user))
+        var enviromerntUser = environmentInfo.EnvironmentUsers.SingleOrDefault(x => x.Id == userId);
+
+        if (enviromerntUser == null)
+        {
+          throw new DeploymentTaskException(string.Format("User [{0}] doesn't exist in enviroment configuration [{1}] in project [{2}]", userId, environmentInfo.Name, projectInfo.Name));
+        }
+
+        string user = enviromerntUser.UserName;
+
+        IDbManager manager = _dbManagerFactory.CreateDbManager(databaseServerMachineName);
+
+       if (databaseExists && manager.UserExists(projectInfo.DbName, user))
         {
           foreach (string dbUserRole in _dbUserRoles)
           {
-            if (!_dbManager.CheckIfUserIsInRole(projectInfo.DbName, user, dbUserRole))
+            if (!manager.CheckIfUserIsInRole(projectInfo.DbName, user, dbUserRole))
             {
-              AddSubTask(new AddRoleToUserStep(_dbManager, projectInfo.DbName, user, dbUserRole));
+              AddSubTask(new AddRoleToUserStep(manager, projectInfo.DbName, user, dbUserRole));
             }
           }
         }
         else
         {
-          AddSubTask(new AddUserToDatabaseStep(_dbManager, projectInfo.DbName, user));
+          AddSubTask(new AddUserToDatabaseStep(manager, projectInfo.DbName, user));
           foreach (string dbUserRole in _dbUserRoles)
           {
-            AddSubTask(new AddRoleToUserStep(_dbManager, projectInfo.DbName, user, dbUserRole));
+            AddSubTask(new AddRoleToUserStep(manager, projectInfo.DbName, user, dbUserRole));
           }
         }
       }

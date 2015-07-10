@@ -19,6 +19,7 @@ namespace UberDeployer.Core.Deployment.Steps
 
     protected override void DoExecute()
     {
+      PostDiagnosticMessage(string.Format("Adding user [{0}] to database [{1}].", _username, _databaseName), DiagnosticMessageType.Info);
       _dbManager.AddUser(_databaseName, _username);
     }
 

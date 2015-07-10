@@ -30,7 +30,7 @@ namespace UberDeployer.Tests.Core.Deployment
     private Mock<IMsSqlDatabasePublisher> _databasePublisherFake;
     private DeployDbProjectDeploymentTask _deploymentTask;
 
-    private Mock<IDbManager> _dbManagerFake;
+    private Mock<IDbManagerFactory> _dbManagerFake;
 
     [SetUp]
     public void SetUp()
@@ -44,7 +44,7 @@ namespace UberDeployer.Tests.Core.Deployment
       _zipFileAdapterFake = new Mock<IZipFileAdapter>();
       _scriptsToRunWebSelectorFake = new Mock<IScriptsToRunWebSelector>();
       _databasePublisherFake = new Mock<IMsSqlDatabasePublisher>();
-      _dbManagerFake = new Mock<IDbManager>();
+      _dbManagerFake = new Mock<IDbManagerFactory>();
       
 
       _projectInfoRepositoryFake

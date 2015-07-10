@@ -129,6 +129,10 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\..\Data\EnvironmentInfo_dev3.xml">
+      <Link>Data\EnvironmentInfo_dev3.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Data\EnvDeploy\Local.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

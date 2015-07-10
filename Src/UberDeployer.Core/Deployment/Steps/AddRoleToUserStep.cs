@@ -26,6 +26,7 @@ namespace UberDeployer.Core.Deployment.Steps
 
     protected override void DoExecute()
     {
+      PostDiagnosticMessage(string.Format("Adding role [{0}] to user [{1}].", _dbRole, _username), DiagnosticMessageType.Info);
       _dbManager.AddUserRole(_databaseName, _username, _dbRole);
     }
 
@@ -33,7 +34,7 @@ namespace UberDeployer.Core.Deployment.Steps
     {
       get
       {
-        return string.Format("Adding roles '{0}' to user: {1}.",_dbRole, _username);
+        return string.Format("Adding role '{0}' to user: {1}.",_dbRole, _username);
       }
     }
   }
