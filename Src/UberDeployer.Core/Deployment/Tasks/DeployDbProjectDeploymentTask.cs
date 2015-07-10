@@ -18,14 +18,14 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IDbVersionProvider _dbVersionProvider;
     private readonly IFileAdapter _fileAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
-    private readonly IScriptsToRunWebSelector _createScriptsToRunWebSelector;
+    private readonly IScriptsToRunSelector _createScriptsToRunSelector;
     private readonly IMsSqlDatabasePublisher _databasePublisher;
 
     private readonly string[] _dbUserRoles = { "db_datareader", "db_datawriter" };
 
     private readonly IDbManagerFactory _dbManagerFactory;
 
-    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunWebSelector createScriptsToRunWebSelector, IMsSqlDatabasePublisher databasePublisher, IDbManagerFactory dbManagerFactory)
+    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunSelector createScriptsToRunSelector, IMsSqlDatabasePublisher databasePublisher, IDbManagerFactory dbManagerFactory)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -33,7 +33,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(dbScriptRunnerFactory, "dbScriptRunnerFactory");
       Guard.NotNull(fileAdapter, "fileAdapter");
       Guard.NotNull(zipFileAdapter, "zipFileAdapter");
-      Guard.NotNull(createScriptsToRunWebSelector, "createScriptsToRunWebSelector");
+      Guard.NotNull(createScriptsToRunSelector, "createScriptsToRunWebSelector");
       Guard.NotNull(databasePublisher, "databasePublisher");
 
       _artifactsRepository = artifactsRepository;
@@ -41,7 +41,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _dbVersionProvider = dbVersionProvider;
       _fileAdapter = fileAdapter;
       _zipFileAdapter = zipFileAdapter;
-      _createScriptsToRunWebSelector = createScriptsToRunWebSelector;
+      _createScriptsToRunSelector = createScriptsToRunSelector;
       _databasePublisher = databasePublisher;
       _dbManagerFactory = dbManagerFactory;
     }
@@ -96,7 +96,7 @@ namespace UberDeployer.Core.Deployment.Tasks
           environmentInfo.Name,
           DeploymentInfo,
           _dbVersionProvider,
-          _createScriptsToRunWebSelector
+          _createScriptsToRunSelector
           );
 
         AddSubTask(gatherDbScriptsToRunDeploymentStep);

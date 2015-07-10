@@ -106,7 +106,7 @@ namespace UberDeployer.CommonConfiguration
           _webAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
     }
 
-    public IScriptsToRunWebSelector CreateScriptsToRunWebSelector()
+    public IScriptsToRunSelector CreateScriptsToRunWebSelector()
     {
       if (string.IsNullOrEmpty(_webAppInternalApiEndpointUrl))
       {
@@ -118,7 +118,7 @@ namespace UberDeployer.CommonConfiguration
       }
 
       return
-        new ScriptsToRunWebSelector(
+        new ScriptsToRunSelector(
           _webAppInternalApiEndpointUrl,
           _webAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
     }

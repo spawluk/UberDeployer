@@ -28,13 +28,13 @@ namespace UberDeployer.Tests.Core.Deployment
 
     private Mock<IDbVersionProvider> _dbVersionProviderFake;
 
-    private Mock<IScriptsToRunWebSelector> _scriptsToRunWebSelector;
+    private Mock<IScriptsToRunSelector> _scriptsToRunWebSelector;
 
     [SetUp]
     public void SetUp()
     {
       _dbVersionProviderFake = new Mock<IDbVersionProvider>(MockBehavior.Loose);
-      _scriptsToRunWebSelector = new Mock<IScriptsToRunWebSelector>(MockBehavior.Loose);
+      _scriptsToRunWebSelector = new Mock<IScriptsToRunSelector>(MockBehavior.Loose);
 
       DbProjectInfo dbProjectInfo = ProjectInfoGenerator.GetDbProjectInfo();
 

@@ -26,7 +26,7 @@ namespace UberDeployer.Tests.Core.Deployment
     private Mock<IDbVersionProvider> _dbVersionProviderFake;
     private Mock<IFileAdapter> _fileAdapterFake;
     private Mock<IZipFileAdapter> _zipFileAdapterFake;
-    private Mock<IScriptsToRunWebSelector> _scriptsToRunWebSelectorFake;
+    private Mock<IScriptsToRunSelector> _scriptsToRunWebSelectorFake;
     private Mock<IMsSqlDatabasePublisher> _databasePublisherFake;
     private DeployDbProjectDeploymentTask _deploymentTask;
 
@@ -42,7 +42,7 @@ namespace UberDeployer.Tests.Core.Deployment
       _dbVersionProviderFake = new Mock<IDbVersionProvider>(MockBehavior.Loose);
       _fileAdapterFake = new Mock<IFileAdapter>();
       _zipFileAdapterFake = new Mock<IZipFileAdapter>();
-      _scriptsToRunWebSelectorFake = new Mock<IScriptsToRunWebSelector>();
+      _scriptsToRunWebSelectorFake = new Mock<IScriptsToRunSelector>();
       _databasePublisherFake = new Mock<IMsSqlDatabasePublisher>();
       _dbManagerFake = new Mock<IDbManagerFactory>();
       

@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 
 namespace UberDeployer.Core.Deployment.Steps
 {
-  public interface IScriptsToRunWebSelector
+  public interface IScriptsToRunSelector
   {
     DbScriptsToRunSelection GetSelectedScriptsToRun(Guid deploymentId, string[] sourceScriptsList);
   }

@@ -591,14 +591,14 @@ namespace UberDeployer.Agent.Service
 
     public void SetSelectedDbScriptsToRun(Guid deploymentId, Proxy.Dto.DbScriptsToRunSelection scriptsToRunSelection)
     {
-      ScriptsToRunWebSelector.SetSelectedScriptsToRun(
+      ScriptsToRunSelector.SetSelectedScriptsToRun(
         deploymentId,
         DtoMapper.Map<Proxy.Dto.DbScriptsToRunSelection, DbScriptsToRunSelection>(scriptsToRunSelection));
     }
 
     public void CancelDbScriptsSelection(Guid deploymentId)
     {
-      ScriptsToRunWebSelector.CancelDbScriptsSelection(deploymentId);
+      ScriptsToRunSelector.CancelDbScriptsSelection(deploymentId);
     }
 
     public string GetDefaultPackageDirPath(string environmentName, string projectName)

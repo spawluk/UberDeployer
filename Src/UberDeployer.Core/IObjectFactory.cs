@@ -65,7 +65,7 @@ namespace UberDeployer.Core
 
     IDbManagerFactory CreateDbManagerFactory();
 
-    IScriptsToRunWebSelector CreateScriptsToRunWebSelector();
+    IScriptsToRunSelector CreateScriptsToRunWebSelector();
     
     ITeamCityRestClient CreateTeamCityRestClient();
 

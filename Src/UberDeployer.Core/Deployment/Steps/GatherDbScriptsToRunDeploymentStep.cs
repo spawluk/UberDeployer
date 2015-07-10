@@ -25,7 +25,7 @@ namespace UberDeployer.Core.Deployment.Steps
 
     private readonly IDbVersionProvider _dbVersionProvider;
 
-    private readonly IScriptsToRunWebSelector _scriptsToRunWebSelector;
+    private readonly IScriptsToRunSelector _scriptsToRunSelector;
 
     private IEnumerable<DbScriptToRun> _scriptsToRun = new List<DbScriptToRun>();
 
@@ -36,7 +36,7 @@ namespace UberDeployer.Core.Deployment.Steps
       string environmentName,
       DeploymentInfo deploymentInfo,
       IDbVersionProvider dbVersionProvider,
-      IScriptsToRunWebSelector scriptsToRunWebSelector)
+      IScriptsToRunSelector scriptsToRunSelector)
     {
       Guard.NotNullNorEmpty(dbName, "dbName");
       Guard.NotNull(scriptsDirectoryPathProvider, "scriptsDirectoryPathProvider");
@@ -44,7 +44,7 @@ namespace UberDeployer.Core.Deployment.Steps
       Guard.NotNullNorEmpty(environmentName, "environmentName");
       Guard.NotNull(deploymentInfo, "deploymentInfo");
       Guard.NotNull(dbVersionProvider, "dbVersionProvider");
-      Guard.NotNull(scriptsToRunWebSelector, "scriptsToRunWebSelector");
+      Guard.NotNull(scriptsToRunSelector, "scriptsToRunWebSelector");
 
       _dbName = dbName;
       _scriptsDirectoryPathProvider = scriptsDirectoryPathProvider;
@@ -52,7 +52,7 @@ namespace UberDeployer.Core.Deployment.Steps
       _environmentName = environmentName;
       _deploymentInfo = deploymentInfo;
       _dbVersionProvider = dbVersionProvider;
-      _scriptsToRunWebSelector = scriptsToRunWebSelector;
+      _scriptsToRunSelector = scriptsToRunSelector;
 
       _scriptsToRun = Enumerable.Empty<DbScriptToRun>();
     }
@@ -147,7 +147,7 @@ namespace UberDeployer.Core.Deployment.Steps
       }
 
       var scriptFileNames = scriptsToRun.Select(s => s.GetScriptFileName()).ToArray();
-      DbScriptsToRunSelection scriptsToRunSelection = _scriptsToRunWebSelector.GetSelectedScriptsToRun(_deploymentInfo.DeploymentId, scriptFileNames);
+      DbScriptsToRunSelection scriptsToRunSelection = _scriptsToRunSelector.GetSelectedScriptsToRun(_deploymentInfo.DeploymentId, scriptFileNames);
 
       if (scriptsToRunSelection.SelectedScripts == null || scriptsToRunSelection.SelectedScripts.Length == 0)
       {

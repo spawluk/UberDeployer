@@ -14,7 +14,7 @@ namespace UberDeployer.Core.Deployment.Steps
     public DbScriptsToRunSelection DbScriptsToRunSelection { get; set; }
   }
 
-  public class ScriptsToRunWebSelector : IScriptsToRunWebSelector
+  public class ScriptsToRunSelector : IScriptsToRunSelector
   {
     private static readonly Dictionary<Guid, DbScriptsToRunSelectionResult> _collectedScriptsByDeploymentId = new Dictionary<Guid, DbScriptsToRunSelectionResult>();
     private readonly string _internalApiEndpointUrl;
@@ -22,7 +22,7 @@ namespace UberDeployer.Core.Deployment.Steps
 
     public event EventHandler<DiagnosticMessageEventArgs> DiagnosticMessagePosted;
 
-    public ScriptsToRunWebSelector(string internalApiEndpointUrl, int maxWaitTimeInSeconds)
+    public ScriptsToRunSelector(string internalApiEndpointUrl, int maxWaitTimeInSeconds)
     {
       Guard.NotNullNorEmpty(internalApiEndpointUrl, "internalApiEndpointUrl");
 
