@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Domain;
@@ -8,7 +7,7 @@ using UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection;
 using UberDeployer.Core.TeamCity;
 using UberDeployer.Core.TeamCity.ApiModels;
 
-namespace UberDeployer.Core.Deployment.Tasks
+namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
 {
   public class DeployDependenciesTask : DeploymentTaskBase
   {
@@ -22,11 +21,13 @@ namespace UberDeployer.Core.Deployment.Tasks
 
     private readonly List<DeploymentTaskBase> _subTasks;
     private readonly Guid _deploymentId;
+    private readonly string _userName;
 
     public DeployDependenciesTask(
       string projectName,
       string targetEnvironment,
       Guid deploymentId,
+      string userName,
       string defaultTeamCityProjectConfiguration,
       IProjectInfoRepository projectInfoRepository,
       IObjectFactory objectFactory,
@@ -36,6 +37,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNullNorEmpty(projectName, "projectName");
       Guard.NotNullNorEmpty(targetEnvironment, "targetEnvironment");
       Guard.NotEmpty(deploymentId, "deploymentId");
+      Guard.NotNullNorEmpty(userName, "userName");
       Guard.NotNullNorEmpty(defaultTeamCityProjectConfiguration, "defaultBuildConfiguration");
       Guard.NotNull(projectInfoRepository, "projectInfoRepository");
       Guard.NotNull(objectFactory, "objectFactory");
@@ -45,6 +47,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _projectName = projectName;
       _targetEnvironment = targetEnvironment;
       _deploymentId = deploymentId;
+      _userName = userName;
       _defaultTeamCityProjectConfiguration = defaultTeamCityProjectConfiguration;
       _projectInfoRepository = projectInfoRepository;
       _objectFactory = objectFactory;
@@ -61,30 +64,46 @@ namespace UberDeployer.Core.Deployment.Tasks
 
     protected override void DoExecute()
     {
-      // TODO MARIO: catch exceptions
       foreach (var subTask in _subTasks)
       {
-        subTask.Execute();
+        try
+        {
+          subTask.Execute();
+        }
+        catch (Exception exc)
+        {
+          PostDiagnosticMessage(
+            string.Format("Error while executing task: [{0}] with description: [{1}], exception: [{2}]", subTask.GetType().FullName, subTask.Description, exc), 
+            DiagnosticMessageType.Error);
+        }
       }
     }
 
     protected override void DoPrepare()
-    {
-      // TODO MARIO: catch exceptions??
+    {      
       List<ProjectInfo> dependentProjectsToDeploy = GetDependentProjectsToDeploy(_projectName);
 
       List<ProjectDeployment> defaultProjectDeployments = BuildDefaultProjectDeployments(dependentProjectsToDeploy, _defaultTeamCityProjectConfiguration);
 
-      List<ProjectDeployment> configuredProjectDeployments = ConfigureDeployments(defaultProjectDeployments);
+      IEnumerable<ProjectDeployment> configuredProjectDeployments = ConfigureDeploymentsByClient(defaultProjectDeployments);
 
       foreach (ProjectDeployment projectDeployment in configuredProjectDeployments)
       {
         DeploymentTask deploymentTask = projectDeployment.ProjectInfo.CreateDeploymentTask(_objectFactory);
 
-        deploymentTask.Initialize(projectDeployment.DeploymentInfo);
-        deploymentTask.Prepare();
+        try
+        {          
+          deploymentTask.Initialize(projectDeployment.DeploymentInfo);
+          deploymentTask.Prepare();
 
-        AddSubTask(deploymentTask);
+          AddSubTask(deploymentTask);
+        }
+        catch (Exception exc)
+        {
+          PostDiagnosticMessage(
+            string.Format("Error while preparing task: [{0}] with description: [{1}], exception: [{2}]", deploymentTask.GetType().FullName, deploymentTask.Description, exc),
+            DiagnosticMessageType.Error);
+        }
       }
     }
 
@@ -121,28 +140,42 @@ namespace UberDeployer.Core.Deployment.Tasks
       }
 
       return projectDeployments;
+    }      
+
+    private IEnumerable<ProjectDeployment> ConfigureDeploymentsByClient(List<ProjectDeployment> defaultDeploymentInfos)
+    {      
+      List<DependentProject> dependentProjects = ConvertToDependentProjects(defaultDeploymentInfos);
+
+      DependentProjectsToDeploySelection dependentProjectsToDeploySelection = _dependentProjectsToDeploySelector.GetSelectedProjectsToDeploy(_deploymentId, _userName, dependentProjects);
+
+      return OverrideBySelectedProjects(defaultDeploymentInfos, dependentProjectsToDeploySelection.SelectedProjects);
     }
 
-    public class ProjectDeployment
+    private IEnumerable<ProjectDeployment> OverrideBySelectedProjects(IEnumerable<ProjectDeployment> defaultDeploymentInfos, IEnumerable<DependentProject> selectedProjects)
     {
-      public ProjectInfo ProjectInfo { get; set; }
-
-      public DeploymentInfo DeploymentInfo { get; set; }
+      return
+        selectedProjects.Join(
+          defaultDeploymentInfos,
+          x => x.ProjectName,
+          y => y.ProjectInfo.Name,
+          (x, y) =>
+          {
+            var depInf = y.DeploymentInfo;
+            y.DeploymentInfo = new DeploymentInfo(depInf.DeploymentId, depInf.IsSimulation, depInf.ProjectName, x.BranchName, x.BuildNumber, depInf.TargetEnvironmentName, depInf.InputParams);
+            return y;
+          });
     }
 
-    private List<ProjectDeployment> ConfigureDeployments(List<ProjectDeployment> defaultDeploymentInfos)
+    private List<DependentProject> ConvertToDependentProjects(IEnumerable<ProjectDeployment> defaultDeploymentInfos)
     {
-      throw new NotImplementedException();
-    }
-
-    private List<DeploymentInfo> BuildDefaultDeploymentInfos(List<ProjectInfo> dependentProjectsToDeploy, string defaultTeamCityProjectConfiguration)
-    {
-      throw new NotImplementedException();
-    }    
-
-    private void GetLatestBuildForProjects(List<ProjectInfo> dependentProjectsToDeploy, string defaultTeamCityProjectConfiguration)
-    {
-      throw new NotImplementedException();
+      return defaultDeploymentInfos.Select(
+        x => new DependentProject
+        {
+          BranchName = x.DeploymentInfo.ProjectConfigurationName,
+          BuildNumber = x.DeploymentInfo.ProjectConfigurationBuildId,
+          ProjectName = x.ProjectInfo.Name,
+        })
+        .ToList();
     }
 
     private void AddSubTask(DeploymentTaskBase subTask)
@@ -160,7 +193,14 @@ namespace UberDeployer.Core.Deployment.Tasks
 
     private List<ProjectInfo> GetDependentProjectsToDeploy(string projectName)
     {
-      throw new NotImplementedException();
+      // TODO MARIO: Move dependency resolving from repo to separate class
+      List<ProjectInfo> findProjectNameWithDependencies = _projectInfoRepository.FindProjectNameWithDependencies(projectName);
+
+      // we need only dependent projects.
+      ProjectInfo projectInfo = findProjectNameWithDependencies.Single(x => x.Name == projectName);
+      findProjectNameWithDependencies.Remove(projectInfo);
+
+      return findProjectNameWithDependencies;
     }
   }
 }

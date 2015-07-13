@@ -89,9 +89,10 @@
     <Compile Include="DataAccess\Xml\XmlApplicationConfigurationRepository.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Pipeline\IEnvDeploymentPipeline.cs" />
-    <Compile Include="Deployment\Tasks\DeployDependenciesTask.cs" />
+    <Compile Include="Deployment\Tasks\DependenciesDeployment\DeployDependenciesTask.cs" />
     <Compile Include="Deployment\Steps\AddRoleToUserStep.cs" />
     <Compile Include="Deployment\Steps\AddUserToDatabaseStep.cs" />
+    <Compile Include="Deployment\Tasks\DependenciesDeployment\ProjectDeployment.cs" />
     <Compile Include="Domain\ProjectDeploymentData.cs" />
     <Compile Include="Domain\IEnvironmentDeployInfoRepository.cs" />
     <Compile Include="Domain\EnvironmentDeployInfo.cs" />
