@@ -219,12 +219,28 @@
       <div class="modal-body">
         <div class="form-horizontal">
           <div class="form-group">
-            <label for="dlg-collect-dependencies-ulist" class="col-sm-4 control-label">Project dependencies:</label>
+           
             <div class="col-sm-12">
-              <ul id="dlg-collect-dependencies-ulist">
+              <div>
+                <div class="row">
+                  <div class="col-sm-7">
+                    Project Name
+                  </div>
+                  <div class="col-sm-3">
+                    Branch
+                  </div>
+                  <div class="col-sm-2">
+                    Build
+                  </div>
+                </div>
+              </div>
+              <div id="dlg-collect-dependencies-grid" style="overflow-y:auto;">
+
+              </div>
+              <ul id="dlg-collect-dependencies-ulist" style="list-style-type: none;">
                 
               </ul>
-            </div>
+              </div>
           </div>
         </div>
       </div>

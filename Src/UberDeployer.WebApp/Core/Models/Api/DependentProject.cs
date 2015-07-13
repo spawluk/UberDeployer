@@ -2,10 +2,10 @@
 {
   public class DependentProject
   {
-    string ProjectName { get; set; }
+    public string ProjectName { get; set; }
 
-    string BranchName { get; set; }
+    public string BranchName { get; set; }
 
-    string BuildNumber { get; set; }
+    public string BuildNumber { get; set; }
   }
 }

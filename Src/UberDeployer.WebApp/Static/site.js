@@ -959,26 +959,35 @@ var CollectScriptsToRunDialog = (function () {
 var CollectProjectDependenciesDialog = (function () {
   function CollectProjectDependenciesDialog() {
     var self = this;
-
-    //self.isMultiple = isMultiple;
-
-    // TODO LK: add click handler for cancel button. We should send cancel command to service asap and not wait for timeout.
+    
     $('#dlg-collect-dependencies-ok')
       .click(function () {
         var deploymentId = $('#dlg-collect-dependencies-deployment-id').val();
         
-        var selectedDependencies = $('#dlg-collect-dependencies-ulist').find("input:checked").map(function() {
-            return this.name;
-          });
+        var selectedDependencies = [];
+        
+        var selectedInputs = $('#dlg-collect-dependencies-grid').find("input:checked");
+
+        selectedInputs.each(function () {
+          var dependentPrj = {
+            ProjectName: $(this).attr("name"),
+            BranchName: $(this).siblings("input[name='branch-name']").val(),
+            BuildNumber: $(this).siblings("input[name='build-number']").val()
+          };
+          selectedDependencies.push(dependentPrj);
+        });
+
+        var postData = {
+          DeploymentId: deploymentId,
+          DependenciesToDeploy: selectedDependencies
+        };
 
         $.ajax({
           url: g_AppPrefix + 'InternalApi/OnDependenciesToRunCollected',
           type: "POST",
-          data: {
-            deploymentId: deploymentId,
-            selectedDependencies: selectedDependencies
-          },
-          traditional: true
+          data: JSON.stringify(postData),
+          traditional: true,
+          contentType: 'application/json; charset=utf-8',
         });
 
         self.closeDialog();
@@ -1004,16 +1013,27 @@ var CollectProjectDependenciesDialog = (function () {
   CollectProjectDependenciesDialog.prototype.showDialog = function (message) {
     $('#dlg-collect-dependencies-deployment-id').val(message.deploymentId);
 
-    var ulist = $('#dlg-collect-dependencies-ulist');
-
+    var projectsGrid = $('#dlg-collect-dependencies-grid');
+    
     $.each(message.dependentProjects, function (index, dependency) {
-      ulist.append(
-        '<li>' +
-        '<label for="' + dependency.ProjectName + '">' +
+      projectsGrid.append(
+        '<div class="row">' +
+        '<div class="col-sm-7">' +
         '<input type="checkbox" id="dlg-collect-dependencies-' + dependency.ProjectName + '" name="' + dependency.ProjectName + '">' +
+        '<label for="dlg-collect-dependencies-' + dependency.ProjectName + '">' +
         dependency.ProjectName +
         '</label>' +
-        '</li>');
+        '<input type="hidden" name="branch-name" value="' + dependency.BranchName + '">' +
+        '<input type="hidden" name="build-number" value="' + dependency.BuildNumber + '">' +
+        '</div>' +
+        '<div class="col-sm-3">' +
+        dependency.BranchName +
+        '</div>' +
+        '<div class="col-sm-2">' +
+        dependency.BuildNumber +
+        '</div>' +
+        '</div>'
+        );
     });
     
     $('#dlg-collect-dependencies').modal('show');
