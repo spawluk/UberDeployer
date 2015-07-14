@@ -50,6 +50,7 @@
     <Compile Include="Dto\DbScriptsToRunSelection.cs" />
     <Compile Include="Dto\DatabaseServer.cs" />
     <Compile Include="Dto\DbProjectConfigurationOverride.cs" />
+    <Compile Include="Dto\DependentProject.cs" />
     <Compile Include="Dto\Input\ExtensionInputParams.cs" />
     <Compile Include="Dto\Metadata\MachineSpecificProjectVersion.cs" />
     <Compile Include="Dto\Metadata\ProjectMetadata.cs" />

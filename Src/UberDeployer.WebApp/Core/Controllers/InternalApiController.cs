@@ -6,6 +6,7 @@ using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.WebApp.Core.Connectivity;
 using UberDeployer.WebApp.Core.Models.Api;
 using UberDeployer.WebApp.Core.Services;
+using DependentProject = UberDeployer.WebApp.Core.Models.Api.DependentProject;
 
 namespace UberDeployer.WebApp.Core.Controllers
 {
@@ -207,7 +208,17 @@ namespace UberDeployer.WebApp.Core.Controllers
         return BadRequest();
       }
 
-      //todo: implement
+      Converter<DependentProject, Agent.Proxy.Dto.DependentProject> convertFunc =
+        dp =>
+          new Agent.Proxy.Dto.DependentProject()
+          {
+            ProjectName = dp.ProjectName,
+            BranchName = dp.BranchName,
+            BuildNumber = dp.BuildNumber
+          };
+
+      _agentService.SetSelectedDependentProjectsToDeploy(response.DeploymentId.Value,
+        response.DependenciesToDeploy.ConvertAll(convertFunc));
 
       return Content("OK");
     }

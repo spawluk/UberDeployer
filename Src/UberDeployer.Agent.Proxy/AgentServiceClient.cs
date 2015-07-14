@@ -105,5 +105,10 @@ namespace UberDeployer.Agent.Proxy
     {
       Exec(@as => @as.DeployEnvironmentAsync(uniqueClientId, requesterIdentity, targetEnvironment, projects));
     }
+
+    public void SetSelectedDependentProjectsToDeploy(Guid deploymentId, List<DependentProject> dependenciesToDeploy)
+    {
+      Exec(@as => @as.SetSelectedDependentProjectsToDeploy(deploymentId, dependenciesToDeploy));
+    }
   }
 }

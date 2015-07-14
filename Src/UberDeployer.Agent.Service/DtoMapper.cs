@@ -56,6 +56,8 @@ namespace UberDeployer.Agent.Service
       Mapper.CreateMap<Core.TeamCity.ApiModels.TeamCityBuildType, Proxy.Dto.TeamCity.ProjectConfiguration>();
       Mapper.CreateMap<Core.TeamCity.ApiModels.TeamCityBuild, Proxy.Dto.TeamCity.ProjectConfigurationBuild>();
 
+      Mapper.CreateMap<Proxy.Dto.DependentProject, Core.ExternalDataCollectors.DependentProjectsSelection.DependentProject>();
+
       Mapper.AssertConfigurationIsValid();
     }
 

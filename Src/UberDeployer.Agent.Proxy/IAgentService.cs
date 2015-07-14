@@ -87,5 +87,9 @@ namespace UberDeployer.Agent.Proxy
     [FaultContract(typeof(EnvironmentDeployConfigurationNotFoundFault))]
     [FaultContract(typeof(EnvironmentNotFoundFault))]
     void DeployEnvironmentAsync(Guid uniqueClientId, string requesterIdentity, string targetEnvironment, List<ProjectToDeploy> projects);
+
+    [OperationContract]
+    void SetSelectedDependentProjectsToDeploy(Guid deploymentId, List<DependentProject> dependenciesToDeploy);
   }
 }
+  

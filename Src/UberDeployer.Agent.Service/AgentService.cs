@@ -8,7 +8,6 @@ using System.Threading;
 using log4net;
 
 using UberDeployer.Agent.Proxy;
-using UberDeployer.Agent.Proxy.Dto;
 using UberDeployer.Agent.Proxy.Dto.EnvDeployment;
 using UberDeployer.Agent.Proxy.Dto.TeamCity;
 using UberDeployer.Agent.Proxy.Faults;
@@ -26,11 +25,13 @@ using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Domain.Input;
 using UberDeployer.Core.ExternalDataCollectors;
+using UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection;
 using UberDeployer.Core.Management.Metadata;
 using UberDeployer.Core.TeamCity;
 using UberDeployer.Core.TeamCity.ApiModels;
 
 using DbScriptsToRunSelection = UberDeployer.Core.Deployment.DbScriptsToRunSelection;
+using DependentProject = UberDeployer.Agent.Proxy.Dto.DependentProject;
 using DeploymentInfo = UberDeployer.Agent.Proxy.Dto.DeploymentInfo;
 using DeploymentRequest = UberDeployer.Core.Deployment.Pipeline.Modules.DeploymentRequest;
 using DiagnosticMessage = UberDeployer.Core.Deployment.DiagnosticMessage;
@@ -254,6 +255,17 @@ namespace UberDeployer.Agent.Service
             _envDeploymentPipeline.DiagnosticMessagePosted -= deploymentPipelineDiagnosticMessageAction;
           }
         });
+    }
+
+    public void SetSelectedDependentProjectsToDeploy(Guid deploymentId, List<DependentProject> dependenciesToDeploy)
+    {
+      DependentProjectsToDeploySelection dependentProjectsToDeploySelection = new DependentProjectsToDeploySelection()
+      {
+        SelectedProjects = new List<Core.ExternalDataCollectors.DependentProjectsSelection.DependentProject>(DtoMapper.Map<List<Proxy.Dto.DependentProject>, List<Core.ExternalDataCollectors.DependentProjectsSelection.DependentProject>>(dependenciesToDeploy))
+      };
+
+      DependentProjectsToDeployWebSelector
+        .SetSelectedProjectsToDeploy(deploymentId, dependentProjectsToDeploySelection);
     }
 
     private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, IEnumerable<ProjectToDeploy> projects)
