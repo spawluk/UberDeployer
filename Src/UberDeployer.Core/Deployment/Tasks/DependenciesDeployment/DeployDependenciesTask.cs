@@ -86,7 +86,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
         DeploymentTask deploymentTask = projectDeployment.ProjectInfo.CreateDeploymentTask(_objectFactory);
 
         try
-        {          
+        {
           deploymentTask.Initialize(projectDeployment.DeploymentInfo);
           deploymentTask.Prepare();
 
@@ -107,7 +107,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
 
       foreach (var projectInfo in dependentProjectsToDeploy)
       {
-        IEnumerable<TeamCityBuildType> teamCityBuildTypes = _temCityRestClient.GetBuildTypes(projectInfo.Name);
+        IEnumerable<TeamCityBuildType> teamCityBuildTypes = _temCityRestClient.GetBuildTypes(projectInfo.ArtifactsRepositoryName);
 
         TeamCityBuildType defaultBuildType = teamCityBuildTypes.FirstOrDefault(x => x.Name == defaultTeamCityProjectConfiguration);
 
@@ -122,8 +122,8 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
         {
           throw new DeploymentTaskException(string.Format("Cannot obtain last successful build for project [{0}], configuration: [{1}], team city build type id: [{2}]", projectInfo.Name, defaultTeamCityProjectConfiguration, defaultBuildType.Id));
         }
-        
-        var deploymentInfo = new DeploymentInfo(_deploymentId, false, projectInfo.Name, defaultTeamCityProjectConfiguration, lastSuccessfulBuild.Id, _targetEnvironment, null);
+
+        var deploymentInfo = new DeploymentInfo(_deploymentId, false, projectInfo.Name, defaultTeamCityProjectConfiguration, lastSuccessfulBuild.Id, _targetEnvironment, projectInfo.CreateEmptyInputParams());
 
         projectDeployments.Add(
           new ProjectDeployment
