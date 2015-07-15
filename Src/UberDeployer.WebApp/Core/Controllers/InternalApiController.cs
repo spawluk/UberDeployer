@@ -188,14 +188,11 @@ namespace UberDeployer.WebApp.Core.Controllers
       if (!request.DeploymentId.HasValue)
       {
         return BadRequest();
-      }
+      }      
 
-      if (string.IsNullOrEmpty(request.UserName))
-      {
-        return BadRequest();
-      }
+      DeploymentState deploymentState = _deploymentStateProvider.FindDeploymentState(request.DeploymentId.Value);
 
-      DeploymentHub.PromptForProjectDependencies(request.DeploymentId, request.UserName, request.DependentProjects);
+      DeploymentHub.PromptForProjectDependencies(request.DeploymentId, deploymentState.UserIdentity, request.DependentProjects);
 
       return Content("OK");
     }

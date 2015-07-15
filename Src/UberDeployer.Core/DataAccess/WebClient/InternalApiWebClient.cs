@@ -71,9 +71,9 @@ namespace UberDeployer.Core.DataAccess.WebClient
       {
         webClient.DownloadString(string.Format("{0}/OnCollectCredentialsTimedOut?deploymentId={1}", _internalApiEndpointUrl, deploymentId));
       }
-    }
+    }    
 
-    public void CollectDependenciesToDeploy(Guid deploymentId, string userName, List<DependentProject> dependentProjects)
+    public void CollectDependenciesToDeploy(Guid deploymentId, List<DependentProject> dependentProjects)
     {
       using (var webClient = CreateWebClient())
       {
@@ -82,7 +82,6 @@ namespace UberDeployer.Core.DataAccess.WebClient
         var data = new
         {
           DeploymentId = deploymentId,
-          UserName = userName,
           DependentProjects = dependentProjects
         };
 

@@ -6,6 +6,7 @@ using UberDeployer.Core.Deployment.Pipeline.Modules;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
+using UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection;
 using UberDeployer.Core.Management.Db;
 using UberDeployer.Core.Management.Db.DbManager;
 using UberDeployer.Core.Management.FailoverCluster;
@@ -72,5 +73,7 @@ namespace UberDeployer.Core
     IMsSqlDatabasePublisher CreateMsSqlDatabasePublisher();
     
     IEnvDeploymentPipeline CrateEnvDeploymentPipeline();
+
+    IDependentProjectsToDeployWebSelector CreateDependentProjectsToDeployWebSelector();
   }
 }

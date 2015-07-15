@@ -123,7 +123,7 @@ namespace UberDeployer.ConsoleApp.Commands
 
         var deploymentContext = new DeploymentContext(RequesterIdentity);
 
-        deploymentPipeline.StartDeployment(deploymentInfo, deploymentTask, deploymentContext);
+        deploymentPipeline.StartDeployment(deploymentInfo, deploymentTask, deploymentContext, false);
 
         return 0;
       }

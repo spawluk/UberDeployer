@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 
@@ -8,12 +9,20 @@ namespace UberDeployer.Core.Deployment.Pipeline
 {
   public class DeploymentPipeline : IDeploymentPipeline
   {
+    private readonly IApplicationConfiguration _applicationConfiguration;
+    private readonly IObjectFactory _objectFactory;
     public event EventHandler<DiagnosticMessageEventArgs> DiagnosticMessagePosted;
 
     private readonly List<IDeploymentPipelineModule> _modules;
 
-    public DeploymentPipeline()
+    public DeploymentPipeline(IApplicationConfiguration applicationConfiguration, IObjectFactory objectFactory)
     {
+      Guard.NotNull(applicationConfiguration, "applicationConfiguration");
+      Guard.NotNull(objectFactory, "objectFactory");
+
+      _applicationConfiguration = applicationConfiguration;
+      _objectFactory = objectFactory;
+
       _modules = new List<IDeploymentPipelineModule>();
     }
 
@@ -27,7 +36,7 @@ namespace UberDeployer.Core.Deployment.Pipeline
       _modules.Add(module);
     }
 
-    public void StartDeployment(DeploymentInfo deploymentInfo, DeploymentTask deploymentTask, DeploymentContext deploymentContext)
+    public void StartDeployment(DeploymentInfo deploymentInfo, DeploymentTask deploymentTask, DeploymentContext deploymentContext, bool deployDependencies)
     {
       Guard.NotNull(deploymentInfo, "deploymentInfo");
       Guard.NotNull(deploymentTask, "deploymentTask");
@@ -46,6 +55,12 @@ namespace UberDeployer.Core.Deployment.Pipeline
       try
       {
         deploymentTask.Initialize(deploymentInfo);
+
+        if (_applicationConfiguration.DeployDependentProjects)
+        {
+          deploymentTask.EnableDependenciesDeployment(_objectFactory);
+        }
+
         deploymentTask.PrepareAndExecute();
 
         finishedSuccessfully = true;

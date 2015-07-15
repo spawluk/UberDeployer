@@ -10,6 +10,6 @@ namespace UberDeployer.Core.Deployment.Pipeline
 
     void AddModule(IDeploymentPipelineModule module);
 
-    void StartDeployment(DeploymentInfo deploymentInfo, DeploymentTask deploymentTask, DeploymentContext deploymentContext);
+    void StartDeployment(DeploymentInfo deploymentInfo, DeploymentTask deploymentTask, DeploymentContext deploymentContext, bool deployDependentProjects);
   }
 }

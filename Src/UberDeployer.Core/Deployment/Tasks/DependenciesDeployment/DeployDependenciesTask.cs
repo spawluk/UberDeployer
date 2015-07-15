@@ -13,7 +13,6 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
   {
     private readonly string _projectName;
     private readonly string _targetEnvironment;
-    private readonly string _defaultTeamCityProjectConfiguration;
     private readonly IProjectInfoRepository _projectInfoRepository;
     private readonly IObjectFactory _objectFactory;
     private readonly ITeamCityRestClient _temCityRestClient;
@@ -21,14 +20,13 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
 
     private readonly List<DeploymentTaskBase> _subTasks;
     private readonly Guid _deploymentId;
-    private readonly string _userName;
+
+    private const string _DefaultTeamCityProjectConfiguration = "Production";
 
     public DeployDependenciesTask(
       string projectName,
       string targetEnvironment,
       Guid deploymentId,
-      string userName,
-      string defaultTeamCityProjectConfiguration,
       IProjectInfoRepository projectInfoRepository,
       IObjectFactory objectFactory,
       ITeamCityRestClient temCityRestClient,
@@ -37,8 +35,6 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
       Guard.NotNullNorEmpty(projectName, "projectName");
       Guard.NotNullNorEmpty(targetEnvironment, "targetEnvironment");
       Guard.NotEmpty(deploymentId, "deploymentId");
-      Guard.NotNullNorEmpty(userName, "userName");
-      Guard.NotNullNorEmpty(defaultTeamCityProjectConfiguration, "defaultBuildConfiguration");
       Guard.NotNull(projectInfoRepository, "projectInfoRepository");
       Guard.NotNull(objectFactory, "objectFactory");
       Guard.NotNull(temCityRestClient, "temCityRestClient");
@@ -47,8 +43,6 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
       _projectName = projectName;
       _targetEnvironment = targetEnvironment;
       _deploymentId = deploymentId;
-      _userName = userName;
-      _defaultTeamCityProjectConfiguration = defaultTeamCityProjectConfiguration;
       _projectInfoRepository = projectInfoRepository;
       _objectFactory = objectFactory;
       _temCityRestClient = temCityRestClient;
@@ -83,7 +77,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
     {      
       List<ProjectInfo> dependentProjectsToDeploy = GetDependentProjectsToDeploy(_projectName);
 
-      List<ProjectDeployment> defaultProjectDeployments = BuildDefaultProjectDeployments(dependentProjectsToDeploy, _defaultTeamCityProjectConfiguration);
+      List<ProjectDeployment> defaultProjectDeployments = BuildDefaultProjectDeployments(dependentProjectsToDeploy, _DefaultTeamCityProjectConfiguration);
 
       IEnumerable<ProjectDeployment> configuredProjectDeployments = ConfigureDeploymentsByClient(defaultProjectDeployments);
 
@@ -129,7 +123,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
           throw new DeploymentTaskException(string.Format("Cannot obtain last successful build for project [{0}], configuration: [{1}], team city build type id: [{2}]", projectInfo.Name, defaultTeamCityProjectConfiguration, defaultBuildType.Id));
         }
         
-        var deploymentInfo = new DeploymentInfo(_deploymentId, false, projectInfo.Name, defaultTeamCityProjectConfiguration, lastSuccessfulBuild.Id, _targetEnvironment, null, false);
+        var deploymentInfo = new DeploymentInfo(_deploymentId, false, projectInfo.Name, defaultTeamCityProjectConfiguration, lastSuccessfulBuild.Id, _targetEnvironment, null);
 
         projectDeployments.Add(
           new ProjectDeployment
@@ -146,7 +140,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
     {      
       List<DependentProject> dependentProjects = ConvertToDependentProjects(defaultDeploymentInfos);
 
-      DependentProjectsToDeploySelection dependentProjectsToDeploySelection = _dependentProjectsToDeploySelector.GetSelectedProjectsToDeploy(_deploymentId, _userName, dependentProjects);
+      DependentProjectsToDeploySelection dependentProjectsToDeploySelection = _dependentProjectsToDeploySelector.GetSelectedProjectsToDeploy(_deploymentId, dependentProjects);
 
       return OverrideBySelectedProjects(defaultDeploymentInfos, dependentProjectsToDeploySelection.SelectedProjects);
     }

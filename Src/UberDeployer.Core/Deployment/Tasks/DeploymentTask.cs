@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UberDeployer.Common;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.Deployment.Tasks.DependenciesDeployment;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Core.Deployment.Tasks
@@ -12,14 +13,13 @@ namespace UberDeployer.Core.Deployment.Tasks
   {
     private readonly IProjectInfoRepository _projectInfoRepository;
     private readonly IEnvironmentInfoRepository _environmentInfoRepository;
-    
     private readonly List<DeploymentTaskBase> _subTasks;
 
     private DeploymentInfo _deploymentInfo;
     private string _tempDirPath;
 
     protected DeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository)
-    {
+    {      
       Guard.NotNull(projectInfoRepository, "projectInfoRepository");
       Guard.NotNull(environmentInfoRepository, "environmentInfoRepository");
 
@@ -29,17 +29,34 @@ namespace UberDeployer.Core.Deployment.Tasks
       _subTasks = new List<DeploymentTaskBase>();
     }
 
+    public void EnableDependenciesDeployment(IObjectFactory objectFactory)
+    {
+      if (IsPrepared)
+      {
+        throw new InvalidOperationException("Task is already prepared.");
+      }
+
+      if (_deploymentInfo == null)
+      {
+        throw new InvalidOperationException("Task is not initialized.");
+      }
+
+      AddSubTask(
+        new DeployDependenciesTask(
+            _deploymentInfo.ProjectName,
+            _deploymentInfo.TargetEnvironmentName,
+            _deploymentInfo.DeploymentId,
+            _projectInfoRepository,
+            objectFactory,
+            objectFactory.CreateTeamCityRestClient(),
+            objectFactory.CreateDependentProjectsToDeployWebSelector()));
+    }
+
     public void Initialize(DeploymentInfo deploymentInfo)
     {
       Guard.NotNull(deploymentInfo, "deploymentInfo");
 
-      _deploymentInfo = deploymentInfo;
-
-      if (deploymentInfo.DeployDependencies)
-      {
-        // TODO MARIO: create task
-        //AddSubTask(new DeployDependenciesTask(deploymentInfo.ProjectName));
-      }
+      _deploymentInfo = deploymentInfo;      
     }
 
     protected override void DoPrepare()

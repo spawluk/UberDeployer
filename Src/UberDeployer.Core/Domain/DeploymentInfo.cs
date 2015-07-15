@@ -13,8 +13,7 @@ namespace UberDeployer.Core.Domain
       string projectConfigurationName,
       string projectConfigurationBuildId,
       string targetEnvironmentName,
-      InputParams inputParams,
-      bool deployDependencies = false)
+      InputParams inputParams)
     {
       Guard.NotEmpty(deploymentId, "deploymentId");
       Guard.NotNullNorEmpty(projectName, "projectName");
@@ -30,7 +29,6 @@ namespace UberDeployer.Core.Domain
       ProjectConfigurationBuildId = projectConfigurationBuildId;
       TargetEnvironmentName = targetEnvironmentName;
       InputParams = inputParams;
-      DeployDependencies = deployDependencies;
     }
 
     public Guid DeploymentId { get; private set; }
@@ -45,8 +43,6 @@ namespace UberDeployer.Core.Domain
 
     public string TargetEnvironmentName { get; private set; }
 
-    public InputParams InputParams { get; private set; }
-
-    public bool DeployDependencies { get; private set; }
+    public InputParams InputParams { get; private set; }    
   }
 }

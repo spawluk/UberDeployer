@@ -9,6 +9,7 @@ using UberDeployer.Core.Deployment.Pipeline.Modules;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.ExternalDataCollectors;
+using UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection;
 using UberDeployer.Core.Management.Db;
 using UberDeployer.Core.Management.Db.DbManager;
 using UberDeployer.Core.Management.FailoverCluster;
@@ -176,6 +177,15 @@ namespace UberDeployer.CommonConfiguration
       IApplicationConfiguration applicationConfiguration = CreateApplicationConfiguration();
 
       return new InternalApiWebClient(applicationConfiguration.WebAppInternalApiEndpointUrl);
+    }
+
+    public IDependentProjectsToDeployWebSelector CreateDependentProjectsToDeployWebSelector()
+    {
+      IApplicationConfiguration applicationConfiguration = CreateApplicationConfiguration();
+
+      return new DependentProjectsToDeployWebSelector(
+        CreateInternalApiWebClient(), 
+        applicationConfiguration.WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
     }
 
     public static IObjectFactory Instance

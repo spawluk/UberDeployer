@@ -15,7 +15,7 @@ namespace UberDeployer.Core.DataAccess.WebClient
 
     void OnCollectCredentialsTimedOut(Guid deploymentId);
 
-    void CollectDependenciesToDeploy(Guid deploymentId, string userName, List<DependentProject> dependentProjects);
+    void CollectDependenciesToDeploy(Guid deploymentId, List<DependentProject> dependentProjects);
 
     void OnCollectDependenciesToDeployTimedOut(Guid deploymentId);
   }

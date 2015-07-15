@@ -152,9 +152,10 @@ namespace UberDeployer.CommonConfiguration
             () =>
             {
               var deploymentRequestRepository = container.Resolve<IDeploymentRequestRepository>();
+              var applicationConfiguration = container.Resolve<IApplicationConfiguration>();              
               var auditingModule = new AuditingModule(deploymentRequestRepository);
               var enforceTargetEnvironmentConstraintsModule = new EnforceTargetEnvironmentConstraintsModule();
-              var deploymentPipeline = new DeploymentPipeline();
+              var deploymentPipeline = new DeploymentPipeline(applicationConfiguration, ObjectFactory.Instance);
 
               deploymentPipeline.AddModule(auditingModule);
               deploymentPipeline.AddModule(enforceTargetEnvironmentConstraintsModule);

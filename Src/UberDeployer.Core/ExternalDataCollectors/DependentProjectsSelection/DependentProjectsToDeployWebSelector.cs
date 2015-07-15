@@ -35,9 +35,9 @@ namespace UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection
       }
     }
 
-    public DependentProjectsToDeploySelection GetSelectedProjectsToDeploy(Guid deploymentId, string userName, List<DependentProject> dependentProjects)
+    public DependentProjectsToDeploySelection GetSelectedProjectsToDeploy(Guid deploymentId, List<DependentProject> dependentProjects)
     {
-      _internalApiWebClient.CollectDependenciesToDeploy(deploymentId, userName, dependentProjects);
+      _internalApiWebClient.CollectDependenciesToDeploy(deploymentId, dependentProjects);
 
       var pollStartTime = DateTime.UtcNow;
       DependentProjectsToDeploySelectionResult dependentProjectsToDeploySelectionResult;

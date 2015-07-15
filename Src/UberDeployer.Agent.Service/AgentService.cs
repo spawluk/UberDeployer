@@ -711,10 +711,10 @@ namespace UberDeployer.Agent.Service
         (eventSender, tmpArgs) => LogMessage(uniqueClientId, tmpArgs.MessageType, tmpArgs.Message);
 
       try
-      {
+      {        
         _deploymentPipeline.DiagnosticMessagePosted += deploymentPipelineDiagnosticMessageAction;
 
-        _deploymentPipeline.StartDeployment(deploymentInfo, deploymentTask, deploymentContext);
+        _deploymentPipeline.StartDeployment(deploymentInfo, deploymentTask, deploymentContext, _applicationConfiguration.DeployDependentProjects);
       }
       finally
       {
