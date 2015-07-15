@@ -102,6 +102,7 @@
     <Compile Include="Core\Deployment\PrepareVersionedFolderDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\RunDbScriptsDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\UpdateApplicationShortcutDeploymentStepTests.cs" />
+    <Compile Include="Core\Deployment\UserNameNormalizerTests.cs" />
     <Compile Include="Core\Domain\EnvironmentInfoTests.cs" />
     <Compile Include="Core\Domain\IisAppPoolInfoTests.cs" />
     <Compile Include="Core\Domain\NtServiceProjectInfoTests.cs" />

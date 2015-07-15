@@ -93,6 +93,7 @@
     <Compile Include="Deployment\Steps\AddRoleToUserStep.cs" />
     <Compile Include="Deployment\Steps\AddUserToDatabaseStep.cs" />
     <Compile Include="Deployment\Tasks\DependenciesDeployment\ProjectDeployment.cs" />
+    <Compile Include="Deployment\UserNameNormalizer.cs" />
     <Compile Include="Domain\ProjectDeploymentData.cs" />
     <Compile Include="Domain\IEnvironmentDeployInfoRepository.cs" />
     <Compile Include="Domain\EnvironmentDeployInfo.cs" />
@@ -222,6 +223,8 @@
     <Compile Include="Deployment\Steps\CreateSchedulerTaskDeploymentStep.cs" />
     <Compile Include="Deployment\Pipeline\Modules\IDeploymentRequestRepository.cs" />
     <Compile Include="Management\Iis\MsDeployBasedIisManager.cs" />
+    <Compile Include="Management\Ldap\ILdapClient.cs" />
+    <Compile Include="Management\Ldap\LdapClient.cs" />
     <Compile Include="Management\Metadata\IProjectMetadataExplorer.cs" />
     <Compile Include="Management\Metadata\MachineSpecificProjectVersion.cs" />
     <Compile Include="Management\Metadata\ProjectMetadata.cs" />
