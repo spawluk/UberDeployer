@@ -187,18 +187,18 @@ namespace UberDeployer.Core.Deployment.Tasks
               appPoolInfo);
 
           AddSubTask(createAppPoolDeploymentStep);
+
+          // create a step for assigning the app pool to the web application
+          var setAppPoolDeploymentStep =
+            new SetAppPoolDeploymentStep(
+              _iisManager,
+              webServerMachineName,
+              webSiteName,
+              appPoolInfo,
+              webAppName);
+
+          AddSubTask(setAppPoolDeploymentStep);
         }
-
-        // create a step for assigning the app pool to the web application
-        var setAppPoolDeploymentStep =
-          new SetAppPoolDeploymentStep(
-            _iisManager,
-            webServerMachineName,
-            webSiteName,
-            appPoolInfo,
-            webAppName);
-
-        AddSubTask(setAppPoolDeploymentStep);
       }
     }
 
