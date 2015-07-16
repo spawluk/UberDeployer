@@ -11,5 +11,9 @@ namespace UberDeployer.Core.Domain
     List<ProjectInfo> FindProjectNameWithDependencies(string name);
 
     List<ProjectInfo> FindProjectNameWithDependencies(ProjectInfo projectInfo);
+
+    List<ProjectInfo> CreateDependentProjects(string name);
+
+    List<ProjectInfo> CreateDependendProjects(ProjectInfo info);
   }
 }
