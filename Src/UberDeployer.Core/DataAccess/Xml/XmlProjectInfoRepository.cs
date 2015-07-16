@@ -207,7 +207,7 @@ namespace UberDeployer.Core.DataAccess.Xml
 
     public List<ProjectInfo> CreateDependentProjects(ProjectInfo info)
     {
-      var output = CreateDependentProjects(info);
+      var output = FindProjectNameWithDependencies(info);
       output.Remove(info);
       return output;
     }

@@ -130,6 +130,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
           {
             ProjectInfo = projectInfo,
             DeploymentInfo = deploymentInfo,
+            TeamCityBuild = lastSuccessfulBuild,
           });
       }
 
@@ -142,22 +143,17 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
 
       DependentProjectsToDeploySelection dependentProjectsToDeploySelection = _dependentProjectsToDeploySelector.GetSelectedProjectsToDeploy(_deploymentId, dependentProjects);
 
-      return OverrideBySelectedProjects(defaultDeploymentInfos, dependentProjectsToDeploySelection.SelectedProjects);
+      return FilterBySelectedProjects(defaultDeploymentInfos, dependentProjectsToDeploySelection.SelectedProjects);
     }
 
-    private IEnumerable<ProjectDeployment> OverrideBySelectedProjects(IEnumerable<ProjectDeployment> defaultDeploymentInfos, IEnumerable<DependentProject> selectedProjects)
+    private static IEnumerable<ProjectDeployment> FilterBySelectedProjects(IEnumerable<ProjectDeployment> defaultDeploymentInfos, IEnumerable<DependentProject> selectedProjects)
     {
       return
         selectedProjects.Join(
           defaultDeploymentInfos,
-          x => x.ProjectName,
-          y => y.ProjectInfo.Name,
-          (x, y) =>
-          {
-            var depInf = y.DeploymentInfo;
-            y.DeploymentInfo = new DeploymentInfo(depInf.DeploymentId, depInf.IsSimulation, depInf.ProjectName, x.BranchName, x.BuildNumber, depInf.TargetEnvironmentName, depInf.InputParams);
-            return y;
-          });
+          selectedProject => selectedProject.ProjectName,
+          defaultProject => defaultProject.ProjectInfo.Name,
+          (selectedProject, defaultProject) => defaultProject);
     }
 
     private List<DependentProject> ConvertToDependentProjects(IEnumerable<ProjectDeployment> defaultDeploymentInfos)
@@ -166,7 +162,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
         x => new DependentProject
         {
           BranchName = x.DeploymentInfo.ProjectConfigurationName,
-          BuildNumber = x.DeploymentInfo.ProjectConfigurationBuildId,
+          BuildNumber = x.TeamCityBuild.Number,
           ProjectName = x.ProjectInfo.Name,
         })
         .ToList();
