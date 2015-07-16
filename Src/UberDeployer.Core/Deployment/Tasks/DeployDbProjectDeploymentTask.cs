@@ -20,12 +20,23 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IZipFileAdapter _zipFileAdapter;
     private readonly IScriptsToRunSelector _createScriptsToRunSelector;
     private readonly IMsSqlDatabasePublisher _databasePublisher;
-
-    private readonly string[] _dbUserRoles = { "db_datareader", "db_datawriter" };
-
     private readonly IDbManagerFactory _dbManagerFactory;
+    private readonly IUserNameNormalizer _userNameNormalizer;
 
-    public DeployDbProjectDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IArtifactsRepository artifactsRepository, IDbScriptRunnerFactory dbScriptRunnerFactory, IDbVersionProvider dbVersionProvider, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IScriptsToRunSelector createScriptsToRunSelector, IMsSqlDatabasePublisher databasePublisher, IDbManagerFactory dbManagerFactory)
+    private readonly string[] _dbUserRoles = { "db_datareader", "db_datawriter" };    
+
+    public DeployDbProjectDeploymentTask(
+      IProjectInfoRepository projectInfoRepository, 
+      IEnvironmentInfoRepository environmentInfoRepository, 
+      IArtifactsRepository artifactsRepository, 
+      IDbScriptRunnerFactory dbScriptRunnerFactory, 
+      IDbVersionProvider dbVersionProvider, 
+      IFileAdapter fileAdapter, 
+      IZipFileAdapter zipFileAdapter, 
+      IScriptsToRunSelector createScriptsToRunSelector, 
+      IMsSqlDatabasePublisher databasePublisher, 
+      IDbManagerFactory dbManagerFactory, 
+      IUserNameNormalizer userNameNormalizer)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -35,6 +46,8 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(zipFileAdapter, "zipFileAdapter");
       Guard.NotNull(createScriptsToRunSelector, "createScriptsToRunWebSelector");
       Guard.NotNull(databasePublisher, "databasePublisher");
+      Guard.NotNull(dbManagerFactory, "dbManagerFactory");
+      Guard.NotNull(userNameNormalizer, "userNameNormalizer");
 
       _artifactsRepository = artifactsRepository;
       _dbScriptRunnerFactory = dbScriptRunnerFactory;
@@ -44,6 +57,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _createScriptsToRunSelector = createScriptsToRunSelector;
       _databasePublisher = databasePublisher;
       _dbManagerFactory = dbManagerFactory;
+      _userNameNormalizer = userNameNormalizer;
     }
 
     protected override void DoPrepare()
@@ -126,14 +140,14 @@ namespace UberDeployer.Core.Deployment.Tasks
 
       foreach (string userId in projectInfo.Users)
       {
-        var enviromerntUser = environmentInfo.EnvironmentUsers.SingleOrDefault(x => x.Id == userId);
+        var environmentUser = environmentInfo.EnvironmentUsers.SingleOrDefault(x => x.Id == userId);
 
-        if (enviromerntUser == null)
+        if (environmentUser == null)
         {
           throw new DeploymentTaskException(string.Format("User [{0}] doesn't exist in enviroment configuration [{1}] in project [{2}]", userId, environmentInfo.Name, projectInfo.Name));
         }
 
-        string user = enviromerntUser.UserName;
+        string user = _userNameNormalizer.ConvertToPreWin2000UserName(environmentUser.UserName, environmentInfo.DomainName);
 
         IDbManager manager = _dbManagerFactory.CreateDbManager(databaseServerMachineName);
 

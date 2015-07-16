@@ -87,6 +87,7 @@
     <Compile Include="DataAccess\WebClient\InternalApiWebClient.cs" />
     <Compile Include="DataAccess\Xml\ApplicationConfigurationXml.cs" />
     <Compile Include="DataAccess\Xml\XmlApplicationConfigurationRepository.cs" />
+    <Compile Include="Deployment\IUserNameNormalizer.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Pipeline\IEnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Tasks\DependenciesDeployment\DeployDependenciesTask.cs" />

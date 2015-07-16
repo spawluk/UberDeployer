@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using UberDeployer.Core.Deployment;
 
@@ -43,6 +40,47 @@ namespace UberDeployer.Tests.Core.Deployment
 
       // assert
       Assert.IsFalse(isUpnUserName);
+    }
+
+    [Test]
+    public void ConvertToPreWin2000UserName_converts_from_Upn_format_to_pre_windows2000()
+    {
+      // arrange 
+      const string expectedPreWin2000UserName = "domain-name\\username";
+      const string upnUserName = "username@domain.name";
+      const string domainName = "domain-name";
+
+      // act
+      string preWin2000UserName = _userNameNormalizer.ConvertToPreWin2000UserName(upnUserName, domainName);
+
+      // assert
+      Assert.AreEqual(expectedPreWin2000UserName, preWin2000UserName);
+    }
+
+    [Test]
+    public void ConvertToPreWin2000UserName_returns_the_same_value_when_given_user_name_is_already_in_this_format()
+    {
+      // arrange  
+      const string expectedPreWin2000UserName = "domain-name\\username";
+      const string domainName = "domain-name";
+
+      // act
+      string preWin2000UserName = _userNameNormalizer.ConvertToPreWin2000UserName(expectedPreWin2000UserName, domainName);
+
+      // assert
+      Assert.AreEqual(expectedPreWin2000UserName, preWin2000UserName);
+    }
+
+    [Test]
+    public void ConvertToPreWin2000UserName_fails_when_given_user_name_is_invalid()
+    {
+      // arrange  
+      const string domainName = "domain-name";
+      const string invalidUserName = "invalid#User$";
+
+      // act assert
+      Assert.Throws<InvalidOperationException>(
+        () => _userNameNormalizer.ConvertToPreWin2000UserName(invalidUserName, domainName));
     }
   }
 }

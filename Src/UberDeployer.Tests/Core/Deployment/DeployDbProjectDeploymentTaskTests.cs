@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 
 using UberDeployer.Common.IO;
+using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
@@ -29,8 +30,8 @@ namespace UberDeployer.Tests.Core.Deployment
     private Mock<IScriptsToRunSelector> _scriptsToRunWebSelectorFake;
     private Mock<IMsSqlDatabasePublisher> _databasePublisherFake;
     private DeployDbProjectDeploymentTask _deploymentTask;
-
     private Mock<IDbManagerFactory> _dbManagerFake;
+    private Mock<IUserNameNormalizer> _userNameNormalizerMock;
 
     [SetUp]
     public void SetUp()
@@ -45,8 +46,8 @@ namespace UberDeployer.Tests.Core.Deployment
       _scriptsToRunWebSelectorFake = new Mock<IScriptsToRunSelector>();
       _databasePublisherFake = new Mock<IMsSqlDatabasePublisher>();
       _dbManagerFake = new Mock<IDbManagerFactory>();
+      _userNameNormalizerMock = new Mock<IUserNameNormalizer>();
       
-
       _projectInfoRepositoryFake
         .Setup(x => x.FindByName(It.IsAny<string>()))
         .Returns(ProjectInfoGenerator.GetDbProjectInfo());
@@ -70,8 +71,8 @@ namespace UberDeployer.Tests.Core.Deployment
           _zipFileAdapterFake.Object,
           _scriptsToRunWebSelectorFake.Object,
           _databasePublisherFake.Object,
-          _dbManagerFake.Object
-          );
+          _dbManagerFake.Object,
+          _userNameNormalizerMock.Object);
 
       _deploymentTask.Initialize(DeploymentInfoGenerator.GetDbDeploymentInfo());
 

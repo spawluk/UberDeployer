@@ -54,6 +54,8 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string TerminalAppsShortcutFolder { get; set; }
 
       public string ManualDeploymentPackageDirPath { get; set; }
+
+      public string DomainName { get; set; }
     }
 
     public class EnvironmentUserXml
@@ -250,8 +252,8 @@ namespace UberDeployer.Core.DataAccess.Xml
                 e.ProjectName,
                 e.DatabaseServerId)),
           environmentInfoXml.TerminalAppsShortcutFolder,
-          environmentInfoXml.ManualDeploymentPackageDirPath
-          );
+          environmentInfoXml.ManualDeploymentPackageDirPath,
+          environmentInfoXml.DomainName);
     }
 
     private static Dictionary<string, string> ConvertSqlPakcageVariables(IEnumerable<Variable> sqlPackageVariables)

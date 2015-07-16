@@ -25,6 +25,7 @@ namespace UberDeployer.Tests.Core.Domain
     private const string _TerminalAppsBaseDirPath = "C:\\TerminalApps";
     private const string _TerminalAppsShortcutFolder = "C:\\TerminalAppShortcuts";
     private const string _ArtifactsDeploymentDirPath = "C:\\ArtifactsDeploymentDirPath";
+    private const string _DomainName = "domain-name";
 
     [Test]
     public void Test_EnvironmentInfoTests_Does_Not_Allow_Template_null()
@@ -54,7 +55,8 @@ namespace UberDeployer.Tests.Core.Domain
             TestData.WebAppProjectConfigurationOverrides,
             TestData.DbProjectConfigurationOverrides,
             _TerminalAppsShortcutFolder,
-            _ArtifactsDeploymentDirPath);
+            _ArtifactsDeploymentDirPath,
+            _DomainName);
         });
     }
 
@@ -86,7 +88,8 @@ namespace UberDeployer.Tests.Core.Domain
             TestData.WebAppProjectConfigurationOverrides,
             TestData.DbProjectConfigurationOverrides,
             _TerminalAppsShortcutFolder,
-            _ArtifactsDeploymentDirPath);
+            _ArtifactsDeploymentDirPath,
+            _DomainName);
         });
     }
 
@@ -115,7 +118,8 @@ namespace UberDeployer.Tests.Core.Domain
         TestData.WebAppProjectConfigurationOverrides,
         TestData.DbProjectConfigurationOverrides,
         _TerminalAppsShortcutFolder,
-        _ArtifactsDeploymentDirPath);
+        _ArtifactsDeploymentDirPath,
+        _DomainName);
 
       Assert.Throws<ArgumentException>(
         () => envInfo.GetAppServerNetworkPath(@"\\kasjdkasdj"));
@@ -147,7 +151,8 @@ namespace UberDeployer.Tests.Core.Domain
           TestData.WebAppProjectConfigurationOverrides,
           TestData.DbProjectConfigurationOverrides,
           _TerminalAppsShortcutFolder,
-          _ArtifactsDeploymentDirPath);
+          _ArtifactsDeploymentDirPath,
+          _DomainName);
 
       Assert.Throws<ArgumentException>(
         () => envInfo.GetAppServerNetworkPath("qlwelqwelw"));
@@ -179,7 +184,8 @@ namespace UberDeployer.Tests.Core.Domain
           TestData.WebAppProjectConfigurationOverrides,
           TestData.DbProjectConfigurationOverrides,
           _TerminalAppsShortcutFolder,
-          _ArtifactsDeploymentDirPath);
+          _ArtifactsDeploymentDirPath,
+          _DomainName);
 
       Assert.AreEqual(
         "\\\\" + _WebMachineNames[0] + "\\c$\\",

@@ -188,6 +188,11 @@ namespace UberDeployer.CommonConfiguration
         applicationConfiguration.WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
     }
 
+    public IUserNameNormalizer CreateUserNameNormalizer()
+    {
+      return _container.Resolve<IUserNameNormalizer>();
+    }
+
     public static IObjectFactory Instance
     {
       get { return (_instance ?? (_instance = new ObjectFactory())); }

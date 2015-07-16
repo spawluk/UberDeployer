@@ -75,5 +75,7 @@ namespace UberDeployer.Core
     IEnvDeploymentPipeline CrateEnvDeploymentPipeline();
 
     IDependentProjectsToDeployWebSelector CreateDependentProjectsToDeployWebSelector();
+    
+    IUserNameNormalizer CreateUserNameNormalizer();
   }
 }

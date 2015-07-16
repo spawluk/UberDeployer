@@ -241,6 +241,11 @@ namespace UberDeployer.CommonConfiguration
         Component.For<IDbScriptRunnerFactory>()
           .ImplementedBy<MsSqlDbScriptRunnerFactory>()
           .LifeStyle.Is(LifestyleType.Transient));
+
+      container.Register(
+        Component.For<IUserNameNormalizer>()
+          .ImplementedBy<UserNameNormalizer>()
+          .LifeStyle.Transient);
     }
 
     private static ISessionFactory CreateNHibernateSessionFactory()

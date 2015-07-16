@@ -145,7 +145,8 @@ namespace UberDeployer.Tests.Agent.Service
         new[] { new WebAppProjectConfigurationOverride("webappprj", "website", "apppool", "dir", "webapp"), },
         new[] { new DbProjectConfigurationOverride("dbprj", "db_server"), },
         "terminalAppsShortcutFolder",
-        "artifactsDeploymentDirPath");
+        "artifactsDeploymentDirPath",
+        "domain-name");
     }
   }
 }

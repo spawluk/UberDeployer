@@ -114,7 +114,8 @@ namespace UberDeployer.Tests.Core.Domain
           TestData.WebAppProjectConfigurationOverrides,
           TestData.DbProjectConfigurationOverrides,
           "terminalAppsShortcutFolder",
-          "artifactsDeploymentDirPath");
+          "artifactsDeploymentDirPath",
+          "domain-name");
 
       var schedulerAppProjectInfo =
         new SchedulerAppProjectInfo(

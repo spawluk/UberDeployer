@@ -42,7 +42,8 @@ namespace UberDeployer.Core.Domain
       IEnumerable<WebAppProjectConfigurationOverride> webAppProjectConfigurationOverrides,
       IEnumerable<DbProjectConfigurationOverride> dbProjectConfigurations,
       string terminalAppShortcutFolder,
-      string manualDeploymentPackageDirPath
+      string manualDeploymentPackageDirPath,
+      string domainName
       )
     {
       Guard.NotNullNorEmpty(name, "name");
@@ -101,6 +102,7 @@ namespace UberDeployer.Core.Domain
         throw new ArgumentNullException("dbProjectConfigurations");
       }
 
+      Guard.NotNullNorEmpty(domainName, "domainName");
       Guard.NotNullNorEmpty(name, "terminalAppShortcutPath");      
 
       Name = name;
@@ -140,7 +142,8 @@ namespace UberDeployer.Core.Domain
       _dbProjectConfigurationOverridesDict = dbProjectConfigurations.ToDictionary(e => e.ProjectName);
 
       TerminalAppsShortcutFolder = terminalAppShortcutFolder;
-      ManualDeploymentPackageDirPath = manualDeploymentPackageDirPath;
+      ManualDeploymentPackageDirPath = manualDeploymentPackageDirPath;      
+      DomainName = domainName;
     }
 
     public static string GetNetworkPath(string machineName, string absoluteLocalPath)
@@ -388,6 +391,8 @@ namespace UberDeployer.Core.Domain
     public string TerminalAppsShortcutFolder { get; private set; }
 
     public string ManualDeploymentPackageDirPath { get; private set; }
+
+    public string DomainName { get; private set; }
 
     public IEnumerable<EnvironmentUser> EnvironmentUsers
     {
