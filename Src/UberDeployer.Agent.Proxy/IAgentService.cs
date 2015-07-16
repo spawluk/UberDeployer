@@ -90,6 +90,9 @@ namespace UberDeployer.Agent.Proxy
 
     [OperationContract]
     void SetSelectedDependentProjectsToDeploy(Guid deploymentId, List<DependentProject> dependenciesToDeploy);
+
+    [OperationContract]
+    void CancelDependentProjectsSelection(Guid deploymentId);
   }
 }
   

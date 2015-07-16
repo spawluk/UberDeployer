@@ -228,7 +228,7 @@ namespace UberDeployer.WebApp.Core.Controllers
         return BadRequest();
       }
 
-      //todo: Implement method
+      _agentService.CancelDependentProjectsSelection(deploymentId.Value);
 
       return Content("OK");
     }

@@ -798,7 +798,7 @@ function setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog, colle
   };
 
   deploymentHub.client.cancelPromptForScriptsToRun = function () {
-    collectScriptsToRunDialog.cancel();
+    collectScriptsToRunDialog.closeDialog();
   };
 
   deploymentHub.client.promptForProjectDependencies = function (message) {
@@ -806,7 +806,7 @@ function setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog, colle
   };
 
   deploymentHub.client.cancelPromptForProjectDependencies = function () {
-    collectProjectDependenciesDialog.cancel();
+    collectProjectDependenciesDialog.closeDialog();
   };
 
   $.connection.hub.start();
@@ -955,12 +955,17 @@ var CollectScriptsToRunDialog = (function () {
 
 
 /* Project dependencies */
-
 var CollectProjectDependenciesDialog = (function () {
   function CollectProjectDependenciesDialog() {
     var self = this;
-    
-    $('#dlg-collect-dependencies-ok')
+
+    var collectDependenciesSubmit = $('#dlg-collect-dependencies-ok');
+    collectDependenciesSubmit.unbind("click");
+
+    var collectDependenciesCancel = $('#dlg-collect-dependencies-cancel');
+    collectDependenciesCancel.unbind("click");
+
+    collectDependenciesSubmit
       .click(function () {
         var deploymentId = $('#dlg-collect-dependencies-deployment-id').val();
         
@@ -993,7 +998,7 @@ var CollectProjectDependenciesDialog = (function () {
         self.closeDialog();
       });
 
-    $('#dlg-collect-dependencies-cancel')
+    collectDependenciesCancel
       .click(function () {
         var deploymentId = $('#dlg-collect-dependencies-deployment-id').val();
 
@@ -1014,12 +1019,13 @@ var CollectProjectDependenciesDialog = (function () {
     $('#dlg-collect-dependencies-deployment-id').val(message.deploymentId);
 
     var projectsGrid = $('#dlg-collect-dependencies-grid');
+    projectsGrid.empty();
     
     $.each(message.dependentProjects, function (index, dependency) {
       projectsGrid.append(
         '<div class="row">' +
         '<div class="col-sm-7">' +
-        '<input type="checkbox" id="dlg-collect-dependencies-' + dependency.ProjectName + '" name="' + dependency.ProjectName + '">' +
+        '<input type="checkbox" id="dlg-collect-dependencies-' + dependency.ProjectName + '" name="' + dependency.ProjectName + '" checked="checked" >' +
         '<label for="dlg-collect-dependencies-' + dependency.ProjectName + '">' +
         dependency.ProjectName +
         '</label>' +

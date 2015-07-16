@@ -103,7 +103,7 @@ namespace UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection
       }
     }
 
-    public static void CancelDbScriptsSelection(Guid deploymentId)
+    public static void CancelDependentProjectsSelection(Guid deploymentId)
     {
       lock (_collectedProjectsByDeploymentId)
       {

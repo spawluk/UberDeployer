@@ -268,6 +268,11 @@ namespace UberDeployer.Agent.Service
         .SetSelectedProjectsToDeploy(deploymentId, dependentProjectsToDeploySelection);
     }
 
+    public void CancelDependentProjectsSelection(Guid deploymentId)
+    {
+      DependentProjectsToDeployWebSelector.CancelDependentProjectsSelection(deploymentId);
+    }
+
     private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, IEnumerable<ProjectToDeploy> projects)
     {
       var projectDeployments = new List<ProjectDeploymentData>();

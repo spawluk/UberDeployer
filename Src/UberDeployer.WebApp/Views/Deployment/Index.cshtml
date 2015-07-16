@@ -223,6 +223,7 @@
               <div>
                 <div class="row">
                   <div class="col-sm-7">
+                    <input type="checkbox" id="dlg-collect-dependencies-checkbox-all" name="dlg-collect-dependencies-checkbox-all" checked="checked">
                     Project Name
                   </div>
                   <div class="col-sm-3">
@@ -240,7 +241,7 @@
       </div>
       <div class="modal-footer">
         <button id="dlg-collect-dependencies-ok" class="btn btn-primary">OK</button>
-        <button id="dlg-collect-dependencies-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button id="dlg-collect-dependencies-cancel" class="btn" >Cancel</button>
       </div>
       <input type="hidden" id="dlg-collect-dependencies-deployment-id" name="dlg-collect-dependencies-deployment-id" value="" />
     </div>
@@ -261,6 +262,18 @@
       };
 
       initializeDeploymentPage(initData);
+
+      $("#dlg-collect-dependencies-checkbox-all").change(function() {
+
+        var self = this;
+
+        var inputs = $('#dlg-collect-dependencies-grid').find("input[type=checkbox]");
+
+        inputs.each(function() {
+          this.checked = self.checked;
+        });
+      });
     })
-  </script>
+</script>
+
 }

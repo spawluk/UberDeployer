@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using UberDeployer.Agent.Proxy.Dto;
 using UberDeployer.Agent.Proxy.Dto.EnvDeployment;
@@ -109,6 +108,11 @@ namespace UberDeployer.Agent.Proxy
     public void SetSelectedDependentProjectsToDeploy(Guid deploymentId, List<DependentProject> dependenciesToDeploy)
     {
       Exec(@as => @as.SetSelectedDependentProjectsToDeploy(deploymentId, dependenciesToDeploy));
+    }
+
+    public void CancelDependentProjectsSelection(Guid deploymentId)
+    {
+      Exec(@as => @as.CancelDependentProjectsSelection(deploymentId));
     }
   }
 }
