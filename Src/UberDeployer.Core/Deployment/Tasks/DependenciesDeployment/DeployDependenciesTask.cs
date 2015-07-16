@@ -77,6 +77,12 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
     {
       List<ProjectInfo> dependentProjectsToDeploy = _projectInfoRepository.CreateDependentProjects(_projectName);
 
+      if (!dependentProjectsToDeploy.Any())
+      {
+        PostDiagnosticMessage(string.Format("No dependent projects to deploy for project: [{0}]", _projectName), DiagnosticMessageType.Trace);
+        return;
+      }
+
       List<ProjectDeployment> defaultProjectDeployments = BuildDefaultProjectDeployments(dependentProjectsToDeploy, _DefaultTeamCityProjectConfiguration);
 
       IEnumerable<ProjectDeployment> configuredProjectDeployments = ConfigureDeploymentsByClient(defaultProjectDeployments);
