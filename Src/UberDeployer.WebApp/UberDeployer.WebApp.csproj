@@ -153,6 +153,9 @@
     <Content Include="Static\css\flat-buttons.min.css">
       <DependentUpon>flat-buttons.css</DependentUpon>
     </Content>
+    <Content Include="Static\css\site.css.map">
+      <DependentUpon>site.css</DependentUpon>
+    </Content>
     <None Include="Static\plugins\fontawesome\css\font-awesome.less" />
     <Content Include="Static\plugins\fontawesome\css\font-awesome.css">
       <DependentUpon>font-awesome.less</DependentUpon>

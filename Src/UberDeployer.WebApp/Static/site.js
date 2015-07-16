@@ -1025,7 +1025,7 @@ var CollectProjectDependenciesDialog = (function () {
       projectsGrid.append(
         '<div class="row">' +
         '<div class="col-sm-7">' +
-        '<input type="checkbox" id="dlg-collect-dependencies-' + dependency.ProjectName + '" name="' + dependency.ProjectName + '" checked="checked" >' +
+        '<input type="checkbox" id="dlg-collect-dependencies-' + dependency.ProjectName + '" name="' + dependency.ProjectName + '" checked="checked"' +
         '<label for="dlg-collect-dependencies-' + dependency.ProjectName + '">' +
         dependency.ProjectName +
         '</label>' +
