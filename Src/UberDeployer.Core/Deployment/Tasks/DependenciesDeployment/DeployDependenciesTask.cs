@@ -74,8 +74,8 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
     }
 
     protected override void DoPrepare()
-    {      
-      List<ProjectInfo> dependentProjectsToDeploy = GetDependentProjectsToDeploy(_projectName);
+    {
+      List<ProjectInfo> dependentProjectsToDeploy = _projectInfoRepository.CreateDependentProjects(_projectName);
 
       List<ProjectDeployment> defaultProjectDeployments = BuildDefaultProjectDeployments(dependentProjectsToDeploy, _DefaultTeamCityProjectConfiguration);
 
@@ -183,18 +183,6 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
 
       // this will cause the events raised by sub-tasks to bubble up
       subTask.DiagnosticMessagePosted += OnDiagnosticMessagePosted;
-    }
-
-    private List<ProjectInfo> GetDependentProjectsToDeploy(string projectName)
-    {
-      // TODO MARIO: Move dependency resolving from repo to separate class
-      List<ProjectInfo> findProjectNameWithDependencies = _projectInfoRepository.FindProjectNameWithDependencies(projectName);
-
-      // we need only dependent projects.
-      ProjectInfo projectInfo = findProjectNameWithDependencies.Single(x => x.Name == projectName);
-      findProjectNameWithDependencies.Remove(projectInfo);
-
-      return findProjectNameWithDependencies;
-    }
+    }    
   }
 }

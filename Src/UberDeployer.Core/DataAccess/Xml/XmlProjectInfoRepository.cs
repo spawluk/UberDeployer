@@ -201,12 +201,13 @@ namespace UberDeployer.Core.DataAccess.Xml
 
     public List<ProjectInfo> CreateDependentProjects(string name)
     {
-      return CreateDependendProjects(FindByName(name));
+      // TODO MARIO: Move dependency resolving from repo to separate class
+      return CreateDependentProjects(FindByName(name));
     }
 
-    public List<ProjectInfo> CreateDependendProjects(ProjectInfo info)
+    public List<ProjectInfo> CreateDependentProjects(ProjectInfo info)
     {
-      var output = CreateDependendProjects(info);
+      var output = CreateDependentProjects(info);
       output.Remove(info);
       return output;
     }
