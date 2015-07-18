@@ -8,8 +8,6 @@ namespace UberDeployer.WebApp.Core.Services
   {
     private const string SessionKey_UniqueClientId = "UniqueClientId";
 
-    #region ISessionService Members
-
     public Guid UniqueClientId
     {
       get
@@ -30,15 +28,9 @@ namespace UberDeployer.WebApp.Core.Services
       }
     }
 
-    #endregion
-
-    #region Properties
-
-    private HttpSessionState Session
+    private static HttpSessionState Session
     {
       get { return HttpContext.Current.Session; }
     }
-
-    #endregion
   }
 }

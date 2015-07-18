@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 using UberDeployer.Agent.Proxy;
 using UberDeployer.Agent.Proxy.Faults;
+using UberDeployer.WebApp.Core.ApiControllers;
 using UberDeployer.WebApp.Core.Controllers;
 using UberDeployer.WebApp.Core.Services;
 

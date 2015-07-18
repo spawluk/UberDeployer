@@ -20,7 +20,10 @@ namespace UberDeployer.WebApp.Core.Utils
       get
       {
         return
-          (HttpContext.Current.User != null && HttpContext.Current.User != null && HttpContext.Current.User.Identity != null && !string.IsNullOrEmpty(HttpContext.Current.User.Identity.Name))
+          (HttpContext.Current.User != null
+           && HttpContext.Current.User != null
+           && HttpContext.Current.User.Identity != null
+           && !string.IsNullOrEmpty(HttpContext.Current.User.Identity.Name))
             ? HttpContext.Current.User.Identity.Name
             : "?";
       }

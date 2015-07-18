@@ -14,6 +14,9 @@
 .flat-butt:hover {
   background: #005580;
 }
+.flat-butt i {
+  margin-right: 5px;
+}
 .flat-butt-full-width {
   width: 100%;
   margin-left: 0;
@@ -127,3 +130,4 @@
   padding: 11px 0px;
   box-shadow: #BDC3C7 2px 2px 0px;
 }
+/*# sourceMappingURL=flat-buttons.css.map */

@@ -61,6 +61,7 @@
     <Compile Include="ReflectionUtils.cs" />
     <Compile Include="RetryUtils.cs" />
     <Compile Include="SyntaxSugar\Guard.cs" />
+    <Compile Include="SyntaxSugar\SyntaxSugarExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

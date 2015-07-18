@@ -410,12 +410,6 @@ function disableDeployButtonsForCurrentEnvironment() {
   if (!environment || !project) {
     return;
   }
-
-  //if (g_userCanDeploy && environment.isDeployable && $.inArray(selectedEnvironmentName, project.allowedEnvironmentNames) > -1) {
-  //  $('#btn-deploy').removeAttr('disabled');
-  //} else {
-  //  $('#btn-deploy').attr('disabled', 'disabled');
-  //}
 }
 
 function loadProjectConfigurations(projectName, onFinishedCallback) {

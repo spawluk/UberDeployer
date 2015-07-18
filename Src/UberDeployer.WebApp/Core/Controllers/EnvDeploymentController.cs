@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using UberDeployer.Agent.Proxy;
 using UberDeployer.Agent.Proxy.Dto.EnvDeployment;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.WebApp.Core.Infrastructure;
 using UberDeployer.WebApp.Core.Models.EnvDeploy;
 using UberDeployer.WebApp.Core.Services;
 using UberDeployer.WebApp.Core.Utils;

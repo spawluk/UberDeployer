@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.AspNet.SignalR;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.WebApp.Core.Models.Api;
@@ -36,13 +36,22 @@ namespace UberDeployer.WebApp.Core.Connectivity
 
     public override Task OnDisconnected()
     {
-      _connectionIdUserIdentityDict.Remove(UserIdentity);
-      _deploymentStateProvider.RemoveAllDeploymentStates(UserIdentity);
+      string userIdentity = UserIdentity;
+
+      _connectionIdUserIdentityDict.Remove(userIdentity);
+      _deploymentStateProvider.RemoveAllDeploymentStates(userIdentity);
 
       return base.OnDisconnected();
     }
 
-    public static void PromptForCredentials(Guid deploymentId, string userIdentity, string projectName, string projectConfigurationName, string targetEnvironmentName, string machineName, string username)
+    public static void PromptForCredentials(
+      Guid deploymentId,
+      string userIdentity,
+      string projectName,
+      string projectConfigurationName,
+      string targetEnvironmentName,
+      string machineName,
+      string username)
     {
       Guard.NotEmpty(deploymentId, "deploymentId");
       Guard.NotNullNorEmpty(userIdentity, "userIdentity");
@@ -148,14 +157,11 @@ namespace UberDeployer.WebApp.Core.Connectivity
       return client;
     }
 
-    private static string UserIdentity
+    private string UserIdentity
     {
       get
       {
-        string userIdentity =
-          Thread.CurrentPrincipal != null && Thread.CurrentPrincipal.Identity != null
-            ? Thread.CurrentPrincipal.Identity.Name
-            : null;
+        string userIdentity = Context.User.With(x => x.Identity).With(x => x.Name);
 
         if (string.IsNullOrEmpty(userIdentity))
         {

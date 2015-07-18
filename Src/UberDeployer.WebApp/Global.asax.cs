@@ -7,6 +7,8 @@ using UberDeployer.Common;
 using log4net;
 using log4net.Config;
 
+using UberDeployer.WebApp.Core.Infrastructure;
+
 namespace UberDeployer.WebApp
 {
   public class MvcApplication : HttpApplication
@@ -25,7 +27,7 @@ namespace UberDeployer.WebApp
       routes.MapRoute(
         "Default",
         "{controller}/{action}/{id}",
-        new { controller = "Home", action = "Index", id = UrlParameter.Optional });
+        new { controller = "Deployment", action = "Index", id = UrlParameter.Optional });
     }
 
     protected void Application_Start()
@@ -34,6 +36,8 @@ namespace UberDeployer.WebApp
       XmlConfigurator.Configure();
 
       RouteTable.Routes.MapHubs();
+
+      ViewEngines.Engines.Add(new UberDeployerViewEngine());
 
       AreaRegistration.RegisterAllAreas();
 
