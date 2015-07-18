@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Web;
 using UberDeployer.Common;
+using UberDeployer.Common.SyntaxSugar;
 
 namespace UberDeployer.WebApp.Core.Utils
 {
@@ -19,13 +20,7 @@ namespace UberDeployer.WebApp.Core.Utils
     {
       get
       {
-        return
-          (HttpContext.Current.User != null
-           && HttpContext.Current.User != null
-           && HttpContext.Current.User.Identity != null
-           && !string.IsNullOrEmpty(HttpContext.Current.User.Identity.Name))
-            ? HttpContext.Current.User.Identity.Name
-            : "?";
+        return HttpContext.Current.With(x => x.User).With(x => x.Identity).With(x => x.Name) ?? "?";
       }
     }
 
