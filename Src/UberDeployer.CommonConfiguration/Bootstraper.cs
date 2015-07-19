@@ -42,7 +42,7 @@ namespace UberDeployer.CommonConfiguration
 
     private static readonly object _mutex = new object();
 
-    public static void Bootstrap()
+    public static void Bootstrap(bool mockTeamCity = false)
     {
       var container = ObjectFactory.Container;
 
@@ -98,10 +98,22 @@ namespace UberDeployer.CommonConfiguration
             {
               var appConfig = container.Resolve<IApplicationConfiguration>();
 
-              return new TeamCityRestClient(
-                new Uri(string.Format("http://{0}:{1}", appConfig.TeamCityHostName, appConfig.TeamCityPort)),
-                appConfig.TeamCityUserName,
-                appConfig.TeamCityPassword);
+              ITeamCityRestClient restClient;
+              if (mockTeamCity)
+              {
+                restClient = new MockedTeamCityRestClient();
+              }
+              else
+              {
+                restClient = new TeamCityRestClient(
+                  new Uri(string.Format("http://{0}:{1}", appConfig.TeamCityHostName, appConfig.TeamCityPort)),
+                  appConfig.TeamCityUserName,
+                  appConfig.TeamCityPassword);
+              }
+
+              container.Release(appConfig);
+
+              return restClient;
             })
           .LifeStyle.Transient);
 

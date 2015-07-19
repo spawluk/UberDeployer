@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UberDeployer.Agent.Service;
+using UberDeployer.Common;
 using UberDeployer.CommonConfiguration;
 
 namespace UberDeployer.Agent.NtService
@@ -9,7 +10,8 @@ namespace UberDeployer.Agent.NtService
   {
     protected override void OnServiceHostsStarting()
     {
-      Bootstraper.Bootstrap();
+      bool mockTeamCity = AppSettingsUtils.ReadAppSettingBool("MockTeamCity");
+      Bootstraper.Bootstrap(mockTeamCity);
 
       base.OnServiceHostsStarting();
     }

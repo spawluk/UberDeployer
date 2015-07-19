@@ -51,11 +51,15 @@ namespace UberDeployer.Agent.Service
     private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
     private readonly IDeploymentPipeline _deploymentPipeline;
+
     private readonly IEnvDeploymentPipeline _envDeploymentPipeline;
+
     private readonly IProjectInfoRepository _projectInfoRepository;
 
     private readonly IEnvironmentInfoRepository _environmentInfoRepository;
+
     private readonly IEnvironmentDeployInfoRepository _environmentDeployInfoRepository;
+
     private readonly ITeamCityRestClient _teamCityClient;
 
     private readonly IDeploymentRequestRepository _deploymentRequestRepository;
@@ -64,7 +68,7 @@ namespace UberDeployer.Agent.Service
 
     private readonly IProjectMetadataExplorer _projectMetadataExplorer;
 
-    private readonly IDirPathParamsResolver _dirPathParamsResolver;    
+    private readonly IDirPathParamsResolver _dirPathParamsResolver;
 
     private readonly IApplicationConfiguration _applicationConfiguration;
 
@@ -266,6 +270,11 @@ namespace UberDeployer.Agent.Service
 
       DependentProjectsToDeployWebSelector
         .SetSelectedProjectsToDeploy(deploymentId, dependentProjectsToDeploySelection);
+    }
+
+    public void SkipDependentProjectsSelection(Guid deploymentId)
+    {
+      DependentProjectsToDeployWebSelector.SkipDependentProjectsSelection(deploymentId);
     }
 
     public void CancelDependentProjectsSelection(Guid deploymentId)

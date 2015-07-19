@@ -151,6 +151,7 @@
     <Compile Include="Domain\ProjectType.cs" />
     <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProject.cs" />
     <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProjectsToDeploySelection.cs" />
+    <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProjectsToDeploySelectionCancelledException.cs" />
     <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProjectsToDeploySelectionResult.cs" />
     <Compile Include="ExternalDataCollectors\DependentProjectsSelection\DependentProjectsToDeployWebSelector.cs" />
     <Compile Include="ExternalDataCollectors\DependentProjectsSelection\IDependentProjectsToDeployWebSelector.cs" />
@@ -280,6 +281,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TeamCity\ITeamCityRestClient.cs" />
+    <Compile Include="TeamCity\MockedTeamCityRestClient.cs" />
     <Compile Include="TeamCity\Models\BuildsLocation.cs" />
     <Compile Include="TeamCity\Models\BuildStatus.cs" />
     <Compile Include="TeamCity\Models\ProjectBranch.cs" />

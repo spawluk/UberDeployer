@@ -4,6 +4,7 @@ using System.Threading;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.DataAccess.WebClient;
 using UberDeployer.Core.Deployment;
+using UberDeployer.Core.Deployment.Tasks;
 
 namespace UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection
 {
@@ -44,7 +45,7 @@ namespace UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection
 
       while (true)
       {
-        PostDiagnosticMessage("Waiting for script selection...", DiagnosticMessageType.Trace);
+        PostDiagnosticMessage("Waiting for dependency selection...", DiagnosticMessageType.Trace);
 
         lock (_collectedProjectsByDeploymentId)
         {
@@ -58,27 +59,36 @@ namespace UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection
 
         if (DateTime.UtcNow - pollStartTime > new TimeSpan(0, 0, _maxWaitTimeInSeconds))
         {
-          PostDiagnosticMessage("No scripts were selected in the alloted time slot - we'll time out.", DiagnosticMessageType.Trace);
+          PostDiagnosticMessage("No dependencies were selected in the alloted time slot - we'll time out.", DiagnosticMessageType.Trace);
 
           break;
         }
       }
 
-      if (dependentProjectsToDeploySelectionResult != null && dependentProjectsToDeploySelectionResult.Canceled)
+      if (dependentProjectsToDeploySelectionResult.Check(x => x.Skipped))
       {
-        PostDiagnosticMessage("Canceled selection of scripts to run - we'll not continue.", DiagnosticMessageType.Trace);
+        PostDiagnosticMessage("Skipped selection of dependencies to run - continuing...", DiagnosticMessageType.Trace);
 
         return new DependentProjectsToDeploySelection();
       }
-
-      if (dependentProjectsToDeploySelectionResult == null || dependentProjectsToDeploySelectionResult.DependentProjectsToDeploySelection.SelectedProjects == null || dependentProjectsToDeploySelectionResult.DependentProjectsToDeploySelection.SelectedProjects.Count == 0)
+      
+      if (dependentProjectsToDeploySelectionResult.Check(x => x.Canceled))
       {
-        _internalApiWebClient.OnCollectDependenciesToDeployTimedOut(deploymentId);
-        
-        throw new TimeoutException("Given up waiting for scripts selection.");
+        PostDiagnosticMessage("Canceled selection of dependencies to run - we'll not continue.", DiagnosticMessageType.Trace);
+
+        throw new DependentProjectsToDeploySelectionCancelledException();
       }
 
-      PostDiagnosticMessage("Scripts to run were provided - we'll continue.", DiagnosticMessageType.Trace);
+      if (dependentProjectsToDeploySelectionResult == null
+          || dependentProjectsToDeploySelectionResult.DependentProjectsToDeploySelection.SelectedProjects == null
+          || dependentProjectsToDeploySelectionResult.DependentProjectsToDeploySelection.SelectedProjects.Count == 0)
+      {
+        _internalApiWebClient.OnCollectDependenciesToDeployTimedOut(deploymentId);
+
+        throw new TimeoutException("Given up waiting for dependency selection.");
+      }
+
+      PostDiagnosticMessage("Dependencies to include were provided - we'll continue.", DiagnosticMessageType.Trace);
 
       return dependentProjectsToDeploySelectionResult.DependentProjectsToDeploySelection;
     }
@@ -103,6 +113,17 @@ namespace UberDeployer.Core.ExternalDataCollectors.DependentProjectsSelection
       }
     }
 
+    public static void SkipDependentProjectsSelection(Guid deploymentId)
+    {
+      lock (_collectedProjectsByDeploymentId)
+      {
+        _collectedProjectsByDeploymentId[deploymentId] = new DependentProjectsToDeploySelectionResult
+        {
+          Skipped = true
+        };
+      }
+    }
+    
     public static void CancelDependentProjectsSelection(Guid deploymentId)
     {
       lock (_collectedProjectsByDeploymentId)

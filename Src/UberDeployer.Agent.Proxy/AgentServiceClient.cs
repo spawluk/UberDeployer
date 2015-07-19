@@ -110,6 +110,11 @@ namespace UberDeployer.Agent.Proxy
       Exec(@as => @as.SetSelectedDependentProjectsToDeploy(deploymentId, dependenciesToDeploy));
     }
 
+    public void SkipDependentProjectsSelection(Guid deploymentId)
+    {
+      Exec(@as => @as.SkipDependentProjectsSelection(deploymentId));
+    }
+
     public void CancelDependentProjectsSelection(Guid deploymentId)
     {
       Exec(@as => @as.CancelDependentProjectsSelection(deploymentId));

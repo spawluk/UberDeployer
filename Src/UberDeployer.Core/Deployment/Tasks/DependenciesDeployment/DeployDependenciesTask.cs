@@ -141,13 +141,21 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
       }
 
       return projectDeployments;
-    }      
+    }
 
     private IEnumerable<ProjectDeployment> ConfigureDeploymentsByClient(List<ProjectDeployment> defaultDeploymentInfos)
-    {      
+    {
       List<DependentProject> dependentProjects = ConvertToDependentProjects(defaultDeploymentInfos);
 
-      DependentProjectsToDeploySelection dependentProjectsToDeploySelection = _dependentProjectsToDeploySelector.GetSelectedProjectsToDeploy(_deploymentId, dependentProjects);
+      DependentProjectsToDeploySelection dependentProjectsToDeploySelection;
+      try
+      {
+        dependentProjectsToDeploySelection = _dependentProjectsToDeploySelector.GetSelectedProjectsToDeploy(_deploymentId, dependentProjects);
+      }
+      catch (DependentProjectsToDeploySelectionCancelledException)
+      {
+        throw new DeploymentTaskException(string.Format("Deploying project [{0}] was cancelled. Deployment Id = [{1}]", _projectName, _deploymentId));
+      }
 
       return FilterBySelectedProjects(defaultDeploymentInfos, dependentProjectsToDeploySelection.SelectedProjects);
     }

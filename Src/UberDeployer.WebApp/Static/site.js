@@ -956,6 +956,9 @@ var CollectProjectDependenciesDialog = (function () {
     var collectDependenciesSubmit = $('#dlg-collect-dependencies-ok');
     collectDependenciesSubmit.unbind("click");
 
+    var collectDependenciesSkip = $('#dlg-collect-dependencies-skip');
+    collectDependenciesSkip.unbind("click");
+
     var collectDependenciesCancel = $('#dlg-collect-dependencies-cancel');
     collectDependenciesCancel.unbind("click");
 
@@ -992,12 +995,28 @@ var CollectProjectDependenciesDialog = (function () {
         self.closeDialog();
       });
 
+    collectDependenciesSkip
+      .click(function () {
+        var deploymentId = $('#dlg-collect-dependencies-deployment-id').val();
+
+        $.ajax({
+          url: g_AppPrefix + 'InternalApi/OnDependenciesToRunSkipped',
+          type: "POST",
+          data: {
+            deploymentId: deploymentId
+          },
+          traditional: true
+        });
+
+        self.closeDialog();
+      });
+
     collectDependenciesCancel
       .click(function () {
         var deploymentId = $('#dlg-collect-dependencies-deployment-id').val();
 
         $.ajax({
-          url: g_AppPrefix + 'InternalApi/OnDependenciesToRunCanceled',
+          url: g_AppPrefix + 'InternalApi/OnDependenciesToRunCancelled',
           type: "POST",
           data: {
             deploymentId: deploymentId

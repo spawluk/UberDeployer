@@ -224,7 +224,20 @@ namespace UberDeployer.WebApp.Core.ApiControllers
     }
 
     [HttpPost]
-    public ActionResult OnDependenciesToRunCanceled(Guid? deploymentId)
+    public ActionResult OnDependenciesToRunSkipped(Guid? deploymentId)
+    {
+      if (!deploymentId.HasValue)
+      {
+        return BadRequest();
+      }
+
+      _agentService.SkipDependentProjectsSelection(deploymentId.Value);
+
+      return Content("OK");
+    }
+    
+    [HttpPost]
+    public ActionResult OnDependenciesToRunCancelled(Guid? deploymentId)
     {
       if (!deploymentId.HasValue)
       {
