@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using UberDeployer.Common.IO;
 using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Core.Deployment.Steps
@@ -105,9 +106,15 @@ namespace UberDeployer.Core.Deployment.Steps
           throw new InvalidOperationException("Step has not been prepared yet.");
         }
 
-        return
-          Path.Combine(_targetArtifactsDirPath, _archiveSubPath.Replace("/", Path.DirectorySeparatorChar.ToString()))
-            .TrimEnd(Path.DirectorySeparatorChar);
+        string binariesDirPath = Path.Combine(_targetArtifactsDirPath, _archiveSubPath.Replace("/", Path.DirectorySeparatorChar.ToString()))
+          .TrimEnd(Path.DirectorySeparatorChar);
+
+        if (!Directory.Exists(binariesDirPath))
+        {
+          throw new DeploymentTaskException(string.Format("Binaries directory doesn't exist after extracting artifacts. Check project configuration (ArtifactsRepositoryDirName). BinariesDirPath: [{0}]", BinariesDirPath));
+        }
+
+        return binariesDirPath;
       }
     }
   }
