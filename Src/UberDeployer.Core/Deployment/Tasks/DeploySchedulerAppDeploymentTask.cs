@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NHibernate.Mapping;
 using UberDeployer.Common;
 using UberDeployer.Common.IO;
 using UberDeployer.Common.SyntaxSugar;
@@ -191,8 +192,19 @@ namespace UberDeployer.Core.Deployment.Tasks
 
     private void AddTaskConfigurationSteps(EnvironmentInfo environmentInfo, string schedulerServerTasksMachineName, SchedulerAppTask schedulerAppTask, ScheduledTaskDetails taskDetails = null)
     {
-      bool hasSettingsChanged = HasSettingsChanged(taskDetails, schedulerAppTask, environmentInfo);
+      TaskSettingsCompareResult settingsCompareResult = CompareTaskSettings(taskDetails, schedulerAppTask, environmentInfo);
+      bool hasSettingsChanged = settingsCompareResult.AreEqual == false;      
+
       bool taskExists = taskDetails != null;
+
+      if (taskExists)
+      {
+        LogSettingsDifferences(schedulerAppTask.Name, settingsCompareResult);
+      }
+      else
+      {
+        PostDiagnosticMessage(string.Format("Scheduler task [{0}] doesn't exist.", schedulerAppTask.Name), DiagnosticMessageType.Trace);
+      }
 
       EnvironmentUser environmentUser =
         environmentInfo.GetEnvironmentUser(schedulerAppTask.UserId);
@@ -251,6 +263,28 @@ namespace UberDeployer.Core.Deployment.Tasks
             schedulerAppTask.ExecutionTimeLimitInMinutes,
             schedulerAppTask.Repetition,
             _taskScheduler));
+      }
+    }
+
+    private void LogSettingsDifferences(string taskName, TaskSettingsCompareResult settingsCompareResult)
+    {      
+      if (settingsCompareResult.AreEqual)
+      {
+        PostDiagnosticMessage(string.Format("Scheduler task settings and configuration are equal, taskName: [{0}]", taskName), DiagnosticMessageType.Trace);
+        return;
+      }
+
+      PostDiagnosticMessage(string.Format("Differences between scheduler task settings and configuration for scheduler task: [{0}]", taskName), DiagnosticMessageType.Trace);
+
+      foreach (var settingDifference in settingsCompareResult.Differencies)
+      {
+        PostDiagnosticMessage(
+          string.Format(
+            "Scheduler task settings difference, option name: [{0}], current task value: [{1}], configuration value: [{2}]",
+            settingDifference.OptionName,
+            settingDifference.CurrentTaskValue,
+            settingDifference.ExpectedConfigurationValue),
+          DiagnosticMessageType.Trace);
       }
     }
 
@@ -314,23 +348,28 @@ namespace UberDeployer.Core.Deployment.Tasks
       return Path.Combine(targetDirPath, schedulerAppTask.ExecutableName);
     }
 
-    private bool HasSettingsChanged(ScheduledTaskDetails taskDetails, SchedulerAppTask schedulerAppTask, EnvironmentInfo environmentInfo)
+    private TaskSettingsCompareResult CompareTaskSettings(ScheduledTaskDetails taskDetails, SchedulerAppTask schedulerAppTask, EnvironmentInfo environmentInfo)
     {
       if (taskDetails == null)
       {
-        return false;
+        return new TaskSettingsCompareResult(new List<SettingDifference>());
       }
 
       string taskExecutablePath = GetTaskExecutablePath(schedulerAppTask, environmentInfo);
 
-      return !(taskDetails.Name == schedulerAppTask.Name
-          && taskDetails.ScheduledHour == schedulerAppTask.ScheduledHour
-          && taskDetails.ScheduledMinute == schedulerAppTask.ScheduledMinute
-          && taskDetails.ExecutionTimeLimitInMinutes == schedulerAppTask.ExecutionTimeLimitInMinutes
-          && taskDetails.Repetition.Interval == schedulerAppTask.Repetition.Interval
-          && taskDetails.Repetition.Duration == schedulerAppTask.Repetition.Duration
-          && taskDetails.Repetition.StopAtDurationEnd == schedulerAppTask.Repetition.StopAtDurationEnd
-          && taskDetails.ExeAbsolutePath == taskExecutablePath);
+      var compareResultBuilder = new TaskSettingsCompareResultBuilder();
+
+      compareResultBuilder
+        .CompareValues("Name", taskDetails.Name, schedulerAppTask.Name)
+        .CompareValues("ScheduledHour", taskDetails.ScheduledHour, schedulerAppTask.ScheduledHour)
+        .CompareValues("ScheduledMinute", taskDetails.ScheduledMinute, schedulerAppTask.ScheduledMinute)
+        .CompareValues("ExecutionTimeLimitInMinutes", taskDetails.ExecutionTimeLimitInMinutes, schedulerAppTask.ExecutionTimeLimitInMinutes)
+        .CompareValues("Repetition.Interval", taskDetails.Repetition.Interval, schedulerAppTask.Repetition.Interval)
+        .CompareValues("Repetition.Duration", taskDetails.Repetition.Duration, schedulerAppTask.Repetition.Duration)
+        .CompareValues("Repetition.StopAtDurationEnd", taskDetails.Repetition.StopAtDurationEnd, schedulerAppTask.Repetition.StopAtDurationEnd)
+        .CompareValues("ExeAbsolutePath", taskDetails.ExeAbsolutePath, taskExecutablePath);
+
+      return compareResultBuilder.GetResult();
     }
 
     private void MakeSureTasksThatWereEnabledAreEnabled()
@@ -381,5 +420,61 @@ namespace UberDeployer.Core.Deployment.Tasks
     }
 
     #endregion
+
+    private class TaskSettingsCompareResultBuilder
+    {
+      public TaskSettingsCompareResultBuilder()
+      {
+        _differencies = new List<SettingDifference>();
+      }
+
+      private readonly List<SettingDifference> _differencies;
+
+      public TaskSettingsCompareResultBuilder CompareValues<T>(string optionName, T currentValue, T expectedValue)
+      {
+        if (currentValue.Equals(expectedValue) == false)
+        {
+          _differencies.Add(new SettingDifference(optionName, currentValue.ToString(), expectedValue.ToString()));;
+        }
+
+        return this;
+      }
+
+      public TaskSettingsCompareResult GetResult()
+      {
+        return new TaskSettingsCompareResult(_differencies);
+      }
+    }
+
+    private class TaskSettingsCompareResult
+    {
+      public TaskSettingsCompareResult(List<SettingDifference> differences)
+      {
+        Differencies = differences;
+      }
+
+      public List<SettingDifference> Differencies { get; private set; }
+
+      public bool AreEqual
+      {
+        get { return Differencies.Count == 0; }
+      }      
+    }
+
+    private class SettingDifference
+    {
+      public SettingDifference(string optionName, string currentTaskValue, string expectedConfigurationValue)
+      {
+        OptionName = optionName;
+        CurrentTaskValue = currentTaskValue;
+        ExpectedConfigurationValue = expectedConfigurationValue;
+      }
+
+      public string OptionName { get; private set; }
+
+      public string CurrentTaskValue { get; private set; }
+
+      public string ExpectedConfigurationValue { get; private set; }
+    }
   }
 }
