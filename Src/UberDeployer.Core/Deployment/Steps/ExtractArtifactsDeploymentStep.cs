@@ -94,11 +94,6 @@ namespace UberDeployer.Core.Deployment.Steps
       }
 
       _zipFileAdapter.ExtractAll(archivePath, _targetArtifactsDirPath, true);      
-
-      if (!_directoryAdapter.Exists(_binariesDirPath))
-      {
-        throw new DeploymentTaskException(string.Format("Binaries directory doesn't exist after extracting artifacts. Check project configuration (ArtifactsRepositoryDirName). BinariesDirPath: [{0}]", _binariesDirPath));
-      }
     }
 
     public override string Description
@@ -124,7 +119,12 @@ namespace UberDeployer.Core.Deployment.Steps
         if (!IsPrepared)
         {
           throw new InvalidOperationException("Step has not been prepared yet.");
-        }        
+        }
+
+        if (!_directoryAdapter.Exists(_binariesDirPath))
+        {
+          throw new DeploymentTaskException(string.Format("Binaries directory doesn't exist after extracting artifacts. Check project configuration (ArtifactsRepositoryDirName). BinariesDirPath: [{0}]", _binariesDirPath));
+        }
 
         return _binariesDirPath;
       }

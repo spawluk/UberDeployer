@@ -88,6 +88,9 @@ namespace UberDeployer.Tests.Core.Deployment
       NtServiceProjectInfo projectInfo =
         ProjectInfoGenerator.GetNtServiceProjectInfo(areEnvironmentSpecific: true);
 
+      _directoryAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
+        .Returns(true);
+
       _deploymentStep =
         new ExtractArtifactsDeploymentStep(
           projectInfo,
@@ -112,6 +115,9 @@ namespace UberDeployer.Tests.Core.Deployment
       NtServiceProjectInfo projectInfo =
         ProjectInfoGenerator.GetNtServiceProjectInfo(areEnvironmentSpecific: false);
 
+      _directoryAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
+        .Returns(true);
+
       _deploymentStep =
         new ExtractArtifactsDeploymentStep(
           projectInfo,
@@ -130,14 +136,39 @@ namespace UberDeployer.Tests.Core.Deployment
     }
 
     [Test]
+    public void BinariesDirPath_fails_when_extracted_binaries_dir_doesnt_exist()
+    {
+      // arrange
+      NtServiceProjectInfo projectInfo =
+        ProjectInfoGenerator.GetNtServiceProjectInfo(areEnvironmentSpecific: false);
+
+      _directoryAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
+        .Returns(false);
+
+      _deploymentStep =
+        new ExtractArtifactsDeploymentStep(
+          projectInfo,
+          _environmentInfo,
+          _deploymentInfo,
+          _ArtifactsFilePath,
+          _TargetArtifactsDirPath,
+          _fileAdapterFake.Object,
+          _directoryAdapterFake.Object,
+          _zipFileAdapterFake.Object);
+
+      _deploymentStep.Prepare();
+
+      // act assert
+      Assert.Throws<DeploymentTaskException>(
+        () => { string binPath = _deploymentStep.BinariesDirPath; });
+    }
+
+    [Test]
     public void DoExecute_extracts_artifacts()
     {
       // arrange
       _fileAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
-        .Returns(true);
-
-      _directoryAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
-        .Returns(true);
+        .Returns(true);      
 
       // act
       _deploymentStep.PrepareAndExecute();
@@ -146,22 +177,7 @@ namespace UberDeployer.Tests.Core.Deployment
       _zipFileAdapterFake.Verify(
         x => x.ExtractAll(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()),
         Times.Exactly(2));
-    }
-
-    [Test]
-    public void DoExecute_fails_when_extracted_binaries_dir_doesnt_exist()
-    {      
-      // arrange
-      _directoryAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
-        .Returns(false);
-
-      _fileAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
-        .Returns(true);      
-
-      // act assert
-      Assert.Throws<DeploymentTaskException>(
-        () => _deploymentStep.PrepareAndExecute());     
-    }
+    }    
 
     #endregion
 
