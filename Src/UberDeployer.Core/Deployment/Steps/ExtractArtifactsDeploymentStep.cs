@@ -15,11 +15,21 @@ namespace UberDeployer.Core.Deployment.Steps
     private readonly string _artifactsFilePath;
     private readonly string _targetArtifactsDirPath;
     private readonly IFileAdapter _fileAdapter;
+    private readonly IDirectoryAdapter _directoryAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
 
     private string _archiveSubPath;
+    private string _binariesDirPath;
 
-    public ExtractArtifactsDeploymentStep(ProjectInfo projectInfo, EnvironmentInfo environmentInfo, DeploymentInfo deploymentInfo, string artifactsFilePath, string targetArtifactsDirPath, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter)
+    public ExtractArtifactsDeploymentStep(
+      ProjectInfo projectInfo, 
+      EnvironmentInfo environmentInfo, 
+      DeploymentInfo deploymentInfo, 
+      string artifactsFilePath, 
+      string targetArtifactsDirPath, 
+      IFileAdapter fileAdapter, 
+      IDirectoryAdapter directoryAdapter, 
+      IZipFileAdapter zipFileAdapter)
     {
       Guard.NotNull(projectInfo, "projectInfo");
       Guard.NotNull(environmentInfo, "environmentInfo");
@@ -27,6 +37,7 @@ namespace UberDeployer.Core.Deployment.Steps
       Guard.NotNullNorEmpty(artifactsFilePath, "artifactsFilePath");
       Guard.NotNullNorEmpty(targetArtifactsDirPath, "targetArtifactsDirPath");
       Guard.NotNull(fileAdapter, "fileAdapter");
+      Guard.NotNull(directoryAdapter, "directoryAdapter");
       Guard.NotNull(zipFileAdapter, "zipFileAdapter");
 
       _projectInfo = projectInfo;
@@ -35,6 +46,7 @@ namespace UberDeployer.Core.Deployment.Steps
       _artifactsFilePath = artifactsFilePath;
       _targetArtifactsDirPath = targetArtifactsDirPath;
       _fileAdapter = fileAdapter;
+      _directoryAdapter = directoryAdapter;
       _zipFileAdapter = zipFileAdapter;
     }
 
@@ -52,6 +64,9 @@ namespace UberDeployer.Core.Deployment.Steps
         !string.IsNullOrEmpty(_projectInfo.ArtifactsRepositoryDirName)
           ? string.Format("{0}{1}/", archiveParentPath, _projectInfo.ArtifactsRepositoryDirName)
           : archiveParentPath;
+
+      _binariesDirPath = Path.Combine(_targetArtifactsDirPath, _archiveSubPath.Replace("/", Path.DirectorySeparatorChar.ToString()))
+          .TrimEnd(Path.DirectorySeparatorChar);
     }
 
     protected override void DoExecute()
@@ -78,7 +93,12 @@ namespace UberDeployer.Core.Deployment.Steps
         throw new InvalidOperationException(string.Format("Couldn't extract internal ZIP archive because it doesn't exist: '{0}'.", archivePath));
       }
 
-      _zipFileAdapter.ExtractAll(archivePath, _targetArtifactsDirPath, true);
+      _zipFileAdapter.ExtractAll(archivePath, _targetArtifactsDirPath, true);      
+
+      if (!_directoryAdapter.Exists(_binariesDirPath))
+      {
+        throw new DeploymentTaskException(string.Format("Binaries directory doesn't exist after extracting artifacts. Check project configuration (ArtifactsRepositoryDirName). BinariesDirPath: [{0}]", _binariesDirPath));
+      }
     }
 
     public override string Description
@@ -104,17 +124,9 @@ namespace UberDeployer.Core.Deployment.Steps
         if (!IsPrepared)
         {
           throw new InvalidOperationException("Step has not been prepared yet.");
-        }
+        }        
 
-        string binariesDirPath = Path.Combine(_targetArtifactsDirPath, _archiveSubPath.Replace("/", Path.DirectorySeparatorChar.ToString()))
-          .TrimEnd(Path.DirectorySeparatorChar);
-
-        if (!Directory.Exists(binariesDirPath))
-        {
-          throw new DeploymentTaskException(string.Format("Binaries directory doesn't exist after extracting artifacts. Check project configuration (ArtifactsRepositoryDirName). BinariesDirPath: [{0}]", BinariesDirPath));
-        }
-
-        return binariesDirPath;
+        return _binariesDirPath;
       }
     }
   }

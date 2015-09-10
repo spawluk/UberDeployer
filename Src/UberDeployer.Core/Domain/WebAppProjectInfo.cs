@@ -46,7 +46,8 @@ namespace UberDeployer.Core.Domain
           objectFactory.CreateIIisManager(),
           objectFactory.CreateFileAdapter(),
           objectFactory.CreateZipFileAdapter(),
-          objectFactory.CreateApplicationConfiguration());
+          objectFactory.CreateApplicationConfiguration(),
+          objectFactory.CreateDirectoryAdapter());
     }
 
     public override IEnumerable<string> GetTargetFolders(IObjectFactory objectFactory, EnvironmentInfo environmentInfo)

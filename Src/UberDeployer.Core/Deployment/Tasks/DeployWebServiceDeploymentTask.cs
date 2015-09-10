@@ -10,8 +10,8 @@ namespace UberDeployer.Core.Deployment.Tasks
   {
     #region Constructor(s)
 
-    public DeployWebServiceDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IMsDeploy msDeploy, IArtifactsRepository artifactsRepository, IIisManager iisManager, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IApplicationConfiguration applicationConfiguration)
-      : base(projectInfoRepository, environmentInfoRepository, msDeploy, artifactsRepository, iisManager, fileAdapter, zipFileAdapter, applicationConfiguration)
+    public DeployWebServiceDeploymentTask(IProjectInfoRepository projectInfoRepository, IEnvironmentInfoRepository environmentInfoRepository, IMsDeploy msDeploy, IArtifactsRepository artifactsRepository, IIisManager iisManager, IFileAdapter fileAdapter, IZipFileAdapter zipFileAdapter, IApplicationConfiguration applicationConfiguration, IDirectoryAdapter directoryAdapter)
+      : base(projectInfoRepository, environmentInfoRepository, msDeploy, artifactsRepository, iisManager, fileAdapter, zipFileAdapter, applicationConfiguration, directoryAdapter)
     {
     }
 

@@ -46,12 +46,13 @@ namespace UberDeployer.Core.Domain
           objectFactory.CreateArtifactsRepository(),
           objectFactory.CreateDbScriptRunnerFactory(),
           objectFactory.CreateDbVersionProvider(),
-          objectFactory.CreateFileAdapter(),
+          objectFactory.CreateFileAdapter(),          
           objectFactory.CreateZipFileAdapter(),
           objectFactory.CreateScriptsToRunWebSelector(),
           objectFactory.CreateMsSqlDatabasePublisher(),
           objectFactory.CreateDbManagerFactory(),
-          objectFactory.CreateUserNameNormalizer());
+          objectFactory.CreateUserNameNormalizer(),
+          objectFactory.CreateDirectoryAdapter());
     }
 
     public override IEnumerable<string> GetTargetFolders(IObjectFactory objectFactory, EnvironmentInfo environmentInfo)

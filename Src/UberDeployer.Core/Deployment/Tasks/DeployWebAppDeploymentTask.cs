@@ -19,6 +19,7 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IArtifactsRepository _artifactsRepository;
     private readonly IIisManager _iisManager;
     private readonly IFileAdapter _fileAdapter;
+    private readonly IDirectoryAdapter _directoryAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
     private readonly IApplicationConfiguration _applicationConfiguration;
 
@@ -32,7 +33,8 @@ namespace UberDeployer.Core.Deployment.Tasks
       IIisManager iisManager,
       IFileAdapter fileAdapter,
       IZipFileAdapter zipFileAdapter,
-      IApplicationConfiguration applicationConfiguration)
+      IApplicationConfiguration applicationConfiguration, 
+      IDirectoryAdapter directoryAdapter)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(msDeploy, "msDeploy");
@@ -40,6 +42,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(iisManager, "iisManager");
       Guard.NotNull(fileAdapter, "fileAdapter");
       Guard.NotNull(zipFileAdapter, "zipFileAdapter");
+      Guard.NotNull(directoryAdapter, "directoryAdapter");
 
       _msDeploy = msDeploy;
       _artifactsRepository = artifactsRepository;
@@ -47,6 +50,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _fileAdapter = fileAdapter;
       _zipFileAdapter = zipFileAdapter;
       _applicationConfiguration = applicationConfiguration;
+      _directoryAdapter = directoryAdapter;
     }
 
     #endregion
@@ -101,6 +105,7 @@ namespace UberDeployer.Core.Deployment.Tasks
           downloadArtifactsDeploymentStep.ArtifactsFilePath,
           GetTempDirPath(),
           _fileAdapter,
+          _directoryAdapter,
           _zipFileAdapter);
 
       AddSubTask(extractArtifactsDeploymentStep);

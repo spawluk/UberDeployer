@@ -65,6 +65,7 @@ namespace UberDeployer.Core.Deployment.Tasks
           downloadArtifactsDeploymentStep.ArtifactsFilePath,
           GetTempDirPath(),
           _fileAdapter,
+          _directoryAdapter,
           _zipFileAdapter);
 
       AddSubTask(extractArtifactsDeploymentStep);

@@ -52,6 +52,7 @@ namespace UberDeployer.Tests.Core.Domain
       var fileAdapter = new Mock<IFileAdapter>(MockBehavior.Loose);
       var zipFileAdapter = new Mock<IZipFileAdapter>(MockBehavior.Loose);
       var applicationConfiguration = new Mock<IApplicationConfiguration>(MockBehavior.Loose);
+      var directoryAdapter = new Mock<IDirectoryAdapter>(MockBehavior.Loose);
 
       var projectInfo =
         new WebAppProjectInfo(
@@ -74,6 +75,7 @@ namespace UberDeployer.Tests.Core.Domain
       objectFactory.Setup(o => o.CreateFileAdapter()).Returns(fileAdapter.Object);
       objectFactory.Setup(o => o.CreateZipFileAdapter()).Returns(zipFileAdapter.Object);
       objectFactory.Setup(o => o.CreateApplicationConfiguration()).Returns(applicationConfiguration.Object);
+      objectFactory.Setup(o => o.CreateDirectoryAdapter()).Returns(directoryAdapter.Object);
 
       projectInfo.CreateDeploymentTask(objectFactory.Object);
     }

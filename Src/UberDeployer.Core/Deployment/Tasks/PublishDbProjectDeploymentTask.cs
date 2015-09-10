@@ -15,6 +15,7 @@ namespace UberDeployer.Core.Deployment.Tasks
   {
     private readonly IArtifactsRepository _artifactsRepository;
     private readonly IFileAdapter _fileAdapter;
+    private readonly IDirectoryAdapter _directoryAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
     private readonly IDbManagerFactory _dbManagerFactory;
     private readonly IMsSqlDatabasePublisher _databasePublisher;
@@ -26,7 +27,8 @@ namespace UberDeployer.Core.Deployment.Tasks
       IFileAdapter fileAdapter, 
       IZipFileAdapter zipFileAdapter, 
       IDbManagerFactory dbManagerFactory, 
-      IMsSqlDatabasePublisher databasePublisher) 
+      IMsSqlDatabasePublisher databasePublisher, 
+      IDirectoryAdapter directoryAdapter) 
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -34,12 +36,14 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(zipFileAdapter, "zipFileAdapter");
       Guard.NotNull(dbManagerFactory, "dbManagerFactory");
       Guard.NotNull(databasePublisher, "databasePublisher");
+      Guard.NotNull(directoryAdapter, "directoryAdapter");
 
       _artifactsRepository = artifactsRepository;
       _fileAdapter = fileAdapter;
       _zipFileAdapter = zipFileAdapter;
       _dbManagerFactory = dbManagerFactory;
       _databasePublisher = databasePublisher;
+      _directoryAdapter = directoryAdapter;
     }
 
     protected override void DoPrepare()
@@ -74,6 +78,7 @@ namespace UberDeployer.Core.Deployment.Tasks
           downloadArtifactsDeploymentStep.ArtifactsFilePath,
           GetTempDirPath(),
           _fileAdapter,
+          _directoryAdapter,
           _zipFileAdapter);
 
       AddSubTask(extractArtifactsDeploymentStep);

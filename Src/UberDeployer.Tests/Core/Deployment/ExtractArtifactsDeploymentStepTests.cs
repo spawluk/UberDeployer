@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 using UberDeployer.Common.IO;
 using UberDeployer.Core.Deployment.Steps;
+using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 using UberDeployer.Tests.Core.Generators;
 using UberDeployer.Tests.Core.TestUtils;
@@ -23,6 +24,7 @@ namespace UberDeployer.Tests.Core.Deployment
     private DeploymentInfo _deploymentInfo;
     private ProjectInfo _projectInfo;
     private Mock<IFileAdapter> _fileAdapterFake;
+    private Mock<IDirectoryAdapter> _directoryAdapterFake;
     private Mock<IZipFileAdapter> _zipFileAdapterFake;
 
     private ExtractArtifactsDeploymentStep _deploymentStep;
@@ -36,6 +38,7 @@ namespace UberDeployer.Tests.Core.Deployment
       _deploymentInfo = DeploymentInfoGenerator.GetDbDeploymentInfo();
       _projectInfo = ProjectInfoGenerator.GetTerminalAppProjectInfo();
       _fileAdapterFake = new Mock<IFileAdapter>(MockBehavior.Loose);
+      _directoryAdapterFake = new Mock<IDirectoryAdapter>(MockBehavior.Loose);
       _zipFileAdapterFake = new Mock<IZipFileAdapter>(MockBehavior.Loose);
 
       _deploymentStep =
@@ -46,6 +49,7 @@ namespace UberDeployer.Tests.Core.Deployment
           _ArtifactsFilePath,
           _TargetArtifactsDirPath,
           _fileAdapterFake.Object,
+          _directoryAdapterFake.Object,
           _zipFileAdapterFake.Object);
     }
 
@@ -92,6 +96,7 @@ namespace UberDeployer.Tests.Core.Deployment
           _ArtifactsFilePath,
           _TargetArtifactsDirPath,
           _fileAdapterFake.Object,
+          _directoryAdapterFake.Object,
           _zipFileAdapterFake.Object);
 
       _deploymentStep.Prepare();
@@ -115,6 +120,7 @@ namespace UberDeployer.Tests.Core.Deployment
           _ArtifactsFilePath,
           _TargetArtifactsDirPath,
           _fileAdapterFake.Object,
+          _directoryAdapterFake.Object,
           _zipFileAdapterFake.Object);
 
       _deploymentStep.Prepare();
@@ -130,6 +136,9 @@ namespace UberDeployer.Tests.Core.Deployment
       _fileAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
         .Returns(true);
 
+      _directoryAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
+        .Returns(true);
+
       // act
       _deploymentStep.PrepareAndExecute();
 
@@ -137,6 +146,21 @@ namespace UberDeployer.Tests.Core.Deployment
       _zipFileAdapterFake.Verify(
         x => x.ExtractAll(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()),
         Times.Exactly(2));
+    }
+
+    [Test]
+    public void DoExecute_fails_when_extracted_binaries_dir_doesnt_exist()
+    {      
+      // arrange
+      _directoryAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
+        .Returns(false);
+
+      _fileAdapterFake.Setup(x => x.Exists(It.IsAny<string>()))
+        .Returns(true);      
+
+      // act assert
+      Assert.Throws<DeploymentTaskException>(
+        () => _deploymentStep.PrepareAndExecute());     
     }
 
     #endregion
@@ -154,6 +178,7 @@ namespace UberDeployer.Tests.Core.Deployment
           { "artifactsFilePath", _ArtifactsFilePath },
           { "targetArtifactsDirPath", _TargetArtifactsDirPath },
           { "fileAdapter", _fileAdapterFake.Object },
+          { "directoryAdapter", _directoryAdapterFake.Object },
           { "zipFileAdapter", _zipFileAdapterFake.Object },
         };
 

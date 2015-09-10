@@ -17,6 +17,7 @@ namespace UberDeployer.Core.Deployment.Tasks
     private readonly IDbScriptRunnerFactory _dbScriptRunnerFactory;
     private readonly IDbVersionProvider _dbVersionProvider;
     private readonly IFileAdapter _fileAdapter;
+    private readonly IDirectoryAdapter _directoryAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
     private readonly IScriptsToRunSelector _createScriptsToRunSelector;
     private readonly IMsSqlDatabasePublisher _databasePublisher;
@@ -36,7 +37,8 @@ namespace UberDeployer.Core.Deployment.Tasks
       IScriptsToRunSelector createScriptsToRunSelector, 
       IMsSqlDatabasePublisher databasePublisher, 
       IDbManagerFactory dbManagerFactory, 
-      IUserNameNormalizer userNameNormalizer)
+      IUserNameNormalizer userNameNormalizer,
+      IDirectoryAdapter directoryAdapter)
       : base(projectInfoRepository, environmentInfoRepository)
     {
       Guard.NotNull(artifactsRepository, "artifactsRepository");
@@ -48,6 +50,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       Guard.NotNull(databasePublisher, "databasePublisher");
       Guard.NotNull(dbManagerFactory, "dbManagerFactory");
       Guard.NotNull(userNameNormalizer, "userNameNormalizer");
+      Guard.NotNull(directoryAdapter, "directoryAdapter");
 
       _artifactsRepository = artifactsRepository;
       _dbScriptRunnerFactory = dbScriptRunnerFactory;
@@ -58,6 +61,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       _databasePublisher = databasePublisher;
       _dbManagerFactory = dbManagerFactory;
       _userNameNormalizer = userNameNormalizer;
+      _directoryAdapter = directoryAdapter;
     }
 
     protected override void DoPrepare()
@@ -96,6 +100,7 @@ namespace UberDeployer.Core.Deployment.Tasks
           downloadArtifactsDeploymentStep.ArtifactsFilePath,
           GetTempDirPath(),
           _fileAdapter,
+          _directoryAdapter,
           _zipFileAdapter);
 
       AddSubTask(extractArtifactsDeploymentStep);

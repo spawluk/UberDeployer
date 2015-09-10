@@ -339,7 +339,8 @@ namespace UberDeployer.Agent.Service
           ObjectFactory.Instance.CreateFileAdapter(),
           ObjectFactory.Instance.CreateZipFileAdapter(),
           ObjectFactory.Instance.CreateDbManagerFactory(), 
-          ObjectFactory.Instance.CreateMsSqlDatabasePublisher());
+          ObjectFactory.Instance.CreateMsSqlDatabasePublisher(),
+          ObjectFactory.Instance.CreateDirectoryAdapter());
       }
 
       return projectInfo.CreateDeploymentTask(ObjectFactory.Instance);

@@ -32,6 +32,7 @@ namespace UberDeployer.Tests.Core.Deployment
     private Mock<IFileAdapter> _fileAdapterFake;
     private Mock<IZipFileAdapter> _zipFileAdapterFake;
     private Mock<IApplicationConfiguration> _applicationConfigurationFake;
+    private Mock<IDirectoryAdapter> _directoryAdapterFake;
 
     private WebAppProjectInfo _projectInfo;
     private EnvironmentInfo _environmentInfo;
@@ -47,6 +48,7 @@ namespace UberDeployer.Tests.Core.Deployment
       _fileAdapterFake = new Mock<IFileAdapter>(MockBehavior.Loose);
       _zipFileAdapterFake = new Mock<IZipFileAdapter>(MockBehavior.Loose);
       _applicationConfigurationFake = new Mock<IApplicationConfiguration>();
+      _directoryAdapterFake = new Mock<IDirectoryAdapter>();
 
       _projectInfo = ProjectInfoGenerator.GetWebAppProjectInfo();
       _environmentInfo = DeploymentDataGenerator.GetEnvironmentInfo();
@@ -60,7 +62,8 @@ namespace UberDeployer.Tests.Core.Deployment
           _iisManager.Object,
           _fileAdapterFake.Object,
           _zipFileAdapterFake.Object,
-          _applicationConfigurationFake.Object);
+          _applicationConfigurationFake.Object,
+          _directoryAdapterFake.Object);
 
       _deployWebAppDeploymentTask.Initialize(DeploymentInfoGenerator.GetWebAppDeploymentInfo());
 
