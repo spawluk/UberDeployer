@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<ProjectInfosXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <ProjectInfos>
+    <!-- NT services -->
+    <ProjectInfoXml xsi:type="NtServiceProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleNtService</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleNtService</ArtifactsRepositoryDirName>
+      <NtServiceName>UberDeployer.SampleNtService</NtServiceName>
+      <NtServiceDirName>UberDeployer.SampleNtService</NtServiceDirName>
+      <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
+      <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
+      <NtServiceUserId>Sample.User</NtServiceUserId>
+	  <DependentProjects>
+		<ProjectName>SampleProject.SampleDb</ProjectName>
+		<ProjectName>SampleProject.AnotherDb</ProjectName>		
+	  </DependentProjects>
+    </ProjectInfoXml>    
+    
+    <!-- Web apps -->
+    <ProjectInfoXml xsi:type="WebAppProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleWebApp</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleWebApp</ArtifactsRepositoryDirName>
+      <AppPoolId>Default</AppPoolId>
+      <WebSiteName>Default Web Site</WebSiteName>
+      <WebAppDirName>UberDeployer.SampleWebApp</WebAppDirName>
+      <WebAppName>UberDeployer.SampleWebApp</WebAppName>
+    </ProjectInfoXml>
+
+    <!-- Scheduler apps -->
+    <ProjectInfoXml xsi:type="SchedulerAppProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleSchedulerApp</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleSchedulerApp</ArtifactsRepositoryDirName>
+      <SchedulerAppDirName>SampleSchedulerApp</SchedulerAppDirName>
+      <SchedulerAppExeName>UberDeployerSamples.SampleSchedulerApp.exe</SchedulerAppExeName>
+      <SchedulerAppTasks>
+        <SchedulerAppTaskXml>
+          <Name>SampleSchedulerApp</Name>
+          <ExecutableName>SampleSchedulerApp</ExecutableName>
+          <UserId>Sample.User</UserId>
+          <ScheduledHour>12</ScheduledHour>
+          <ScheduledMinute>0</ScheduledMinute>
+          <ExecutionTimeLimitInMinutes>1</ExecutionTimeLimitInMinutes>
+          <Repetition>
+            <Enabled>true</Enabled>
+            <Interval>00:15:00</Interval>
+            <Duration>1.00:00:00</Duration>
+            <StopAtDurationEnd>true</StopAtDurationEnd>
+          </Repetition>
+        </SchedulerAppTaskXml>
+      </SchedulerAppTasks>
+    </ProjectInfoXml>
+
+    <!-- Terminal apps -->
+    <ProjectInfoXml xsi:type="TerminalAppProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleTerminalApp</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleTerminalApp</ArtifactsRepositoryDirName>
+      <TerminalAppName>UberDeployer.SampleTerminalApp</TerminalAppName>
+      <TerminalAppDirName>UberDeployer.SampleTerminalApp</TerminalAppDirName>
+      <TerminalAppExeName>UberDeployer.SampleTerminalApp.exe</TerminalAppExeName>
+    </ProjectInfoXml>
+
+    <!-- Db projects -->
+    <ProjectInfoXml xsi:type="DbProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SampleDb</Name>
+      <ArtifactsRepositoryName>UberDeployerSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>DbScripts</ArtifactsRepositoryDirName>
+      <ArtifactsAreNotEnvironmentSpecific>true</ArtifactsAreNotEnvironmentSpecific>
+      <DbName>UberDeployerSample</DbName>
+      <DatabaseServerId>Default</DatabaseServerId>
+	  <Users>
+		<UserId>Username1</UserId>
+		<UserId>Username2</UserId>
+	  </Users>
+    </ProjectInfoXml>  
+
+	<ProjectInfoXml xsi:type="DbProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>SampleProject.SampleDb</Name>
+      <ArtifactsRepositoryName>SampleProject.SampleDb</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>DbScripts</ArtifactsRepositoryDirName>
+      <ArtifactsAreNotEnvironmentSpecific>true</ArtifactsAreNotEnvironmentSpecific>
+      <DbName>SampleDb</DbName>
+      <DatabaseServerId>Default</DatabaseServerId>
+	  <Users>
+		<UserId>Username1</UserId>
+	  </Users>
+    </ProjectInfoXml>  
+
+	<ProjectInfoXml xsi:type="DbProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>SampleProject.AnotherDb</Name>
+      <ArtifactsRepositoryName>SampleProject.AnotherDb</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>DbScripts</ArtifactsRepositoryDirName>
+      <ArtifactsAreNotEnvironmentSpecific>true</ArtifactsAreNotEnvironmentSpecific>
+      <DbName>AnotherDb</DbName>
+      <DatabaseServerId>Default</DatabaseServerId>
+	  <Users>
+		<UserId>Username1</UserId>
+	  </Users>
+    </ProjectInfoXml>  
+  
+  </ProjectInfos>
+</ProjectInfosXml>
