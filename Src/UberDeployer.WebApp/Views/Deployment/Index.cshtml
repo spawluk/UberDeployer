@@ -1,4 +1,5 @@
 ﻿@model UberDeployer.WebApp.Core.Models.Deployment.IndexViewModel
+
 @{
   ViewBag.Title = "Deployment | ÜberDeployer";
   Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,43 +12,48 @@
     </div>
   </div>
 </div>
+
 <div class="page-content inset">
+
   <div class="row">
     <div id="errorMsg" class="alert alert-error" style="display: none;">
     </div>
   </div>
+
   <div id="main-container">
+    <div class="row" id="targets">
+      <div class="col-md-6">
+        <label for="lst-environments" class="lst-header">Target environment:</label>
+        <select id="lst-environments" size="7"></select>
+      </div>
+      <div class="col-md-6">
+        <label for="lst-machines" class="lst-header">Target machines:</label>
+        <select id="lst-machines" size="7" multiple="multiple"></select>
+      </div>
+    </div>
+
     <div class="row" id="main-row">
       <div class="col-md-3">
         <label for="lst-projects" class="lst-header">Projects:</label>
         <div class="lst-filter">
-          <input type="checkbox" id="chb-deployable-projects" @(Model.ShowOnlyDeployable ? "checked=\"checked\"" : "") />
+          <input type="checkbox" id="chb-deployable-projects" @(Model.ShowOnlyDeployable ? "checked=\"checked\"" : "")/>
           <label for="chb-deployable-projects">Only deployable</label>
         </div>
-        <br />
+        <br/>
         <select id="lst-projects" size="10"></select>
       </div>
       <div class="col-md-4">
         <label for="lst-project-configs" class="lst-header">Configurations:</label>
-        <br />
+        <br/>
         <select id="lst-project-configs" size="10"></select>
       </div>
       <div class="col-md-5">
         <label for="lst-project-config-builds" class="lst-header">Builds:</label>
-        <br />
+        <br/>
         <select id="lst-project-config-builds" size="10"></select>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-6">
-        <label for="lst-environments" class="lst-header">Target environment:</label>
-        <select id="lst-environments" size="5"></select>
-      </div>
-      <div class="col-md-6">
-        <label for="lst-machines" class="lst-header">Target machines:</label>
-        <select id="lst-machines" size="5" multiple="multiple"></select>
-      </div>
-    </div>
+
     <div class="row row-with-top-margin row-with-bottom-margin">
       <div class="col-md-6">
         @if (Model.IsCreatePackageVisible)
@@ -93,7 +99,8 @@
           <p>
             <q><em>@Model.TipOfTheDay</em></q>
           </p>
-          <p><small>Courtesy of <a href="http://fuckinghomepage.com/">Fucking Homepage</a>.</small></p>
+          <p><small>Courtesy of <a href="http://fuckinghomepage.com/">Fucking Homepage</a>.</small>
+          </p>
         </div>
       </div>
       <div class="col-md-6">
@@ -101,7 +108,7 @@
           <p class="dev-life-description">
             "@Model.FunnyGifDescription"
           </p>
-          <img src="@Model.FunnyGifUrl" />
+          <img src="@Model.FunnyGifUrl"/>
         </div>
       </div>
     </div>

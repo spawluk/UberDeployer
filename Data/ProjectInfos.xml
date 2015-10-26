@@ -12,12 +12,12 @@
       <NtServiceDisplayName>UberDeployer.SampleNtService</NtServiceDisplayName>
       <NtServiceExeName>UberDeployerSamples.SampleNtService.exe</NtServiceExeName>
       <NtServiceUserId>Sample.User</NtServiceUserId>
-	  <DependentProjects>
-		<ProjectName>SampleProject.SampleDb</ProjectName>
-		<ProjectName>SampleProject.AnotherDb</ProjectName>		
-	  </DependentProjects>
-    </ProjectInfoXml>    
-    
+      <DependentProjects>
+        <ProjectName>SampleProject.SampleDb</ProjectName>
+        <ProjectName>SampleProject.AnotherDb</ProjectName>
+      </DependentProjects>
+    </ProjectInfoXml>
+
     <!-- Web apps -->
     <ProjectInfoXml xsi:type="WebAppProjectInfoXml" allowedEnvironments="Local,Remote">
       <Name>UberDeployer.SampleWebApp</Name>
@@ -72,35 +72,35 @@
       <ArtifactsAreNotEnvironmentSpecific>true</ArtifactsAreNotEnvironmentSpecific>
       <DbName>UberDeployerSample</DbName>
       <DatabaseServerId>Default</DatabaseServerId>
-	  <Users>
-		<UserId>Username1</UserId>
-		<UserId>Username2</UserId>
-	  </Users>
-    </ProjectInfoXml>  
+      <Users>
+        <UserId>Username1</UserId>
+        <UserId>Username2</UserId>
+      </Users>
+    </ProjectInfoXml>
 
-	<ProjectInfoXml xsi:type="DbProjectInfoXml" allowedEnvironments="Local,Remote">
+    <ProjectInfoXml xsi:type="DbProjectInfoXml" allowedEnvironments="Local,Remote">
       <Name>SampleProject.SampleDb</Name>
       <ArtifactsRepositoryName>SampleProject.SampleDb</ArtifactsRepositoryName>
       <ArtifactsRepositoryDirName>DbScripts</ArtifactsRepositoryDirName>
       <ArtifactsAreNotEnvironmentSpecific>true</ArtifactsAreNotEnvironmentSpecific>
       <DbName>SampleDb</DbName>
       <DatabaseServerId>Default</DatabaseServerId>
-	  <Users>
-		<UserId>Username1</UserId>
-	  </Users>
-    </ProjectInfoXml>  
+      <Users>
+        <UserId>Username1</UserId>
+      </Users>
+    </ProjectInfoXml>
 
-	<ProjectInfoXml xsi:type="DbProjectInfoXml" allowedEnvironments="Local,Remote">
+    <ProjectInfoXml xsi:type="DbProjectInfoXml" allowedEnvironments="Local,Remote">
       <Name>SampleProject.AnotherDb</Name>
       <ArtifactsRepositoryName>SampleProject.AnotherDb</ArtifactsRepositoryName>
       <ArtifactsRepositoryDirName>DbScripts</ArtifactsRepositoryDirName>
       <ArtifactsAreNotEnvironmentSpecific>true</ArtifactsAreNotEnvironmentSpecific>
       <DbName>AnotherDb</DbName>
       <DatabaseServerId>Default</DatabaseServerId>
-	  <Users>
-		<UserId>Username1</UserId>
-	  </Users>
-    </ProjectInfoXml>  
-  
+      <Users>
+        <UserId>Username1</UserId>
+      </Users>
+    </ProjectInfoXml>
+
   </ProjectInfos>
 </ProjectInfosXml>

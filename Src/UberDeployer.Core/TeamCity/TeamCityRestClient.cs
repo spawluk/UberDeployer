@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
-
+using System.Reflection;
+using log4net;
 using Newtonsoft.Json.Linq;
 
 using UberDeployer.Common.SyntaxSugar;
@@ -11,6 +13,8 @@ namespace UberDeployer.Core.TeamCity
 {
   public class TeamCityRestClient : ITeamCityRestClient
   {
+    private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
     private const string _guestAuthenticationType = "guestAuth";
 
     private const string _httpAuthenticationType = "httpAuth";
@@ -59,6 +63,11 @@ namespace UberDeployer.Core.TeamCity
     {
       var response = ExecuteRequest("projects");
 
+      if (response == null)
+      {
+        return Enumerable.Empty<TeamCityProject>();
+      }
+
       var projects = ParseResponse<List<TeamCityProject>>(response["project"]);
 
       return projects;
@@ -81,6 +90,11 @@ namespace UberDeployer.Core.TeamCity
 
       var response = ExecuteRequest(string.Format("projects/{0}/buildTypes", projectName));
 
+      if (response == null)
+      {
+        return Enumerable.Empty<TeamCityBuildType>();
+      }
+
       var buildTypes = ParseResponse<List<TeamCityBuildType>>(response["buildType"]);
 
       return buildTypes;
@@ -91,6 +105,11 @@ namespace UberDeployer.Core.TeamCity
       Guard.NotNullNorEmpty(projectName, "projectName");
 
       var response = ExecuteRequest(string.Format("projects/{0}/buildTypes", projectName));
+
+      if (response == null)
+      {
+        return Enumerable.Empty<TeamCityBuildType>();
+      }
 
       var buildTypes = ParseResponse<List<TeamCityBuildType>>(response["buildType"]);
 
@@ -118,9 +137,14 @@ namespace UberDeployer.Core.TeamCity
             "buildTypes/id:{0}/builds?{1}start={2}&count={3}{4}",
             buildTypeId,
             branchLocator,
-            start.ToString(),
-            count.ToString(),
+            start,
+            count,
             statusLocator));
+
+      if (response == null)
+      {
+        return Enumerable.Empty<TeamCityBuild>();
+      }
 
       var builds = ParseResponse<List<TeamCityBuild>>(response["build"]);
 
@@ -161,9 +185,16 @@ namespace UberDeployer.Core.TeamCity
       string authenticationType = _isGuestMode ? _guestAuthenticationType : _httpAuthenticationType;
       string requestUrl = string.Format("{0}/{1}/downloadArtifacts.html?buildId={2}", _url, authenticationType, buildId);
 
-      using (var webClient = CreateWebClient())
+      try
       {
-        webClient.DownloadFile(requestUrl, destinationFilePath);
+        using (var webClient = CreateWebClient())
+        {
+          webClient.DownloadFile(requestUrl, destinationFilePath);
+        }
+      }
+      catch (Exception e)
+      {
+        throw new InternalException(string.Format("Cannot download artifacts for build id [{0}]", buildId), e);
       }
     }
 
@@ -172,9 +203,18 @@ namespace UberDeployer.Core.TeamCity
       string requestUrl = CreateRequestUrl(requestPath);
 
       string response;
-      using (var webClient = CreateWebClient())
+
+      try
       {
-        response = webClient.DownloadString(requestUrl);
+        using (var webClient = CreateWebClient())
+        {
+          response = webClient.DownloadString(requestUrl);
+        }
+      }
+      catch (Exception e)
+      {
+        _log.Error(string.Format("Cannot execute request [{0}]", requestPath), e);
+        return null;
       }
 
       return JObject.Parse(response);
