@@ -9,7 +9,8 @@
   <link href="@Url.Content("~/Static/plugins/bootstrap/css/bootstrap.less")" rel="stylesheet" type="text/css" />
   <link href="@Url.Content("~/Static/plugins/fontawesome/css/font-awesome.less")" rel="stylesheet" type="text/css" />
   <link href="@Url.Content("~/Static/plugins/toastr/toastr.less")" rel="stylesheet" type="text/css" />
-  <link href="@Url.Content("~/Static/less/site.less")" rel="stylesheet" type="text/css" />
+  <link href="@Url.Content("~/Static/less/site.less")" rel="stylesheet" type="text/css"/>
+  @RenderSection("OptionalStyles", required: false)
 </head>
 <body>
   <div id="wrapper">

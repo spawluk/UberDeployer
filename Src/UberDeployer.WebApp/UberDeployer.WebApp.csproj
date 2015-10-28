@@ -140,6 +140,7 @@
     <Compile Include="Core\ApiControllers\InternalApiController.cs" />
     <Compile Include="Core\Connectivity\ClientNotConnectedException.cs" />
     <Compile Include="Core\Connectivity\DeploymentHub.cs" />
+    <Compile Include="Core\Connectivity\DiagnosticMessagesHub.cs" />
     <Compile Include="Core\Infrastructure\UberDeployerViewEngine.cs" />
     <Compile Include="Core\Infrastructure\UberDeployerWebAppController.cs" />
     <Compile Include="Core\Models\Api\CollectProjectDependenciesToDeployRequest.cs" />
@@ -192,45 +193,13 @@
     <None Include="Static\less\bootstrap-helpers.less" />
     <Content Include="Static\plugins\signalr\jquery.signalR-2.2.0.js" />
     <Content Include="Static\plugins\signalr\jquery.signalR-2.2.0.min.js" />
-    <Content Include="Static\less\bootstrap-helpers.css">
-      <DependentUpon>bootstrap-helpers.less</DependentUpon>
-    </Content>
-    <Content Include="Static\less\bootstrap-helpers.min.css">
-      <DependentUpon>bootstrap-helpers.css</DependentUpon>
-    </Content>
     <Content Include="Static\js\envDeploy.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Static\plugins\bootstrap\css\bootstrap.min.css">
-      <DependentUpon>bootstrap.css</DependentUpon>
-    </Content>
-    <Content Include="Static\less\flat-buttons.css.map">
-      <DependentUpon>flat-buttons.css</DependentUpon>
-    </Content>
     <None Include="Static\less\flat-buttons.less" />
-    <Content Include="Static\less\flat-buttons.css">
-      <DependentUpon>flat-buttons.less</DependentUpon>
-    </Content>
-    <Content Include="Static\less\flat-buttons.min.css">
-      <DependentUpon>flat-buttons.css</DependentUpon>
-    </Content>
-    <Content Include="Static\less\site.css.map">
-      <DependentUpon>site.css</DependentUpon>
-    </Content>
+    <Content Include="Static\plugins\typeahead\typeahead.less" />
     <None Include="Static\plugins\fontawesome\css\font-awesome.less" />
-    <Content Include="Static\plugins\fontawesome\css\font-awesome.css">
-      <DependentUpon>font-awesome.less</DependentUpon>
-    </Content>
-    <Content Include="Static\plugins\fontawesome\css\font-awesome.min.css">
-      <DependentUpon>font-awesome.css</DependentUpon>
-    </Content>
     <None Include="Static\less\fonts.less" />
-    <Content Include="Static\less\fonts.css">
-      <DependentUpon>fonts.less</DependentUpon>
-    </Content>
-    <Content Include="Static\less\fonts.min.css">
-      <DependentUpon>fonts.css</DependentUpon>
-    </Content>
     <Content Include="Static\plugins\bootstrap\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Static\plugins\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Static\plugins\bootstrap\fonts\glyphicons-halflings-regular.woff" />
@@ -284,33 +253,18 @@
     <Content Include="Static\fonts\lato\lato-light-webfont.svg" />
     <Content Include="Static\fonts\lato\lato-regular-webfont.svg" />
     <Content Include="Static\img\logo.png" />
-    <Content Include="Static\plugins\toastr\toastr.css">
-      <DependentUpon>toastr.less</DependentUpon>
-    </Content>
     <Content Include="Static\plugins\toastr\toastr.js" />
-    <Content Include="Static\plugins\toastr\toastr.min.css">
-      <DependentUpon>toastr.css</DependentUpon>
-    </Content>
     <Content Include="Static\plugins\toastr\toastr.min.js" />
-    <Content Include="Static\less\sidebar.css">
-      <DependentUpon>sidebar.less</DependentUpon>
-    </Content>
-    <Content Include="Static\less\sidebar.min.css">
-      <DependentUpon>sidebar.css</DependentUpon>
-    </Content>
-    <Content Include="Static\less\site.css">
-      <DependentUpon>site.less</DependentUpon>
-    </Content>
+    <Content Include="Static\plugins\typeahead\bloodhound.js" />
+    <Content Include="Static\plugins\typeahead\bloodhound.min.js" />
+    <Content Include="Static\plugins\typeahead\typeahead.bundle.js" />
+    <Content Include="Static\plugins\typeahead\typeahead.bundle.min.js" />
+    <Content Include="Static\plugins\typeahead\typeahead.jquery.js" />
+    <Content Include="Static\plugins\typeahead\typeahead.jquery.min.js" />
     <Content Include="Static\site.js" />
     <Content Include="Static\plugins\jquery\jquery.js" />
     <None Include="Static\less\site.less" />
-    <Content Include="Static\plugins\bootstrap\css\bootstrap.css">
-      <DependentUpon>bootstrap.less</DependentUpon>
-    </Content>
     <Content Include="Static\plugins\bootstrap\js\bootstrap.js" />
-    <Content Include="Static\less\site.min.css">
-      <DependentUpon>site.css</DependentUpon>
-    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -5,6 +5,81 @@
   Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section OptionalStyles
+{
+  <link href="@Url.Content("~/Static/plugins/typeahead/typeahead.less")" rel="stylesheet" type="text/css" />
+}
+
+@section OptionalScripts {
+  <script type="text/javascript" src="@Url.Content("~/Static/plugins/typeahead/bloodhound.js")"></script>
+  <script type="text/javascript" src="@Url.Content("~/Static/plugins/typeahead/typeahead.jquery.js")"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+
+      var targetEnvironmentName = @Html.Raw(Model.InitialSelection != null ? string.Format("'{0}'", Model.InitialSelection.TargetEnvironmentName) : "null");
+      var projectName = @Html.Raw(Model.InitialSelection != null && !string.IsNullOrEmpty(Model.InitialSelection.ProjectName) ? string.Format("'{0}'", Model.InitialSelection.ProjectName) : "null");
+      var projectConfigurationName = @Html.Raw(Model.InitialSelection != null && !string.IsNullOrEmpty(Model.InitialSelection.ProjectConfigurationName) ? string.Format("'{0}'", Model.InitialSelection.ProjectConfigurationName) : "null");
+      var projectConfigurationBuildId = @Html.Raw(Model.InitialSelection != null && !string.IsNullOrEmpty(Model.InitialSelection.ProjectConfigurationBuildId) ? string.Format("'{0}'", Model.InitialSelection.ProjectConfigurationBuildId) : "null");
+
+      var initData = {
+        userCanDeploy: "true",
+        initialSelection: {
+          targetEnvironmentName: targetEnvironmentName,
+          projectName: projectName,
+          projectConfigurationName: projectConfigurationName,
+          projectConfigurationBuildId: projectConfigurationBuildId
+        }
+      };
+
+      initializeDeploymentPage(initData);
+
+      $("#dlg-collect-dependencies-checkbox-all").change(function() {
+
+        var self = this;
+
+        var inputs = $('#dlg-collect-dependencies-grid').find("input[type=checkbox]");
+
+        inputs.each(function() {
+          this.checked = self.checked;
+        });
+      });
+
+      var substringMatcher = function(source) {
+        return function findMatches(q, cb) {
+          var matches, substringRegex;
+
+          // an array that will be populated with substring matches
+          matches = [];
+
+          // regex used to determine if a string contains the substring `q`
+          substrRegex = new RegExp(q, 'i');
+
+          // iterate through the pool of strings and for any string that
+          // contains the substring `q`, add it to the `matches` array
+          $.each(g_ProjectNames, function(i, str) {
+            if (substrRegex.test(str)) {
+              matches.push(str);
+            }
+          });
+
+          cb(matches);
+        };
+      };
+
+      $('#main-row .typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+      },
+      {
+        name: 'projects',
+        source: substringMatcher(g_ProjectNames)
+      });
+    })
+  </script>
+}
+
 <div id="content-title">
   <div class="row">
     <div class="col-md-12">
@@ -34,22 +109,29 @@
 
     <div class="row" id="main-row">
       <div class="col-md-3">
-        <label for="lst-projects" class="lst-header">Projects:</label>
-        <div class="lst-filter">
-          <input type="checkbox" id="chb-deployable-projects" @(Model.ShowOnlyDeployable ? "checked=\"checked\"" : "")/>
-          <label for="chb-deployable-projects">Only deployable</label>
+        
+        <div class="row">
+          <label for="lst-projects" class="lst-header">Projects:</label>
+          <div class="lst-filter">
+            <input type="checkbox" id="chb-deployable-projects" @(Model.ShowOnlyDeployable ? "checked=\"checked\"" : "") />
+            <label for="chb-deployable-projects">Only deployable</label>
+          </div>
         </div>
-        <br/>
-        <select id="lst-projects" size="10"></select>
+        <div class="row">
+          <input class="typeahead" type="text" placeholder="Project" />
+        </div>
+        <div class="row">
+          <select id="lst-projects" size="10"></select>
+        </div>
       </div>
       <div class="col-md-4">
         <label for="lst-project-configs" class="lst-header">Configurations:</label>
-        <br/>
+        <br />
         <select id="lst-project-configs" size="10"></select>
       </div>
       <div class="col-md-5">
         <label for="lst-project-config-builds" class="lst-header">Builds:</label>
-        <br/>
+        <br />
         <select id="lst-project-config-builds" size="10"></select>
       </div>
     </div>
@@ -99,7 +181,8 @@
           <p>
             <q><em>@Model.TipOfTheDay</em></q>
           </p>
-          <p><small>Courtesy of <a href="http://fuckinghomepage.com/">Fucking Homepage</a>.</small>
+          <p>
+            <small>Courtesy of <a href="http://fuckinghomepage.com/">Fucking Homepage</a>.</small>
           </p>
         </div>
       </div>
@@ -108,7 +191,7 @@
           <p class="dev-life-description">
             "@Model.FunnyGifDescription"
           </p>
-          <img src="@Model.FunnyGifUrl"/>
+          <img src="@Model.FunnyGifUrl" />
         </div>
       </div>
     </div>
@@ -122,40 +205,3 @@
 @{ Html.RenderPartial("Popups/DeployArtifactsToLocation");}
 
 @{ Html.RenderPartial("Popups/CollectDependencies");}
-
-
-@section OptionalScripts {
-  <script type="text/javascript">
-    $(document).ready(function() {
-
-      var targetEnvironmentName = @Html.Raw(Model.InitialSelection != null ? string.Format("'{0}'", Model.InitialSelection.TargetEnvironmentName) : "null");
-      var projectName = @Html.Raw(Model.InitialSelection != null && !string.IsNullOrEmpty(Model.InitialSelection.ProjectName) ? string.Format("'{0}'", Model.InitialSelection.ProjectName) : "null");
-      var projectConfigurationName = @Html.Raw(Model.InitialSelection != null && !string.IsNullOrEmpty(Model.InitialSelection.ProjectConfigurationName) ? string.Format("'{0}'", Model.InitialSelection.ProjectConfigurationName) : "null");
-      var projectConfigurationBuildId = @Html.Raw(Model.InitialSelection != null && !string.IsNullOrEmpty(Model.InitialSelection.ProjectConfigurationBuildId) ? string.Format("'{0}'", Model.InitialSelection.ProjectConfigurationBuildId) : "null");
-
-      var initData = {
-        userCanDeploy: "true",
-        initialSelection: {
-          targetEnvironmentName: targetEnvironmentName,
-          projectName: projectName,
-          projectConfigurationName: projectConfigurationName,
-          projectConfigurationBuildId: projectConfigurationBuildId
-        }
-      };
-
-      initializeDeploymentPage(initData);
-
-      $("#dlg-collect-dependencies-checkbox-all").change(function() {
-
-        var self = this;
-
-        var inputs = $('#dlg-collect-dependencies-grid').find("input[type=checkbox]");
-
-        inputs.each(function() {
-          this.checked = self.checked;
-        });
-      });
-    })
-</script>
-
-}
