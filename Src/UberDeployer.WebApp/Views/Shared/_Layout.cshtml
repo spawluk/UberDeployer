@@ -3,14 +3,15 @@
 @model BaseViewModel
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>@ViewBag.Title</title>
-    <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/png" />
-    <link href="@Url.Content("~/Static/plugins/bootstrap/css/bootstrap.min.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Static/plugins/fontawesome/css/font-awesome.min.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Static/plugins/toastr/toastr.min.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Static/css/site.min.css?t=382743")" rel="stylesheet" type="text/css" />    
-  </head>
+<head>
+  <title>@ViewBag.Title</title>
+  <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/png" />
+  <link href="@Url.Content("~/Static/plugins/bootstrap/css/bootstrap.less")" rel="stylesheet" type="text/css" />
+  <link href="@Url.Content("~/Static/plugins/fontawesome/css/font-awesome.less")" rel="stylesheet" type="text/css" />
+  <link href="@Url.Content("~/Static/plugins/toastr/toastr.less")" rel="stylesheet" type="text/css" />
+  <link href="@Url.Content("~/Static/less/site.less")" rel="stylesheet" type="text/css"/>
+  @RenderSection("OptionalStyles", required: false)
+</head>
 <body>
   <div id="wrapper">
     <div id="sidebar-wrapper">
@@ -22,8 +23,8 @@
         <li class="@(Model.CurrentAppPage == AppPage.History ? "active" : "")">
           <a href="@Url.Action("Index", "History")">History</a>
         </li>
-        @if(@Model.IsEnvDeployEnabled)
-        {
+        @if (@Model.IsEnvDeployEnabled)
+      {
           <li class="@(Model.CurrentAppPage == AppPage.EnvDeployment ? "active" : "")">
             <a href="@Url.Action("Index", "EnvDeployment")">Deploy All</a>
           </li>
@@ -40,22 +41,23 @@
       @RenderBody()
     </div>
   </div>
+
   <script type="text/javascript" src="@Url.Content("~/Static/plugins/jquery/jquery.js")"> </script>
   <script type="text/javascript" src="@Url.Content("~/Static/plugins/toastr/toastr.min.js")"> </script>
   <script type="text/javascript" src="@Url.Content("~/Static/plugins/bootstrap/js/bootstrap.js")"> </script>
-
-  <script type="text/javascript" src="@Url.Content("~/Static/site.js?t=857337")"> </script>
-  <script type="text/javascript" src="@Url.Content("~/Static/plugins/jquery/jquery.signalr.js")"> </script>
-  <script src="signalr/hubs" type="text/javascript"> </script>
+  
+  <script type="text/javascript" src="@Url.Content("~/Static/site.js?t=857338")"> </script>
+  <script type="text/javascript" src="@Url.Content("~/Static/plugins/signalr/jquery.signalR-2.2.0.min.js")"> </script>
+  <script type="text/javascript" src="@Url.Content("~/signalr/hubs")"> </script>
   <script type="text/javascript">
     setAppPrefix('@(Request.ApplicationPath.EndsWith("/") ? Request.ApplicationPath : Request.ApplicationPath + "/")');
     $(function () {
-      $('#menu-toggle').click(function(event) {
+      $('#menu-toggle').click(function (event) {
         event.preventDefault();
 
         $('#wrapper').toggleClass('active');
       });
-      
+
       $('#sidebar-footer a.info').click(function (event) {
         event.preventDefault();
         toastr.info('Username: @Model.Username.Replace(@"\", @"\\")<br/>Version @(BuildManager.GetGlobalAsaxType().BaseType.Assembly.GetName().Version)');

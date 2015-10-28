@@ -9,6 +9,7 @@ using UberDeployer.WebApp.Core.Services;
 
 namespace UberDeployer.WebApp.Core.Connectivity
 {
+  [Authorize]
   public class DeploymentHub : Hub
   {
     private static readonly Dictionary<string, string> _connectionIdUserIdentityDict = new Dictionary<string, string>();

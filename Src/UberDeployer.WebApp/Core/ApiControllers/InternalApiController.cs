@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
-
+using Microsoft.AspNet.SignalR;
 using UberDeployer.Agent.Proxy;
 using UberDeployer.Agent.Proxy.Dto;
 using UberDeployer.Common.SyntaxSugar;

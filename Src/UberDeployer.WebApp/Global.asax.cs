@@ -35,8 +35,6 @@ namespace UberDeployer.WebApp
       GlobalContext.Properties["applicationName"] = "UberDeployer.WebApp";
       XmlConfigurator.Configure();
 
-      RouteTable.Routes.MapHubs();
-
       ViewEngines.Engines.Add(new UberDeployerViewEngine());
 
       AreaRegistration.RegisterAllAreas();

@@ -7,6 +7,7 @@ var g_TargetEnvironmentCookieName = 'target-environment-name';
 var g_TargetEnvironmentCookieExpirationInDays = 365;
 
 var g_ProjectList = [];
+var g_ProjectNames = [];
 var g_EnvironmentList = [];
 
 var g_userCanDeploy = false;
@@ -378,10 +379,12 @@ function doLoadProjects(environmentName, onlyDeployable, onFinishedCallback) {
     .done(
       function (data) {
         g_ProjectList = [];
+        g_ProjectNames = [];
         clearProjects();
 
         $.each(data.projects, function (i, val) {
           g_ProjectList[val.Name] = new Project(val.Name, val.Type, val.AllowedEnvironmentNames);
+          g_ProjectNames.push(val.Name);
 
           domHelper.getProjectsElement()
             .append(
@@ -775,10 +778,10 @@ function kickAss() {
 
 function setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog, collectProjectDependenciesDialog) {
   var deploymentHub = $.connection.deploymentHub;
+  var diagnosticMessagesHub = $.connection.diagnosticMessagesHub;
 
-  deploymentHub.client.connected = function () { };
-  deploymentHub.client.disconnected = function () { };
-
+  setupDiagnosticMessagesHub(diagnosticMessagesHub);
+  
   deploymentHub.client.promptForCredentials = function (message) {
     collectCredentialsDialog.showDialog(message);
   };
@@ -804,6 +807,12 @@ function setupSignalR(collectCredentialsDialog, collectScriptsToRunDialog, colle
   };
 
   $.connection.hub.start();
+}
+
+function setupDiagnosticMessagesHub(diagnosticMessagesHub) {
+  diagnosticMessagesHub.client.onDiagnosticMessage = function(message) {
+    console.debug(message);
+  }
 }
 
 var CollectCredentialsDialog = (function () {
