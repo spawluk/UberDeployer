@@ -146,6 +146,11 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string ExtendedProjectName { get; set; }
     }
 
+    public class PowerShellScriptProjectInfoXml : ProjectInfoXml
+    {
+      public string PowerShellScriptPath { get; set; }
+    }
+
     private readonly string _xmlFilePath;
 
     private ProjectInfosXml _projectInfosXml;
@@ -378,6 +383,21 @@ namespace UberDeployer.Core.DataAccess.Xml
             true,
             extensionProjectXml.ExtendedProjectName,
             extensionProjectXml.DependentProjects);
+      }
+
+      var powerShellScriptProjectInfoXml = projectInfoXml as PowerShellScriptProjectInfoXml;
+
+      if (powerShellScriptProjectInfoXml != null)
+      {
+        return
+          new PowerShellScriptProjectInfo(
+            powerShellScriptProjectInfoXml.Name,
+            powerShellScriptProjectInfoXml.ArtifactsRepositoryName,
+            allowedEnvironmentNames,
+            powerShellScriptProjectInfoXml.ArtifactsRepositoryDirName,
+            powerShellScriptProjectInfoXml.ArtifactsAreNotEnvironmentSpecific,
+            powerShellScriptProjectInfoXml.PowerShellScriptPath,
+            powerShellScriptProjectInfoXml.DependentProjects);
       }
 
       throw new NotSupportedException(string.Format("Project type '{0}' is not supported.", projectInfoXml.GetType()));

@@ -118,6 +118,7 @@
     <Compile Include="Core\Management\Iis\MsDeployBasedIisManagerTests.cs" />
     <Compile Include="Core\Management\NtServices\NtServiceDescriptorTests.cs" />
     <Compile Include="Core\Management\NtServices\ScExeBasedNtServiceManagerTests.cs" />
+    <Compile Include="Core\Management\PowerShell\PowerShellExecutorTests.cs" />
     <Compile Include="Core\TeamCity\ModelsTests.cs" />
     <Compile Include="Core\TeamCity\TeamCityClientTests.cs" />
     <Compile Include="Core\TeamCity\TeamCityRestClientTests.cs" />

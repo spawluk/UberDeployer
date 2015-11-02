@@ -72,6 +72,10 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\System.Management.Automation_PowerShell_3.0.6.3.9600.17400\lib\net40\System.Management.Automation.dll</HintPath>
+    </Reference>
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -90,11 +94,15 @@
     <Compile Include="Deployment\IUserNameNormalizer.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Pipeline\IEnvDeploymentPipeline.cs" />
+    <Compile Include="Deployment\Steps\RunPowerShellScriptStep.cs" />
     <Compile Include="Deployment\Tasks\DependenciesDeployment\DeployDependenciesTask.cs" />
     <Compile Include="Deployment\Steps\AddRoleToUserStep.cs" />
     <Compile Include="Deployment\Steps\AddUserToDatabaseStep.cs" />
     <Compile Include="Deployment\Tasks\DependenciesDeployment\ProjectDeployment.cs" />
+    <Compile Include="Deployment\Tasks\DeployPowerShellScriptDeploymentTask.cs" />
     <Compile Include="Deployment\UserNameNormalizer.cs" />
+    <Compile Include="Domain\Input\PowerShellInputParams.cs" />
+    <Compile Include="Domain\PowerShellScriptProjectInfo.cs" />
     <Compile Include="Domain\ProjectDeploymentData.cs" />
     <Compile Include="Domain\IEnvironmentDeployInfoRepository.cs" />
     <Compile Include="Domain\EnvironmentDeployInfo.cs" />
@@ -234,6 +242,8 @@
     <Compile Include="Management\MsDeploy\IMsDeploy.cs" />
     <Compile Include="Management\MsDeploy\MsDeploy.cs" />
     <Compile Include="Management\MsDeploy\MsDeployException.cs" />
+    <Compile Include="Management\PowerShell\IPowerShellRemoteExecutor.cs" />
+    <Compile Include="Management\PowerShell\PowerShellRemoteExecutor.cs" />
     <Compile Include="Management\ScheduledTasks\ITaskScheduler.cs" />
     <Compile Include="Management\ScheduledTasks\RepetitionSpecification.cs" />
     <Compile Include="Management\ScheduledTasks\ScheduledTaskDetails.cs" />
@@ -316,7 +326,9 @@
       <Name>UberDeployer.Core.DbDiff</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

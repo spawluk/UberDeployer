@@ -21,5 +21,10 @@ namespace UberDeployer.Common.IO
     {
       File.Copy(sourceFileName, destFileName);
     }
+
+    public string ReadAllText(string filePath)
+    {
+      return File.ReadAllText(filePath);
+    }
   }
 }
