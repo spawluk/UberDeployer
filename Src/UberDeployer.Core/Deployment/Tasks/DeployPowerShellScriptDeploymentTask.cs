@@ -1,4 +1,6 @@
-﻿using UberDeployer.Common.IO;
+﻿using System;
+using System.Collections.Generic;
+using UberDeployer.Common.IO;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 
@@ -6,7 +8,9 @@ namespace UberDeployer.Core.Deployment.Tasks
 {
   public class DeployPowerShellScriptDeploymentTask : DeploymentTask
   {
-    private readonly IFileAdapter _fileAdapter;    
+    public const string ScriptName = "Install.ps1";
+
+    private readonly IFileAdapter _fileAdapter;
     private readonly IArtifactsRepository _artifactsRepository;
     private readonly IDirectoryAdapter _directoryAdapter;
     private readonly IZipFileAdapter _zipFileAdapter;
@@ -31,6 +35,7 @@ namespace UberDeployer.Core.Deployment.Tasks
     protected override void DoPrepare()
     {
       EnvironmentInfo environmentInfo = GetEnvironmentInfo();
+      IEnumerable<string> targetMachineNames = _projectInfo.GetTargetMachines(environmentInfo);
 
       _projectInfo = GetProjectInfo<PowerShellScriptProjectInfo>();
 
@@ -68,13 +73,32 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(binariesConfiguratorStep);
       }
 
-      var runPowerShellScriptStep = 
-        new RunPowerShellScriptStep(
-        _projectInfo.MachineName,
-        _projectInfo.ScriptPath,
-        _fileAdapter);
+      foreach (var targetMachineName in targetMachineNames)
+      {
+        // Create temp dir on remote machine
+        var createRemoteTempDirStep = new CreateRemoteTempDir(targetMachineName);
 
-      AddSubTask(runPowerShellScriptStep);
+        AddSubTask(createRemoteTempDirStep);
+
+        // Copy files to remote machine
+        var copyFilesDeploymentStep = new CopyFilesDeploymentStep(
+          _directoryAdapter,
+          new Lazy<string>(() => extractArtifactsDeploymentStep.BinariesDirPath),
+          new Lazy<string>(() => createRemoteTempDirStep.RemoteTempDirPath));
+
+        AddSubTask(copyFilesDeploymentStep);
+
+        // Run powershell script
+        var runPowerShellScriptStep =
+          new RunPowerShellScriptStep(
+            targetMachineName,
+            new Lazy<string>(() => createRemoteTempDirStep.RemoteTempDirPath),
+            ScriptName);
+
+        AddSubTask(runPowerShellScriptStep);
+
+        // Delete remote temp dir
+      }
     }
   }
 }

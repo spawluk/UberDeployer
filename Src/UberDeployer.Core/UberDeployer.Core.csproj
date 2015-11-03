@@ -94,6 +94,7 @@
     <Compile Include="Deployment\IUserNameNormalizer.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Pipeline\IEnvDeploymentPipeline.cs" />
+    <Compile Include="Deployment\Steps\CreateRomoteTempDir.cs" />
     <Compile Include="Deployment\Steps\RunPowerShellScriptStep.cs" />
     <Compile Include="Deployment\Tasks\DependenciesDeployment\DeployDependenciesTask.cs" />
     <Compile Include="Deployment\Steps\AddRoleToUserStep.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Deployment\Tasks\DeployPowerShellScriptDeploymentTask.cs" />
     <Compile Include="Deployment\UserNameNormalizer.cs" />
     <Compile Include="Domain\Input\PowerShellInputParams.cs" />
+    <Compile Include="Domain\MachineType.cs" />
     <Compile Include="Domain\PowerShellScriptProjectInfo.cs" />
     <Compile Include="Domain\ProjectDeploymentData.cs" />
     <Compile Include="Domain\IEnvironmentDeployInfoRepository.cs" />

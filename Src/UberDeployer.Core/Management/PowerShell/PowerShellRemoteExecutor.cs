@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using UberDeployer.Core.Deployment.Tasks;
 
 namespace UberDeployer.Core.Management.PowerShell
 {
@@ -19,7 +21,7 @@ namespace UberDeployer.Core.Management.PowerShell
       _onError = onError;
     }
 
-    public bool Execute(string script)
+    public PSObject Execute(string script)
     {
       _errorCount = 0;
 
@@ -52,7 +54,13 @@ namespace UberDeployer.Core.Management.PowerShell
 
           powerShell.EndInvoke(invokeResult);
 
-          return _errorCount == 0;
+          if (_errorCount != 0)
+          {
+            // TODO MARIO custom exception
+            throw new DeploymentTaskException("Failed executing PowerShell script");
+          }
+
+          return outputCollection.LastOrDefault();
         }
       }
     }

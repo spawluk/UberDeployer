@@ -62,6 +62,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\System.Management.Automation_PowerShell_3.0.6.3.9600.17400\lib\net40\System.Management.Automation.dll</HintPath>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Transactions" />
@@ -101,6 +105,8 @@
     <Compile Include="Core\Deployment\Pipeline\Modules\EnforceTargetEnvironmentConstraintsModuleTests.cs" />
     <Compile Include="Core\Deployment\PrepareVersionedFolderDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\RunDbScriptsDeploymentStepTests.cs" />
+    <Compile Include="Core\Deployment\RunPowerShellScriptStepTests.cs" />
+    <Compile Include="Core\Deployment\Steps\CreateRemoteTempDirTests.cs" />
     <Compile Include="Core\Deployment\UpdateApplicationShortcutDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\UserNameNormalizerTests.cs" />
     <Compile Include="Core\Domain\EnvironmentInfoTests.cs" />
@@ -244,6 +250,7 @@
       <Link>Data\ProjectInfos.xml</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,7 +1,9 @@
-﻿namespace UberDeployer.Core.Management.PowerShell
+﻿using System.Management.Automation;
+
+namespace UberDeployer.Core.Management.PowerShell
 {
   public interface IPowerShellRemoteExecutor
   {
-    bool Execute(string script);
+    PSObject Execute(string script);
   }
 }
