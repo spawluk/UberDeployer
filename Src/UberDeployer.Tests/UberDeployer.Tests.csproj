@@ -107,6 +107,7 @@
     <Compile Include="Core\Deployment\RunDbScriptsDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\RunPowerShellScriptStepTests.cs" />
     <Compile Include="Core\Deployment\Steps\CreateRemoteTempDirTests.cs" />
+    <Compile Include="Core\Deployment\Steps\RemoveRemoteDirectoryStepTests.cs" />
     <Compile Include="Core\Deployment\UpdateApplicationShortcutDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\UserNameNormalizerTests.cs" />
     <Compile Include="Core\Domain\EnvironmentInfoTests.cs" />

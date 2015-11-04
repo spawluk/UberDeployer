@@ -8,17 +8,17 @@ using UberDeployer.Core.Deployment.Steps;
 namespace UberDeployer.Tests.Core.Deployment.Steps
 {
   [TestFixture]
-  public class CreateRemoteTempDirTests
+  public class RemoveRemoteDirectoryStepTests
   {
     [Test]
+    [Ignore]
     public void TEST_METHOD()
     {
       // arrange
-      var createRemoteTempDir = new CreateRemoteTempDirStep("D_APP03");
-
+      var removeRemoteDirectoryStep = new RemoveRemoteDirectoryStep("D_APP03", new Lazy<string>(() => @"E:\LOGS\bla bal bla"));
+      
       // act
-      createRemoteTempDir.Prepare();
-      createRemoteTempDir.Execute();
+      removeRemoteDirectoryStep.PrepareAndExecute();
 
       // assert
     }

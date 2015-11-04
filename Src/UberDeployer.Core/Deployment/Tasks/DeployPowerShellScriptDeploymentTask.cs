@@ -76,7 +76,7 @@ namespace UberDeployer.Core.Deployment.Tasks
       foreach (var targetMachineName in targetMachineNames)
       {
         // Create temp dir on remote machine
-        var createRemoteTempDirStep = new CreateRemoteTempDir(targetMachineName);
+        var createRemoteTempDirStep = new CreateRemoteTempDirStep(targetMachineName);
 
         AddSubTask(createRemoteTempDirStep);
 
@@ -98,6 +98,11 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(runPowerShellScriptStep);
 
         // Delete remote temp dir
+        var removeRemoteDirectory = new RemoveRemoteDirectoryStep(
+          targetMachineName,
+          new Lazy<string>(() => createRemoteTempDirStep.RemoteTempDirPath));
+
+        AddSubTask(removeRemoteDirectory);
       }
     }
   }

@@ -94,6 +94,7 @@
     <Compile Include="Deployment\IUserNameNormalizer.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Pipeline\IEnvDeploymentPipeline.cs" />
+    <Compile Include="Deployment\Steps\RemoveRomoteTempDir.cs" />
     <Compile Include="Deployment\Steps\CreateRomoteTempDir.cs" />
     <Compile Include="Deployment\Steps\RunPowerShellScriptStep.cs" />
     <Compile Include="Deployment\Tasks\DependenciesDeployment\DeployDependenciesTask.cs" />

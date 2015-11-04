@@ -5,7 +5,7 @@ using UberDeployer.Core.Management.PowerShell;
 
 namespace UberDeployer.Core.Deployment.Steps
 {
-  public class CreateRemoteTempDir : DeploymentStep
+  public class CreateRemoteTempDirStep : DeploymentStep
   {
     private readonly string _machineName;
 
@@ -16,7 +16,7 @@ namespace UberDeployer.Core.Deployment.Steps
       "Set-Location $TempDir;" + 
       "(pwd).Path;";
 
-    public CreateRemoteTempDir(string machineName)
+    public CreateRemoteTempDirStep(string machineName)
     {
       _machineName = machineName;
     }
