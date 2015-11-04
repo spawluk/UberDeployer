@@ -138,6 +138,62 @@
         <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
       </DependentProjects>
     </ProjectInfoXml>
-    
+
+    <!-- PowerShell script projects -->
+    <ProjectInfoXml xsi:type="PowerShellScriptProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SamplePowerShellScriptProjectForAppServer</Name>
+      <ArtifactsRepositoryName>UberDeployerPowerShellSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
+      <TargetMachine xsi:type="AppServerTargetMachineXml">
+      </TargetMachine>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+      </DependentProjects>
+    </ProjectInfoXml>
+
+    <ProjectInfoXml xsi:type="PowerShellScriptProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SamplePowerShellScriptProjectForDatabaseServer</Name>
+      <ArtifactsRepositoryName>UberDeployerPowerShellSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
+      <TargetMachine xsi:type="DatabaseServerTargetMachineXml">
+        <DatabaseServerId>Database.Server</DatabaseServerId>
+      </TargetMachine>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+      </DependentProjects>
+    </ProjectInfoXml>
+
+    <ProjectInfoXml xsi:type="PowerShellScriptProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SamplePowerShellScriptProjectForWebServer</Name>
+      <ArtifactsRepositoryName>UberDeployerPowerShellSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
+      <TargetMachine xsi:type="WebServerTargetMachinesXml">
+      </TargetMachine>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+      </DependentProjects>
+    </ProjectInfoXml>
+
+    <ProjectInfoXml xsi:type="PowerShellScriptProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SamplePowerShellScriptProjectForTerminalServer</Name>
+      <ArtifactsRepositoryName>UberDeployerPowerShellSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
+      <TargetMachine xsi:type="TerminalServerTargetMachineXml">
+      </TargetMachine>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+      </DependentProjects>
+    </ProjectInfoXml>
+
+    <ProjectInfoXml xsi:type="PowerShellScriptProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SamplePowerShellScriptProjectForSchedulerServer</Name>
+      <ArtifactsRepositoryName>UberDeployerPowerShellSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
+      <TargetMachine xsi:type="SchedulerServerTargetMachinesXml">
+      </TargetMachine>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+      </DependentProjects>
+    </ProjectInfoXml>
   </ProjectInfos>
 </ProjectInfosXml>
