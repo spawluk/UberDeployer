@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.DataAccess.Xml.ProjectInfos;
+using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Core.DataAccess.Xml
@@ -264,6 +266,8 @@ namespace UberDeployer.Core.DataAccess.Xml
 
     private static TargetMachine ConvertTargetMachine(TargetMachineXml targetMachine)
     {
+      Guard.NotNull(targetMachine, "targetMachine");
+
       if (targetMachine is AppServerTargetMachineXml)
       {
         return new AppServerTargetMachine();
