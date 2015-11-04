@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using log4net.Core;
 using NHibernate.Linq.Functions;
@@ -76,6 +77,11 @@ namespace UberDeployer.Core.Domain
       var appServerMachine = ExecuteOnMachine.TargetMachine as AppServerTargetMachine;
       if (appServerMachine != null)
       {
+        if (environmentInfo.EnableFailoverClusteringForNtServices)
+        {
+          throw new NotSupportedException("Getting target machines for failover cluster is not supported.");
+        }
+
         return new [] { environmentInfo.AppServerMachineName };
       }
 
