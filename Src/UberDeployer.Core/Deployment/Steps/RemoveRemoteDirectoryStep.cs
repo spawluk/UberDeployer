@@ -37,13 +37,11 @@ namespace UberDeployer.Core.Deployment.Steps
     private void OnOutput(string outputMessage)
     {
       PostDiagnosticMessage(outputMessage, DiagnosticMessageType.Trace);
-      Console.WriteLine(outputMessage);
     }
 
     private void OnError(string errorMessage)
     {
       PostDiagnosticMessage(errorMessage, DiagnosticMessageType.Error);
-      Console.WriteLine("Error: " +errorMessage);
     }
   }
 }

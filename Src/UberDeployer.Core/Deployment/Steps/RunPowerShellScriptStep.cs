@@ -46,13 +46,11 @@ namespace UberDeployer.Core.Deployment.Steps
     private void LogError(string errorMessage)
     {
       PostDiagnosticMessage(errorMessage, DiagnosticMessageType.Error);
-      Console.WriteLine(errorMessage);
     }
 
     private void LogOutput(string outputMessage)
     {
       PostDiagnosticMessage(outputMessage, DiagnosticMessageType.Trace);
-      Console.WriteLine(outputMessage);
     }
 
     public override string Description
