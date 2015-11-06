@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using UberDeployer.Common.IO;
+using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Management.PowerShell;
 
@@ -14,6 +14,10 @@ namespace UberDeployer.Core.Deployment.Steps
 
     public RunPowerShellScriptStep(string machineName, Lazy<string> lazyScriptPath, string scriptName)
     {
+      Guard.NotNullNorEmpty(scriptName, "scriptName");
+      Guard.NotNull(lazyScriptPath, "lazyScriptPath");
+      Guard.NotNullNorEmpty(scriptName, "scriptName");
+
       _machineName = machineName;
       _lazyScriptPath = lazyScriptPath;
       _scriptName = scriptName;

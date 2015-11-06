@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Management.Automation;
+using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Management.PowerShell;
 
@@ -18,6 +19,8 @@ namespace UberDeployer.Core.Deployment.Steps
 
     public CreateRemoteTempDirStep(string machineName)
     {
+      Guard.NotNullNorEmpty(machineName, "machineName");
+
       _machineName = machineName;
     }
 

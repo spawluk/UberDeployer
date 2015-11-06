@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Tasks;
 
 namespace UberDeployer.Core.Management.PowerShell
@@ -16,6 +17,8 @@ namespace UberDeployer.Core.Management.PowerShell
 
     public PowerShellRemoteExecutor(string machineName, Action<string> onOutput, Action<string> onError)
     {
+      Guard.NotNullNorEmpty(machineName, "machineName");
+
       _machineName = machineName;
       _onOutput = onOutput;
       _onError = onError;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UberDeployer.Common.IO;
+using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
 
@@ -27,6 +27,11 @@ namespace UberDeployer.Core.Deployment.Tasks
       IZipFileAdapter zipFileAdapter) 
       : base(projectInfoRepository, environmentInfoRepository)
     {
+      Guard.NotNull(artifactsRepository, "artifactsRepository");
+      Guard.NotNull(fileAdapter, "fileAdapter");
+      Guard.NotNull(directoryAdapter, "directoryAdapter");
+      Guard.NotNull(zipFileAdapter, "zipFileAdapter");
+
       _artifactsRepository = artifactsRepository;
       _fileAdapter = fileAdapter;
       _directoryAdapter = directoryAdapter;
