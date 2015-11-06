@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UberDeployer.Common.IO;
 using UberDeployer.Core.Deployment.Steps;
 using UberDeployer.Core.Domain;
@@ -35,9 +36,9 @@ namespace UberDeployer.Core.Deployment.Tasks
     protected override void DoPrepare()
     {
       EnvironmentInfo environmentInfo = GetEnvironmentInfo();
-      IEnumerable<string> targetMachineNames = _projectInfo.GetTargetMachines(environmentInfo);
-
       _projectInfo = GetProjectInfo<PowerShellScriptProjectInfo>();
+
+      IEnumerable<string> targetMachineNames = _projectInfo.GetTargetMachines(environmentInfo);
 
       // create a step for downloading the artifacts
       var downloadArtifactsDeploymentStep =
@@ -81,10 +82,12 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(createRemoteTempDirStep);
 
         // Copy files to remote machine
+        string machineName = targetMachineName;
+
         var copyFilesDeploymentStep = new CopyFilesDeploymentStep(
           _directoryAdapter,
-          new Lazy<string>(() => extractArtifactsDeploymentStep.BinariesDirPath),
-          new Lazy<string>(() => createRemoteTempDirStep.RemoteTempDirPath));
+          srcDirPathProvider : new Lazy<string>(() => extractArtifactsDeploymentStep.BinariesDirPath),
+          dstDirPath: new Lazy<string>(() => EnvironmentInfo.GetNetworkPath(machineName, createRemoteTempDirStep.RemoteTempDirPath)));
 
         AddSubTask(copyFilesDeploymentStep);
 
@@ -103,6 +106,14 @@ namespace UberDeployer.Core.Deployment.Tasks
           new Lazy<string>(() => createRemoteTempDirStep.RemoteTempDirPath));
 
         AddSubTask(removeRemoteDirectory);
+      }
+    }
+
+    public override string Description
+    {
+      get
+      {
+        return string.Format("Deploy PowerShell script project [{0}]", DeploymentInfo.ProjectName);
       }
     }
   }

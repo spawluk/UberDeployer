@@ -9,6 +9,7 @@ namespace UberDeployer.Agent.Proxy.Dto.Input
   [KnownType(typeof(WebAppInputParams))]
   [KnownType(typeof(WebServiceInputParams))]
   [KnownType(typeof(ExtensionInputParams))]
+  [KnownType(typeof(PowerShellScriptInputParams))]
   public abstract class InputParams
   {
   }

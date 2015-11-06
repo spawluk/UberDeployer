@@ -53,7 +53,12 @@ namespace UberDeployer.Core.Deployment.Steps
 
     public override string Description
     {
-      get { return string.Format("Run PowerShell script: {0} on server {1}", _lazyScriptPath, _machineName); }
+      get
+      {
+        string scriptPath = Path.Combine(_lazyScriptPath.Value, _scriptName);
+
+        return string.Format("Run PowerShell script: {0} on server {1}", scriptPath, _machineName);
+      }
     }
   }
 }
