@@ -259,6 +259,7 @@
     <Compile Include="Management\MsDeploy\MsDeployException.cs" />
     <Compile Include="Management\PowerShell\IPowerShellRemoteExecutor.cs" />
     <Compile Include="Management\PowerShell\PowerShellRemoteExecutor.cs" />
+    <Compile Include="Management\PowerShell\PowerShellScriptExecutionException.cs" />
     <Compile Include="Management\ScheduledTasks\ITaskScheduler.cs" />
     <Compile Include="Management\ScheduledTasks\RepetitionSpecification.cs" />
     <Compile Include="Management\ScheduledTasks\ScheduledTaskDetails.cs" />

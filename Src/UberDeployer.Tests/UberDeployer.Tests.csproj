@@ -105,9 +105,6 @@
     <Compile Include="Core\Deployment\Pipeline\Modules\EnforceTargetEnvironmentConstraintsModuleTests.cs" />
     <Compile Include="Core\Deployment\PrepareVersionedFolderDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\RunDbScriptsDeploymentStepTests.cs" />
-    <Compile Include="Core\Deployment\RunPowerShellScriptStepTests.cs" />
-    <Compile Include="Core\Deployment\Steps\CreateRemoteTempDirTests.cs" />
-    <Compile Include="Core\Deployment\Steps\RemoveRemoteDirectoryStepTests.cs" />
     <Compile Include="Core\Deployment\UpdateApplicationShortcutDeploymentStepTests.cs" />
     <Compile Include="Core\Deployment\UserNameNormalizerTests.cs" />
     <Compile Include="Core\Domain\EnvironmentInfoTests.cs" />
@@ -125,7 +122,6 @@
     <Compile Include="Core\Management\Iis\MsDeployBasedIisManagerTests.cs" />
     <Compile Include="Core\Management\NtServices\NtServiceDescriptorTests.cs" />
     <Compile Include="Core\Management\NtServices\ScExeBasedNtServiceManagerTests.cs" />
-    <Compile Include="Core\Management\PowerShell\PowerShellExecutorTests.cs" />
     <Compile Include="Core\TeamCity\ModelsTests.cs" />
     <Compile Include="Core\TeamCity\TeamCityClientTests.cs" />
     <Compile Include="Core\TeamCity\TeamCityRestClientTests.cs" />
