@@ -59,8 +59,7 @@ namespace UberDeployer.Core.Management.PowerShell
 
           if (_errorCount != 0)
           {
-            // TODO MARIO custom exception
-            throw new DeploymentTaskException("Failed executing PowerShell script");
+            throw new PowerShellScriptExecutionException(powerShell.Streams.Error);
           }
 
           return outputCollection.LastOrDefault();
