@@ -31,7 +31,7 @@ namespace UberDeployer.Core.Deployment.Steps
 
     public override string Description
     {
-      get { return string.Format("Removes [{0}] directory on machine: [{1}]", _directoryPathToRemove, _machineName); }
+      get { return string.Format("Removes [{0}] directory on machine: [{1}]", _directoryPathToRemove.Value, _machineName); }
     }
 
     private void OnOutput(string outputMessage)
