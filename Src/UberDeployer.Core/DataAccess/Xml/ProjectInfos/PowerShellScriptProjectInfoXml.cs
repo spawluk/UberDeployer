@@ -5,6 +5,8 @@ namespace UberDeployer.Core.DataAccess.Xml.ProjectInfos
   public class PowerShellScriptProjectInfoXml : ProjectInfoXml
   {
     public TargetMachineXml TargetMachine { get; set; }
+    
+    public string ScriptName { get; set; }
   }
 
   [XmlInclude(typeof(AppServerTargetMachineXml))]

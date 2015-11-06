@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain.Input;
 
@@ -16,6 +17,7 @@ namespace UberDeployer.Core.Domain
       string artifactsRepositoryDirName, 
       bool artifactsAreNotEnvironmentSpecific,
       TargetMachine targetMachine,
+      string scriptName,
       List<string> dependendProjectNames = null)
       : base(
         name, 
@@ -25,7 +27,11 @@ namespace UberDeployer.Core.Domain
         artifactsRepositoryDirName, 
         artifactsAreNotEnvironmentSpecific)
     {
+      Guard.NotNull(targetMachine, "targetMachine");
+      Guard.NotNullNorEmpty(scriptName, "scriptName");
+
       TargetMachine = targetMachine;
+      ScriptName = scriptName;
     }
 
     public override ProjectType Type
@@ -61,6 +67,8 @@ namespace UberDeployer.Core.Domain
     }
 
     public TargetMachine TargetMachine { get; private set; }
+    
+    public string ScriptName { get; private set; }
 
     public IEnumerable<string> GetTargetMachines(EnvironmentInfo environmentInfo)
     {

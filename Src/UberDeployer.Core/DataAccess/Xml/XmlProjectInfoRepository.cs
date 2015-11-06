@@ -258,6 +258,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             powerShellScriptProjectInfoXml.ArtifactsRepositoryDirName,
             powerShellScriptProjectInfoXml.ArtifactsAreNotEnvironmentSpecific,
             ConvertTargetMachine(powerShellScriptProjectInfoXml.TargetMachine),
+            powerShellScriptProjectInfoXml.ScriptName,
             powerShellScriptProjectInfoXml.DependentProjects);
       }
 

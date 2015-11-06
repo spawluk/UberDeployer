@@ -9,8 +9,6 @@ namespace UberDeployer.Core.Deployment.Tasks
 {
   public class DeployPowerShellScriptDeploymentTask : DeploymentTask
   {
-    public const string ScriptName = "Install.ps1";
-
     private readonly IFileAdapter _fileAdapter;
     private readonly IArtifactsRepository _artifactsRepository;
     private readonly IDirectoryAdapter _directoryAdapter;
@@ -101,7 +99,7 @@ namespace UberDeployer.Core.Deployment.Tasks
           new RunPowerShellScriptStep(
             targetMachineName,
             new Lazy<string>(() => createRemoteTempDirStep.RemoteTempDirPath),
-            ScriptName);
+            _projectInfo.ScriptName);
 
         AddSubTask(runPowerShellScriptStep);
 
