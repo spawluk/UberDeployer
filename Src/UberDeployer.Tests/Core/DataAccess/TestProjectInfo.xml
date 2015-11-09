@@ -146,6 +146,7 @@
       <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
       <TargetMachine xsi:type="AppServerTargetMachineXml">
       </TargetMachine>
+      <ScriptName>ScriptName.ps1</ScriptName>
       <DependentProjects>
         <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
       </DependentProjects>
@@ -158,6 +159,7 @@
       <TargetMachine xsi:type="DatabaseServerTargetMachineXml">
         <DatabaseServerId>Database.Server</DatabaseServerId>
       </TargetMachine>
+      <ScriptName>ScriptName.ps1</ScriptName>
       <DependentProjects>
         <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
       </DependentProjects>
@@ -169,6 +171,7 @@
       <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
       <TargetMachine xsi:type="WebServerTargetMachinesXml">
       </TargetMachine>
+      <ScriptName>ScriptName.ps1</ScriptName>
       <DependentProjects>
         <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
       </DependentProjects>
@@ -180,6 +183,7 @@
       <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
       <TargetMachine xsi:type="TerminalServerTargetMachineXml">
       </TargetMachine>
+      <ScriptName>ScriptName.ps1</ScriptName>
       <DependentProjects>
         <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
       </DependentProjects>
@@ -191,6 +195,7 @@
       <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
       <TargetMachine xsi:type="SchedulerServerTargetMachinesXml">
       </TargetMachine>
+      <ScriptName>ScriptName.ps1</ScriptName>
       <DependentProjects>
         <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
       </DependentProjects>
