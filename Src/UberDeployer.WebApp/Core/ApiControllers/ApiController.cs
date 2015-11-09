@@ -553,6 +553,11 @@ namespace UberDeployer.WebApp.Core.ApiControllers
           return new ExtensionInputParams();
         }
 
+        case ProjectType.PowerShellScript:
+        {
+          return new PowerShellScriptInputParams();
+        }
+
         default:
         {
           throw new NotSupportedException(string.Format("Unknown project type: '{0}'.", projectType));

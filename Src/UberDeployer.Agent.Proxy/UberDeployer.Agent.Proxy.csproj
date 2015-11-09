@@ -52,9 +52,11 @@
     <Compile Include="Dto\DbProjectConfigurationOverride.cs" />
     <Compile Include="Dto\DependentProject.cs" />
     <Compile Include="Dto\Input\ExtensionInputParams.cs" />
+    <Compile Include="Dto\Input\PowerShellScriptInputParams.cs" />
     <Compile Include="Dto\Metadata\MachineSpecificProjectVersion.cs" />
     <Compile Include="Dto\Metadata\ProjectMetadata.cs" />
     <Compile Include="Dto\EnvDeployment\ProjectToDeploy.cs" />
+    <Compile Include="Dto\PowerShellScriptProjectInfo.cs" />
     <Compile Include="Dto\Repetition.cs" />
     <Compile Include="Dto\SchedulerAppTask.cs" />
     <Compile Include="Dto\TeamCity\ProjectConfigurationBranch.cs" />

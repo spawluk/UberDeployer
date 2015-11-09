@@ -1,7 +1,9 @@
 ﻿using System;
 using AutoMapper;
+using UberDeployer.Agent.Proxy.Dto.Input;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Domain.Input;
+using ExtensionInputParams = UberDeployer.Core.Domain.Input.ExtensionInputParams;
 
 namespace UberDeployer.Agent.Service
 {
@@ -17,7 +19,8 @@ namespace UberDeployer.Agent.Service
         .Include<Core.Domain.SchedulerAppProjectInfo, Proxy.Dto.SchedulerAppProjectInfo>()
         .Include<Core.Domain.DbProjectInfo, Proxy.Dto.DbProjectInfo>()
         .Include<Core.Domain.UberDeployerAgentProjectInfo, Proxy.Dto.UberDeployerAgentProjectInfo>()
-        .Include<Core.Domain.ExtensionProjectInfo, Proxy.Dto.ProjectInfo>();
+        .Include<Core.Domain.ExtensionProjectInfo, Proxy.Dto.ProjectInfo>()
+        .Include<Core.Domain.PowerShellScriptProjectInfo, Proxy.Dto.PowerShellScriptProjectInfo>();
 
       Mapper.CreateMap<Core.Domain.NtServiceProjectInfo, Proxy.Dto.NtServiceProjectInfo>();
       Mapper.CreateMap<Core.Domain.WebAppProjectInfo, Proxy.Dto.WebAppProjectInfo>();
@@ -27,6 +30,7 @@ namespace UberDeployer.Agent.Service
       Mapper.CreateMap<Core.Domain.DbProjectInfo, Proxy.Dto.DbProjectInfo>();
       Mapper.CreateMap<Core.Domain.UberDeployerAgentProjectInfo, Proxy.Dto.UberDeployerAgentProjectInfo>();
       Mapper.CreateMap<Core.Domain.ExtensionProjectInfo, Proxy.Dto.ProjectInfo>();
+      Mapper.CreateMap<Core.Domain.PowerShellScriptProjectInfo, Proxy.Dto.PowerShellScriptProjectInfo>();
 
       Mapper.CreateMap<Core.Domain.IisAppPoolInfo, Proxy.Dto.IisAppPoolInfo>();
 
@@ -135,6 +139,12 @@ namespace UberDeployer.Agent.Service
       if (extensionInputParams != null)
       {
         return new ExtensionInputParams();  
+      }
+
+      var powerShellScriptInputParams = inputParams as Proxy.Dto.Input.PowerShellScriptInputParams;
+      if (powerShellScriptInputParams != null)
+      {
+        return new PowerShellInputParams();
       }
 
       throw new NotSupportedException(string.Format("Unknown input params type: '{0}'.", inputParams.GetType().FullName));

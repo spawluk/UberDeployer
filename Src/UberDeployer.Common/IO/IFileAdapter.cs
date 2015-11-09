@@ -7,5 +7,7 @@
     void Delete(string path);
 
     void Copy(string sourceFileName, string destFileName);
+
+    string ReadAllText(string filePath);
   }
 }

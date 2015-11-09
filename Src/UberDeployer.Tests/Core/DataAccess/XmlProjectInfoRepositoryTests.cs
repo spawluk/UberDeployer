@@ -1,5 +1,7 @@
 ﻿﻿using System;
-using System.IO;
+﻿using System.Collections;
+﻿using System.Collections.Generic;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -76,6 +78,55 @@ namespace UberDeployer.Tests.Core.DataAccess
       Assert.AreEqual(2, dependencyList.Count);
       Assert.IsTrue(dependencyList.Any(x => x.Name == "UberDeployer.SampleNtDependendServiceWithCycle1"));
       Assert.IsTrue(dependencyList.Any(x => x.Name == "UberDeployer.SampleNtDependendServiceWithCycle2"));
+    }
+
+    [TestCaseSource("GetPowerShellScriptProjectInfoTestCases")]
+    public void PowerShellScriptProjectInfo_is_loaded_properly_with_target_machine(string projectName, Type expectedTargetMachineType)
+    {
+      // act
+      ProjectInfo projectInfo = _projectInfoRepository.FindByName(projectName);
+
+      // assert
+      var powerShellScriptProjectInfo = projectInfo as PowerShellScriptProjectInfo;
+      Assert.IsNotNull(powerShellScriptProjectInfo);
+
+      Assert.IsInstanceOf(expectedTargetMachineType, powerShellScriptProjectInfo.TargetMachine);
+    }
+
+    [Test]
+    public void PowerShellScriptProjectInfo_loads_properly_DatabaseServerId()
+    {
+      // arrange
+      const string expectedDatabaseServerId = "Database.Server";
+
+      // act
+      ProjectInfo projectInfo = _projectInfoRepository.FindByName("UberDeployer.SamplePowerShellScriptProjectForDatabaseServer");
+
+      // assert
+      var powerShellScriptProjectInfo = projectInfo as PowerShellScriptProjectInfo;
+      Assert.IsNotNull(powerShellScriptProjectInfo);
+      
+      var databaseServerTargetMachine = powerShellScriptProjectInfo.TargetMachine as DatabaseServerTargetMachine;
+      Assert.IsNotNull(databaseServerTargetMachine);
+      Assert.AreEqual(expectedDatabaseServerId, databaseServerTargetMachine.DatabaseServerId);
+    }
+
+    public static IEnumerable<TestCaseData> GetPowerShellScriptProjectInfoTestCases()
+    {
+      yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForAppServer", typeof(AppServerTargetMachine))
+        .SetName(typeof(AppServerTargetMachine).Name);
+
+      yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForWebServer", typeof(WebServerTargetMachines))
+        .SetName(typeof(WebServerTargetMachines).Name);
+
+      yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForTerminalServer", typeof(TerminalServerTargetMachine))
+        .SetName(typeof(TerminalServerTargetMachine).Name);
+
+      yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForSchedulerServer", typeof(SchedulerServerTargetMachines))
+        .SetName(typeof(SchedulerServerTargetMachines).Name);
+
+      yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForDatabaseServer", typeof(DatabaseServerTargetMachine))
+        .SetName(typeof(DatabaseServerTargetMachine).Name);
     }
   }
 }

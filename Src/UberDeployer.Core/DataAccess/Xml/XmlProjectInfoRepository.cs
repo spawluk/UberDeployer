@@ -3,149 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-
+using UberDeployer.Common.SyntaxSugar;
+using UberDeployer.Core.DataAccess.Xml.ProjectInfos;
+using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Core.DataAccess.Xml
 {
   public class XmlProjectInfoRepository : IProjectInfoRepository
   {
-    [XmlInclude(typeof(NtServiceProjectInfoXml))]
-    [XmlInclude(typeof(WebAppProjectInfoXml))]
-    [XmlInclude(typeof(SchedulerAppProjectInfoXml))]
-    [XmlInclude(typeof(TerminalAppProjectInfoXml))]
-    [XmlInclude(typeof(DbProjectInfoXml))]
-    [XmlInclude(typeof(UberDeployerAgentProjectInfoXml))]
-    [XmlInclude(typeof(ExtensionProjectInfoXml))]
-    public class ProjectInfosXml
-    {
-      public List<ProjectInfoXml> ProjectInfos { get; set; }
-    }
-
-    public abstract class ProjectInfoXml
-    {
-      private string _allowedEnvironments;
-
-      public string Name { get; set; }
-
-      public string Type { get; set; }
-
-      public string ArtifactsRepositoryName { get; set; }
-
-      public string ArtifactsRepositoryDirName { get; set; }
-
-      public bool ArtifactsAreNotEnvironmentSpecific { get; set; }
-
-      [XmlAttribute("allowedEnvironments")]
-      public string AllowedEnvironments
-      {
-        get { return _allowedEnvironments; }
-        set { _allowedEnvironments = value; }
-      }
-      
-      [XmlArrayItem("ProjectName")]
-      public List<string> DependentProjects { get; set; }
-    }
-
-    public class NtServiceProjectInfoXml : ProjectInfoXml
-    {
-      public string NtServiceName { get; set; }
-
-      public string NtServiceDirName { get; set; }
-
-      public string NtServiceDisplayName { get; set; }
-
-      public string NtServiceExeName { get; set; }
-
-      public string NtServiceUserId { get; set; }
-
-      public string ExtensionsDirName { get; set; }
-    }    
-
-    public class WebAppProjectInfoXml : ProjectInfoXml
-    {
-      public string AppPoolId { get; set; }
-
-      public string WebSiteName { get; set; }
-
-      public string WebAppDirName { get; set; }
-
-      public string WebAppName { get; set; }
-    }
-
-    public class SchedulerAppProjectInfoXml : ProjectInfoXml
-    {
-      public string SchedulerAppDirName { get; set; }
-
-      public string SchedulerAppExeName { get; set; }
-
-      public List<SchedulerAppTaskXml> SchedulerAppTasks { get; set; }
-    }
-
-    public class SchedulerAppTaskXml
-    {
-      public string Name { get; set; }
-
-      public string ExecutableName { get; set; }
-
-      public string UserId { get; set; }
-
-      public int ScheduledHour { get; set; }
-
-      public int ScheduledMinute { get; set; }
-
-      /// <summary>
-      /// 0 - no limit.
-      /// </summary>
-      public int ExecutionTimeLimitInMinutes { get; set; }
-
-      public RepetitionXml Repetition { get; set; }
-    }
-
-    public class RepetitionXml
-    {
-      public bool Enabled { get; set; }
-
-      public string Interval { get; set; }
-
-      public string Duration { get; set; }
-
-      public bool StopAtDurationEnd { get; set; }
-    }
-
-    public class TerminalAppProjectInfoXml : ProjectInfoXml
-    {
-      public string TerminalAppName { get; set; }
-
-      public string TerminalAppDirName { get; set; }
-
-      public string TerminalAppExeName { get; set; }
-    }
-
-    public class DbProjectInfoXml : ProjectInfoXml
-    {
-      public string DbName { get; set; }
-
-      public string DatabaseServerId { get; set; }
-
-      public bool IsTransacional { get; set; }
-
-      public string DacpacFile { get; set; }
-
-      [XmlArray("Users")]
-      [XmlArrayItem("UserId")]
-      public List<string> Users { get; set; }
-    }
-
-    public class UberDeployerAgentProjectInfoXml : NtServiceProjectInfoXml
-    {
-    }
-
-    public class ExtensionProjectInfoXml : ProjectInfoXml
-    {
-      public string ExtendedProjectName { get; set; }
-    }
-
     private readonly string _xmlFilePath;
 
     private ProjectInfosXml _projectInfosXml;
@@ -380,7 +246,59 @@ namespace UberDeployer.Core.DataAccess.Xml
             extensionProjectXml.DependentProjects);
       }
 
+      var powerShellScriptProjectInfoXml = projectInfoXml as PowerShellScriptProjectInfoXml;
+
+      if (powerShellScriptProjectInfoXml != null)
+      {
+        return
+          new PowerShellScriptProjectInfo(
+            powerShellScriptProjectInfoXml.Name,
+            powerShellScriptProjectInfoXml.ArtifactsRepositoryName,
+            allowedEnvironmentNames,
+            powerShellScriptProjectInfoXml.ArtifactsRepositoryDirName,
+            powerShellScriptProjectInfoXml.ArtifactsAreNotEnvironmentSpecific,
+            ConvertTargetMachine(powerShellScriptProjectInfoXml.TargetMachine),
+            powerShellScriptProjectInfoXml.ScriptName,
+            powerShellScriptProjectInfoXml.DependentProjects);
+      }
+
       throw new NotSupportedException(string.Format("Project type '{0}' is not supported.", projectInfoXml.GetType()));
+    }
+
+    private static TargetMachine ConvertTargetMachine(TargetMachineXml targetMachine)
+    {
+      Guard.NotNull(targetMachine, "targetMachine");
+
+      if (targetMachine is AppServerTargetMachineXml)
+      {
+        return new AppServerTargetMachine();
+      }
+
+      if (targetMachine is WebServerTargetMachinesXml)
+      {
+        return new WebServerTargetMachines();
+      }
+
+      if (targetMachine is TerminalServerTargetMachineXml)
+      {
+        return new TerminalServerTargetMachine();
+      }
+
+      if (targetMachine is SchedulerServerTargetMachinesXml)
+      {
+        return new SchedulerServerTargetMachines();
+      }
+
+      var databaseServerTargetMachineXml = targetMachine as DatabaseServerTargetMachineXml;
+      if (databaseServerTargetMachineXml != null)
+      {
+        return new DatabaseServerTargetMachine
+        {
+          DatabaseServerId = databaseServerTargetMachineXml.DatabaseServerId
+        };
+      }
+
+      throw new NotSupportedException(string.Format("TargetMachin with type [{0}] is not supported", targetMachine.GetType().FullName));
     }
 
     private void LoadXmlIfNeeded()
