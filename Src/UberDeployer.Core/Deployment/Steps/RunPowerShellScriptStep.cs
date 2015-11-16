@@ -10,7 +10,9 @@ namespace UberDeployer.Core.Deployment.Steps
   {
     private readonly string _machineName;
     private readonly Lazy<string> _lazyScriptPath;
-    private readonly string _scriptName;    
+    private readonly string _scriptName;
+
+    private const string ScriptTemplate = "Set-Location \"{0}\"; .\\\"{1}\";";
 
     public RunPowerShellScriptStep(string machineName, Lazy<string> lazyScriptPath, string scriptName)
     {
@@ -29,7 +31,7 @@ namespace UberDeployer.Core.Deployment.Steps
       {
         var powerShellRemoteExecutor = new PowerShellRemoteExecutor(_machineName, LogOutput, LogError);
 
-        string script = Path.Combine(_lazyScriptPath.Value, _scriptName);
+        string script = string.Format(ScriptTemplate, _lazyScriptPath.Value, _scriptName);
 
         powerShellRemoteExecutor.Execute(script);
 
