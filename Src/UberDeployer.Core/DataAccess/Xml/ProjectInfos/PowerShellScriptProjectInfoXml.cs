@@ -14,6 +14,7 @@ namespace UberDeployer.Core.DataAccess.Xml.ProjectInfos
   [XmlInclude(typeof(TerminalServerTargetMachineXml))]
   [XmlInclude(typeof(SchedulerServerTargetMachinesXml))]
   [XmlInclude(typeof(DatabaseServerTargetMachineXml))]
+  [XmlInclude(typeof(CustomEnvTargetMachineXml))]
   public abstract class TargetMachineXml { }
 
   public class AppServerTargetMachineXml : TargetMachineXml { }
@@ -27,5 +28,10 @@ namespace UberDeployer.Core.DataAccess.Xml.ProjectInfos
   public class DatabaseServerTargetMachineXml : TargetMachineXml
   {
     public string DatabaseServerId { get; set; }
+  }
+
+  public class CustomEnvTargetMachineXml : TargetMachineXml
+  {
+    public string CustomEnvMachineId { get; set; }
   }
 }

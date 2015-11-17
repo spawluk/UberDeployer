@@ -42,5 +42,11 @@ namespace UberDeployer.Tests.Core
       {
         new DbProjectConfigurationOverride("dbprj", "db_server_id"),
       };
+
+    public static readonly List<CustomEnvMachine> CustomEnvMachines =
+      new List<CustomEnvMachine>
+      {
+        new CustomEnvMachine("id", "machineName"),
+      };
   }
 }

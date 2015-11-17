@@ -200,5 +200,18 @@
         <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
       </DependentProjects>
     </ProjectInfoXml>
+
+    <ProjectInfoXml xsi:type="PowerShellScriptProjectInfoXml" allowedEnvironments="Local,Remote">
+      <Name>UberDeployer.SamplePowerShellScriptProjectForCustomEnvMachine</Name>
+      <ArtifactsRepositoryName>UberDeployerPowerShellSamples</ArtifactsRepositoryName>
+      <ArtifactsRepositoryDirName>SampleScripts</ArtifactsRepositoryDirName>
+      <TargetMachine xsi:type="CustomEnvTargetMachineXml">
+        <CustomEnvMachineId>SamplePSScriptTargetMachine</CustomEnvMachineId>
+      </TargetMachine>
+      <ScriptName>ScriptName.ps1</ScriptName>
+      <DependentProjects>
+        <ProjectName>UberDeployer.SampleNtDependendServiceWithCycle1</ProjectName>
+      </DependentProjects>
+    </ProjectInfoXml>
   </ProjectInfos>
 </ProjectInfosXml>

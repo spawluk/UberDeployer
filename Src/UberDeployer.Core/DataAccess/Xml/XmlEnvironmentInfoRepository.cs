@@ -56,6 +56,8 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string ManualDeploymentPackageDirPath { get; set; }
 
       public string DomainName { get; set; }
+
+      public List<CustomEnvMachineXml> CustomEnvMachines { get; set; }
     }
 
     public class EnvironmentUserXml
@@ -123,6 +125,15 @@ namespace UberDeployer.Core.DataAccess.Xml
       public string ProjectName { get; set; }
 
       public string DatabaseServerId { get; set; }
+    }
+
+    public class CustomEnvMachineXml
+    {
+      [XmlAttribute]
+      public string Id { get; set; }
+
+      [XmlAttribute]
+      public string MachineName { get; set; }
     }
 
     private readonly string _xmlFilesDirPath;
@@ -253,7 +264,12 @@ namespace UberDeployer.Core.DataAccess.Xml
                 e.DatabaseServerId)),
           environmentInfoXml.TerminalAppsShortcutFolder,
           environmentInfoXml.ManualDeploymentPackageDirPath,
-          environmentInfoXml.DomainName);
+          environmentInfoXml.DomainName,
+          environmentInfoXml.CustomEnvMachines.Select(
+            e =>
+              new CustomEnvMachine(
+                e.Id,
+                e.MachineName)));
     }
 
     private static Dictionary<string, string> ConvertSqlPakcageVariables(IEnumerable<Variable> sqlPackageVariables)

@@ -109,7 +109,8 @@ namespace UberDeployer.Tests.Core.Domain
           TestData.DbProjectConfigurationOverrides,
           "terminalAppsShortcutFolder",
           "artifactsDeploymentDirPath",
-          "domain-name");
+          "domain-name",
+          TestData.CustomEnvMachines);
 
       var projectInfo =
         new WebAppProjectInfo(
@@ -156,7 +157,8 @@ namespace UberDeployer.Tests.Core.Domain
           TestData.DbProjectConfigurationOverrides,
           "terminalAppsShortcutFolder",
           "artifactsDeploymentDirPath",
-          "domain-name");
+          "domain-name",
+          TestData.CustomEnvMachines);
 
       var projectInfo =
         new WebAppProjectInfo(

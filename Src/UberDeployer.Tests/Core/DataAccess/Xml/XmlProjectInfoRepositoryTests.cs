@@ -21,7 +21,7 @@ namespace UberDeployer.Tests.Core.DataAccess
     public void SetUp()
     {
       const string filename = "TestProjectInfo.xml";
-      string path = Path.Combine("Core\\DataAccess", filename);
+      string path = Path.Combine("Core\\DataAccess\\Xml", filename);
       _projectInfoRepository = new XmlProjectInfoRepository(path);
     }
 
@@ -111,6 +111,24 @@ namespace UberDeployer.Tests.Core.DataAccess
       Assert.AreEqual(expectedDatabaseServerId, databaseServerTargetMachine.DatabaseServerId);
     }
 
+    [Test]
+    public void PowerShellScriptProjectInfo_loads_properly_CustomMachineId()
+    {
+      // arrange
+      const string expectedMachineId = "SamplePSScriptTargetMachine";
+
+      // act
+      ProjectInfo projectInfo = _projectInfoRepository.FindByName("UberDeployer.SamplePowerShellScriptProjectForCustomEnvMachine");
+
+      // assert
+      var powerShellScriptProjectInfo = projectInfo as PowerShellScriptProjectInfo;
+      Assert.IsNotNull(powerShellScriptProjectInfo);
+
+      var customEnvTargetMachine = powerShellScriptProjectInfo.TargetMachine as CustomEnvTargetMachine;
+      Assert.IsNotNull(customEnvTargetMachine);
+      Assert.AreEqual(expectedMachineId, customEnvTargetMachine.CustomEnvMachineId);
+    }
+
     public static IEnumerable<TestCaseData> GetPowerShellScriptProjectInfoTestCases()
     {
       yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForAppServer", typeof(AppServerTargetMachine))
@@ -127,6 +145,9 @@ namespace UberDeployer.Tests.Core.DataAccess
 
       yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForDatabaseServer", typeof(DatabaseServerTargetMachine))
         .SetName(typeof(DatabaseServerTargetMachine).Name);
+
+      yield return new TestCaseData("UberDeployer.SamplePowerShellScriptProjectForCustomEnvMachine", typeof(CustomEnvTargetMachine))
+        .SetName(typeof(CustomEnvTargetMachine).Name);
     }
   }
 }

@@ -42,7 +42,8 @@ namespace UberDeployer.Tests.Core.Generators
           TestData.DbProjectConfigurationOverrides,
           "X:\\terminal_apps_shortcut_folder",
           "X:\\artifacts_deployment_dir_path",
-          "domain-name");
+          "domain-name",
+          TestData.CustomEnvMachines);
     }
 
     public static EnvironmentInfo GetClusteredEnvironmentInfo(IEnumerable<EnvironmentUser> users)
@@ -71,7 +72,8 @@ namespace UberDeployer.Tests.Core.Generators
           TestData.DbProjectConfigurationOverrides,
           "X:\\terminal_apps_shortcut_folder",
           "X:\\artifacts_deployment_dir_path",
-          "domain-name");
+          "domain-name",
+          TestData.CustomEnvMachines);
     }
 
 
