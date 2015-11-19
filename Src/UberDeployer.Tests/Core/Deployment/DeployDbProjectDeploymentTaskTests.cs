@@ -59,7 +59,7 @@ namespace UberDeployer.Tests.Core.Deployment
         .Returns(DeploymentDataGenerator.GetEnvironmentInfo);
 
       _dbScriptRunnerFactoryFake
-        .Setup(x => x.CreateDbScriptRunner(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>()))
+        .Setup(x => x.CreateDbScriptRunner(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .Returns(new Mock<IDbScriptRunner>(MockBehavior.Loose).Object);
 
       _deploymentTask =
@@ -135,7 +135,7 @@ namespace UberDeployer.Tests.Core.Deployment
     {
       // act
       _dbScriptRunnerFactoryFake
-        .Setup(x => x.CreateDbScriptRunner(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>()))
+        .Setup(x => x.CreateDbScriptRunner(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .Returns((IDbScriptRunner)null);
 
       // assert

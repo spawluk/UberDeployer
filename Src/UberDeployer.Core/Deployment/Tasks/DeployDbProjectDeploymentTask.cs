@@ -121,9 +121,8 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(gatherDbScriptsToRunDeploymentStep);
 
         // create a step for running scripts
-        var runDbScriptsDeploymentStep =
-          new RunDbScriptsDeploymentStep(
-            GetScriptRunner(projectInfo.IsTransactional, databaseServerMachineName, projectInfo.DbName),
+        var runDbScriptsDeploymentStep = new RunDbScriptsDeploymentStep(
+            GetScriptRunner(projectInfo.IsTransactional, databaseServerMachineName, projectInfo.DbName, environmentInfo.DatabaseServers.FirstOrDefault(e => e.Id == projectInfo.DatabaseServerId)),
             databaseServerMachineName,
             new DeferredEnumerable<DbScriptToRun>(() => gatherDbScriptsToRunDeploymentStep.ScriptsToRun));
 
@@ -222,10 +221,15 @@ namespace UberDeployer.Core.Deployment.Tasks
       }
     }
 
-    private IDbScriptRunner GetScriptRunner(bool isTransactional, string databaseServerMachineName, string dbName)
+    private IDbScriptRunner GetScriptRunner(bool isTransactional, string databaseServerMachineName, string dbName, DatabaseServer databaseServers)
     {
+
+      string argumentsSqlCmd = string.Join(" ",
+        databaseServers.SqlPackageVariables.Select(
+          kv => string.Format(" /v {0}=\"{1}\"", kv.Key, kv.Value)));
+
       IDbScriptRunner scriptRunner =
-        _dbScriptRunnerFactory.CreateDbScriptRunner(isTransactional, databaseServerMachineName, dbName);
+      _dbScriptRunnerFactory.CreateDbScriptRunner(isTransactional, databaseServerMachineName, dbName, argumentsSqlCmd);
 
       if (scriptRunner == null)
       {
