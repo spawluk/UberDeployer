@@ -298,7 +298,16 @@ namespace UberDeployer.Core.DataAccess.Xml
         };
       }
 
-      throw new NotSupportedException(string.Format("TargetMachin with type [{0}] is not supported", targetMachine.GetType().FullName));
+      var customEnvTargetMachineXml = targetMachine as CustomEnvTargetMachineXml;
+      if (customEnvTargetMachineXml != null)
+      {
+        return new CustomEnvTargetMachine
+        {
+          CustomEnvMachineId = customEnvTargetMachineXml.CustomEnvMachineId,
+        };
+      }
+
+      throw new NotSupportedException(string.Format("TargetMachine with type [{0}] is not supported", targetMachine.GetType().FullName));
     }
 
     private void LoadXmlIfNeeded()

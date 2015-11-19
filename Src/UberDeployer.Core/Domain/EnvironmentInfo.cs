@@ -19,6 +19,7 @@ namespace UberDeployer.Core.Domain
     private readonly Dictionary<string, ProjectToFailoverClusterGroupMapping> _projectToFailoverClusterGroupMappingsDict;
     private readonly Dictionary<string, WebAppProjectConfigurationOverride> _webAppProjectConfigurationOverridesDict;
     private readonly Dictionary<string, DbProjectConfigurationOverride> _dbProjectConfigurationOverridesDict;
+    private readonly Dictionary<string, CustomEnvMachine> _customEnvMachinesDict;
 
     public EnvironmentInfo(
       string name,
@@ -43,8 +44,8 @@ namespace UberDeployer.Core.Domain
       IEnumerable<DbProjectConfigurationOverride> dbProjectConfigurations,
       string terminalAppShortcutFolder,
       string manualDeploymentPackageDirPath,
-      string domainName
-      )
+      string domainName,
+      IEnumerable<CustomEnvMachine>  customEnvMachines)
     {
       Guard.NotNullNorEmpty(name, "name");
       Guard.NotNull(configurationTemplateName, "configurationTemplateName");
@@ -144,6 +145,11 @@ namespace UberDeployer.Core.Domain
       TerminalAppsShortcutFolder = terminalAppShortcutFolder;
       ManualDeploymentPackageDirPath = manualDeploymentPackageDirPath;      
       DomainName = domainName;
+
+      if (customEnvMachines != null)
+      {
+        _customEnvMachinesDict = customEnvMachines.ToDictionary(m => m.Id);
+      }
     }
 
     public static string GetNetworkPath(string machineName, string absoluteLocalPath)
@@ -351,6 +357,20 @@ namespace UberDeployer.Core.Domain
           : null;
     }
 
+    public CustomEnvMachine GetCustomEnvMachine(string customEnvMachineId)
+    {
+      Guard.NotNullNorEmpty(customEnvMachineId, "customEnvMachineId");
+
+      CustomEnvMachine customEnvMachine;
+
+      if (_customEnvMachinesDict.TryGetValue(customEnvMachineId, out customEnvMachine))
+      {
+        return customEnvMachine;
+      }
+
+      throw new ArgumentException(string.Format("Custom environment machine with id '{0}' is not defined for environment '{1}'.", customEnvMachineId, Name));
+    }
+
     public string Name { get; private set; }
 
     public bool IsVisibleToClients { get; private set; }
@@ -422,6 +442,11 @@ namespace UberDeployer.Core.Domain
     public IEnumerable<DbProjectConfigurationOverride> DbProjectConfigurationOverrides
     {
       get { return _dbProjectConfigurationOverridesDict.Values; }
+    }
+
+    public IEnumerable<CustomEnvMachine> CustomEnvMachines
+    {
+      get { return _customEnvMachinesDict.Values; }
     }
   }
 }

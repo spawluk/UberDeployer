@@ -30,7 +30,8 @@ namespace UberDeployer.Core.Management.PowerShell
 
       var connectionInfo = new WSManConnectionInfo
       {
-        ComputerName = _machineName
+        ComputerName = _machineName,
+        AuthenticationMechanism = AuthenticationMechanism.Negotiate,
       };
 
       using (Runspace runspace = RunspaceFactory.CreateRunspace(connectionInfo))

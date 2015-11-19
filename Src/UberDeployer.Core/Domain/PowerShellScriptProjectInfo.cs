@@ -77,6 +77,12 @@ namespace UberDeployer.Core.Domain
         throw new DeploymentTaskException("Target machine to run PowerShell script is not specified. Set 'ExecuteOnMachine' property in ProjectInfos.xml");
       }
 
+      var customEnvTargetMachine = TargetMachine as CustomEnvTargetMachine;
+      if (customEnvTargetMachine != null)
+      {
+        return new [] { environmentInfo.GetCustomEnvMachine(customEnvTargetMachine.CustomEnvMachineId).MachineName };
+      }
+
       var appServerMachine = TargetMachine as AppServerTargetMachine;
       if (appServerMachine != null)
       {
@@ -131,5 +137,10 @@ namespace UberDeployer.Core.Domain
   public class DatabaseServerTargetMachine : TargetMachine
   {
     public string DatabaseServerId { get; set; }
+  }
+
+  public class CustomEnvTargetMachine : TargetMachine
+  {
+    public string CustomEnvMachineId { get; set; }
   }
 }

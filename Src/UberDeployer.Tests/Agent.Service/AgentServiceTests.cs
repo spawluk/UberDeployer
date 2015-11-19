@@ -16,6 +16,7 @@ using UberDeployer.Core.Deployment.Pipeline.Modules;
 using UberDeployer.Core.Domain;
 using UberDeployer.Core.Management.Metadata;
 using UberDeployer.Core.TeamCity;
+using UberDeployer.Tests.Core;
 
 namespace UberDeployer.Tests.Agent.Service
 {
@@ -146,7 +147,8 @@ namespace UberDeployer.Tests.Agent.Service
         new[] { new DbProjectConfigurationOverride("dbprj", "db_server"), },
         "terminalAppsShortcutFolder",
         "artifactsDeploymentDirPath",
-        "domain-name");
+        "domain-name",
+        TestData.CustomEnvMachines);
     }
   }
 }

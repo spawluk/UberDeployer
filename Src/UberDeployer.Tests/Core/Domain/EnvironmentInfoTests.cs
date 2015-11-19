@@ -56,7 +56,8 @@ namespace UberDeployer.Tests.Core.Domain
             TestData.DbProjectConfigurationOverrides,
             _TerminalAppsShortcutFolder,
             _ArtifactsDeploymentDirPath,
-            _DomainName);
+            _DomainName,
+            TestData.CustomEnvMachines);
         });
     }
 
@@ -89,7 +90,8 @@ namespace UberDeployer.Tests.Core.Domain
             TestData.DbProjectConfigurationOverrides,
             _TerminalAppsShortcutFolder,
             _ArtifactsDeploymentDirPath,
-            _DomainName);
+            _DomainName,
+            TestData.CustomEnvMachines);
         });
     }
 
@@ -119,7 +121,8 @@ namespace UberDeployer.Tests.Core.Domain
         TestData.DbProjectConfigurationOverrides,
         _TerminalAppsShortcutFolder,
         _ArtifactsDeploymentDirPath,
-        _DomainName);
+        _DomainName,
+        TestData.CustomEnvMachines);
 
       Assert.Throws<ArgumentException>(
         () => envInfo.GetAppServerNetworkPath(@"\\kasjdkasdj"));
@@ -152,7 +155,8 @@ namespace UberDeployer.Tests.Core.Domain
           TestData.DbProjectConfigurationOverrides,
           _TerminalAppsShortcutFolder,
           _ArtifactsDeploymentDirPath,
-          _DomainName);
+          _DomainName,
+          TestData.CustomEnvMachines);
 
       Assert.Throws<ArgumentException>(
         () => envInfo.GetAppServerNetworkPath("qlwelqwelw"));
@@ -185,7 +189,8 @@ namespace UberDeployer.Tests.Core.Domain
           TestData.DbProjectConfigurationOverrides,
           _TerminalAppsShortcutFolder,
           _ArtifactsDeploymentDirPath,
-          _DomainName);
+          _DomainName,
+          TestData.CustomEnvMachines);
 
       Assert.AreEqual(
         "\\\\" + _WebMachineNames[0] + "\\c$\\",
