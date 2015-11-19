@@ -240,7 +240,7 @@ namespace UberDeployer.Agent.Service
         throw new FaultException<EnvironmentDeployConfigurationNotFoundFault>(new EnvironmentDeployConfigurationNotFoundFault { EnvironmentName = targetEnvironment });
       }
 
-      List<ProjectDeploymentData> projectsToDeploy = CreateProjectDeployments(uniqueClientId, environmentDeployInfo, projects).ToList();
+      List<ProjectDeploymentData> projectsToDeploy = CreateProjectEnvironmentDeployments(uniqueClientId, environmentDeployInfo, projects).ToList();
 
       ThreadPool.QueueUserWorkItem(
         state =>
@@ -282,9 +282,10 @@ namespace UberDeployer.Agent.Service
       DependentProjectsToDeployWebSelector.CancelDependentProjectsSelection(deploymentId);
     }
 
-    private IEnumerable<ProjectDeploymentData> CreateProjectDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, IEnumerable<ProjectToDeploy> projects)
+    private IEnumerable<ProjectDeploymentData> CreateProjectEnvironmentDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, IEnumerable<ProjectToDeploy> projects)
     {
       var projectDeployments = new List<ProjectDeploymentData>();
+      var environmentProjectDeployments = new List<ProjectDeploymentData>();
 
       EnvironmentInfo environmentInfo = _environmentInfoRepository.FindByName(environmentDeployInfo.TargetEnvironment);
 
@@ -314,9 +315,38 @@ namespace UberDeployer.Agent.Service
           InputParams inputParams = BuildInputParams(projectInfo, environmentInfo);
           var deploymentInfo = new Core.Domain.DeploymentInfo(projectToDeploy.DeploymentId, false, projectToDeploy.ProjectName, environmentDeployInfo.BuildConfigurationName, lastSuccessfulBuild.Id, environmentDeployInfo.TargetEnvironment, inputParams);
 
-          DeploymentTask deploymentTask = CreateDeploymentTask(projectInfo);
+          if (projectInfo.Type == ProjectType.Db)
+          {
+            DeploymentTask dropDbProjectDeploymentTask = new DropDbProjectDeploymentTask(
+              ObjectFactory.Instance.CreateProjectInfoRepository(),
+              ObjectFactory.Instance.CreateEnvironmentInfoRepository(),
+              ObjectFactory.Instance.CreateDbManagerFactory());
 
-          projectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, deploymentTask));
+            environmentProjectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, dropDbProjectDeploymentTask));
+
+            DeploymentTask dbTask =
+              new DeployDbProjectDeploymentTask(
+                ObjectFactory.Instance.CreateProjectInfoRepository(),
+                ObjectFactory.Instance.CreateEnvironmentInfoRepository(),
+                ObjectFactory.Instance.CreateArtifactsRepository(),
+                ObjectFactory.Instance.CreateDbScriptRunnerFactory(),
+                ObjectFactory.Instance.CreateDbVersionProvider(),
+                ObjectFactory.Instance.CreateFileAdapter(),
+                ObjectFactory.Instance.CreateZipFileAdapter(),
+                ObjectFactory.Instance.CreateScriptsToRunWebSelectorForEnvironmentDeploy(),
+                ObjectFactory.Instance.CreateMsSqlDatabasePublisher(),
+                ObjectFactory.Instance.CreateDbManagerFactory(),
+                ObjectFactory.Instance.CreateUserNameNormalizer(),
+                ObjectFactory.Instance.CreateDirectoryAdapter());
+
+            projectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, dbTask));
+          }
+          else
+          {
+            DeploymentTask deploymentTask = projectInfo.CreateDeploymentTask(ObjectFactory.Instance);
+
+            projectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, deploymentTask));
+          }
         }
         catch (Exception e)
         {
@@ -324,26 +354,9 @@ namespace UberDeployer.Agent.Service
         }
       }
 
-      return projectDeployments;
-    }
+      environmentProjectDeployments.AddRange(projectDeployments);
 
-    private static DeploymentTask CreateDeploymentTask(ProjectInfo projectInfo)
-    {
-      if (projectInfo.Type == ProjectType.Db)
-      {
-        // for database projects return publish task instead of default db deployment task.
-        return new PublishDbProjectDeploymentTask(          
-          ObjectFactory.Instance.CreateProjectInfoRepository(),
-          ObjectFactory.Instance.CreateEnvironmentInfoRepository(),
-          ObjectFactory.Instance.CreateArtifactsRepository(),
-          ObjectFactory.Instance.CreateFileAdapter(),
-          ObjectFactory.Instance.CreateZipFileAdapter(),
-          ObjectFactory.Instance.CreateDbManagerFactory(), 
-          ObjectFactory.Instance.CreateMsSqlDatabasePublisher(),
-          ObjectFactory.Instance.CreateDirectoryAdapter());
-      }
-
-      return projectInfo.CreateDeploymentTask(ObjectFactory.Instance);
+      return environmentProjectDeployments;
     }
 
     private static InputParams BuildInputParams(ProjectInfo projectInfo, EnvironmentInfo environmentInfo)

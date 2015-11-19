@@ -67,15 +67,17 @@ namespace UberDeployer.Core
     IDbManagerFactory CreateDbManagerFactory();
 
     IScriptsToRunSelector CreateScriptsToRunWebSelector();
-    
+
+    IScriptsToRunSelector CreateScriptsToRunWebSelectorForEnvironmentDeploy();
+
     ITeamCityRestClient CreateTeamCityRestClient();
 
     IMsSqlDatabasePublisher CreateMsSqlDatabasePublisher();
-    
+
     IEnvDeploymentPipeline CrateEnvDeploymentPipeline();
 
     IDependentProjectsToDeployWebSelector CreateDependentProjectsToDeployWebSelector();
-    
+
     IUserNameNormalizer CreateUserNameNormalizer();
   }
 }

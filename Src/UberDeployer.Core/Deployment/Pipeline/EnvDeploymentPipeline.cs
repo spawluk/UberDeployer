@@ -42,8 +42,8 @@ namespace UberDeployer.Core.Deployment.Pipeline
 
       PostDiagnosticMessage(string.Format("Starting deployment of environment: '{0}'.", targetEnvironment), DiagnosticMessageType.Info);
       PostDiagnosticMessage(string.Format("Projects count to deploy: '{0}'.", projectDeployments.Count), DiagnosticMessageType.Info);
-      
-      deploymentContext.DateStarted = DateTime.UtcNow;      
+
+      deploymentContext.DateStarted = DateTime.UtcNow;
 
       List<ProjectDeploymentData> projectsPreparedSuccessfully = PrepareProjectsBeforeDeploy(projectDeployments, deploymentContext);
 
@@ -60,41 +60,19 @@ namespace UberDeployer.Core.Deployment.Pipeline
         DiagnosticMessageType.Info);
     }
 
-    private List<ProjectDeploymentData> DeployProjects(string targetEnvironment, DeploymentContext deploymentContext, List<ProjectDeploymentData> projectDeployments)
+    private List<ProjectDeploymentData> DeployProjects(string targetEnvironment, DeploymentContext deploymentContext, IEnumerable<ProjectDeploymentData> projectDeployments)
     {
       var deployedSuccessfully = new List<ProjectDeploymentData>();
+      
+      PostDiagnosticMessage(string.Format("Start deploying other projects on evnfironment: '{0}'", targetEnvironment), DiagnosticMessageType.Info);
 
-      IEnumerable<ProjectDeploymentData> dbProjectsToDeploy = projectDeployments.FindAll(x => x.ProjectInfo.Type == ProjectType.Db);
-
-      IEnumerable<ProjectDeploymentData> otherProjectsToDeploy = projectDeployments.FindAll(x => x.ProjectInfo.Type != ProjectType.Db);
-
-      // first deploy databases
-      if (dbProjectsToDeploy.Any())
+      foreach (var projectDeployment in projectDeployments)
       {
-        PostDiagnosticMessage(string.Format("Start deploying database projects on evnfironment: '{0}'", targetEnvironment), DiagnosticMessageType.Info);
+        bool executedSuccessfully = ExecuteProjectDeployment(projectDeployment, deploymentContext);
 
-        foreach (var dbProjectDeployment in dbProjectsToDeploy)
+        if (executedSuccessfully)
         {
-          bool executedSuccessfully = ExecuteProjectDeployment(dbProjectDeployment, deploymentContext);
-          
-          if(executedSuccessfully) {
-            deployedSuccessfully.Add(dbProjectDeployment);
-          }
-        }
-      }
-
-      if (otherProjectsToDeploy.Any())
-      {
-        PostDiagnosticMessage(string.Format("Start deploying other projects on evnfironment: '{0}'", targetEnvironment), DiagnosticMessageType.Info);
-
-        foreach (var otherProjectDeployment in otherProjectsToDeploy)
-        {
-          bool executedSuccessfully = ExecuteProjectDeployment(otherProjectDeployment, deploymentContext);
-
-          if (executedSuccessfully)
-          {
-            deployedSuccessfully.Add(otherProjectDeployment);
-          }
+          deployedSuccessfully.Add(projectDeployment);
         }
       }
 
@@ -126,15 +104,15 @@ namespace UberDeployer.Core.Deployment.Pipeline
 
     private bool ExecuteProjectDeployment(ProjectDeploymentData projectDeploymentData, DeploymentContext deploymentContext)
     {
-      DeploymentInfo deploymentInfo = projectDeploymentData.DeploymentInfo; 
+      DeploymentInfo deploymentInfo = projectDeploymentData.DeploymentInfo;
       DeploymentTask deploymentTask = projectDeploymentData.DeploymentTask;
 
       PostDiagnosticMessage(string.Format("Starting{0} '{1}'.", (deploymentInfo.IsSimulation ? " (simulation)" : ""), deploymentTask.GetType().Name), DiagnosticMessageType.Info);
 
-      deploymentTask.DiagnosticMessagePosted += OnDeploymentTaskDiagnosticMessagePosted;      
+      deploymentTask.DiagnosticMessagePosted += OnDeploymentTaskDiagnosticMessagePosted;
 
       try
-      {        
+      {
         deploymentTask.Execute();
 
         PostDiagnosticMessage(
@@ -243,5 +221,5 @@ namespace UberDeployer.Core.Deployment.Pipeline
     {
       OnDiagnosticMessagePosted(this, e);
     }
-  }  
+  }
 }

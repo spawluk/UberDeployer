@@ -106,6 +106,7 @@
     <Compile Include="Deployment\IUserNameNormalizer.cs" />
     <Compile Include="Deployment\Pipeline\EnvDeploymentPipeline.cs" />
     <Compile Include="Deployment\Pipeline\IEnvDeploymentPipeline.cs" />
+    <Compile Include="Deployment\ScriptsToRunSelectorForEnvironmentDeploy.cs" />
     <Compile Include="Deployment\Steps\CreateRemoteTempDirStep.cs" />
     <Compile Include="Deployment\Steps\RemoveRemoteDirectoryStep.cs" />
     <Compile Include="Deployment\Steps\RunPowerShellScriptStep.cs" />
@@ -136,7 +137,7 @@
     <Compile Include="Deployment\IDirPathParamsResolver.cs" />
     <Compile Include="Deployment\Steps\ToggleSchedulerAppEnabledStep.cs" />
     <Compile Include="Deployment\Tasks\DeployEnvironmentTask.cs" />
-    <Compile Include="Deployment\Tasks\PublishDbProjectDeploymentTask.cs" />
+    <Compile Include="Deployment\Tasks\DropDbProjectDeploymentTask.cs" />
     <Compile Include="Deployment\Steps\DropDatabaseDeploymentStep.cs" />
     <Compile Include="Deployment\Steps\PublishDatabaseDeploymentStep.cs" />
     <Compile Include="Deployment\Win32Api.cs" />

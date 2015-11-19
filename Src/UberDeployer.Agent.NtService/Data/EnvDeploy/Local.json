@@ -1,6 +1,6 @@
 ﻿{
   "TargetEnvironment": "Local",
-  "BuildConfigurationName":  "Production",
+  "BuildConfigurationName": "Production",  
   "ProjectsToDeploy": [ "UberDeployer.SampleDb", "UberDeployer.SampleNtService" ] 
 }
 
