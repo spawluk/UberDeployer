@@ -259,8 +259,8 @@
     <Compile Include="Management\MsDeploy\IMsDeploy.cs" />
     <Compile Include="Management\MsDeploy\MsDeploy.cs" />
     <Compile Include="Management\MsDeploy\MsDeployException.cs" />
-    <Compile Include="Management\PowerShell\IPowerShellRemoteExecutor.cs" />
-    <Compile Include="Management\PowerShell\PowerShellRemoteExecutor.cs" />
+    <Compile Include="Management\PowerShell\IPowerShellExecutor.cs" />
+    <Compile Include="Management\PowerShell\PowerShellExecutor.cs" />
     <Compile Include="Management\PowerShell\PowerShellScriptExecutionException.cs" />
     <Compile Include="Management\ScheduledTasks\ITaskScheduler.cs" />
     <Compile Include="Management\ScheduledTasks\RepetitionSpecification.cs" />

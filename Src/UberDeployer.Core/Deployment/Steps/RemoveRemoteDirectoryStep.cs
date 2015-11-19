@@ -22,7 +22,7 @@ namespace UberDeployer.Core.Deployment.Steps
 
     protected override void DoExecute()
     {
-      var powerShellRemoteExecutor = new PowerShellRemoteExecutor(_machineName, OnOutput, OnError);
+      var powerShellRemoteExecutor = new PowerShellExecutor(_machineName, Environment.MachineName, OnOutput, OnError);
 
       string script = string.Format(RemoveDirScriptTemplate, _directoryPathToRemove.Value);
 

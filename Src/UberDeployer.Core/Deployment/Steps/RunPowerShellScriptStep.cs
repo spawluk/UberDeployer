@@ -29,7 +29,7 @@ namespace UberDeployer.Core.Deployment.Steps
     {
       try
       {
-        var powerShellRemoteExecutor = new PowerShellRemoteExecutor(_machineName, LogOutput, LogError);
+        var powerShellRemoteExecutor = new PowerShellExecutor(_machineName, Environment.MachineName, LogOutput, LogError);
 
         string script = string.Format(ScriptTemplate, _lazyScriptPath.Value, _scriptName);
 

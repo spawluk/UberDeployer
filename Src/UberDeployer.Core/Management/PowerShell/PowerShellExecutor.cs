@@ -3,23 +3,28 @@ using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using UberDeployer.Common.SyntaxSugar;
-using UberDeployer.Core.Deployment.Tasks;
 
 namespace UberDeployer.Core.Management.PowerShell
 {
-  public class PowerShellRemoteExecutor : IPowerShellRemoteExecutor
+  public class PowerShellExecutor : IPowerShellExecutor
   {
     private readonly string _machineName;
+
+    private readonly string _localMachineName;
+
     private readonly Action<string> _onOutput;
+
     private readonly Action<string> _onError;
 
     private int _errorCount = 0;
 
-    public PowerShellRemoteExecutor(string machineName, Action<string> onOutput, Action<string> onError)
+    public PowerShellExecutor(string machineName, string localMachineName, Action<string> onOutput, Action<string> onError)
     {
       Guard.NotNullNorEmpty(machineName, "machineName");
+      Guard.NotNullNorEmpty(localMachineName, "localMachineName");
 
       _machineName = machineName;
+      _localMachineName = localMachineName;
       _onOutput = onOutput;
       _onError = onError;
     }
@@ -28,6 +33,11 @@ namespace UberDeployer.Core.Management.PowerShell
     {
       _errorCount = 0;
 
+      return _machineName == _localMachineName ? ExecuteScript(script, null) : ExecuteRemotely(script);
+    }
+
+    private PSObject ExecuteRemotely(string script)
+    {
       var connectionInfo = new WSManConnectionInfo
       {
         ComputerName = _machineName,
@@ -38,33 +48,38 @@ namespace UberDeployer.Core.Management.PowerShell
       {
         runspace.Open();
 
-        using (var powerShell = System.Management.Automation.PowerShell.Create())
+        return ExecuteScript(script, runspace);
+      }
+    }
+
+    private PSObject ExecuteScript(string script, Runspace runspace)
+    {
+      using (var powerShell = System.Management.Automation.PowerShell.Create())
+      {
+        powerShell.Runspace = runspace;
+
+        powerShell.AddScript(script);
+
+        powerShell.Streams.Error.DataAdded += OnError;
+        powerShell.Streams.Debug.DataAdded += OnDebug;
+        powerShell.Streams.Warning.DataAdded += OnWarning;
+        powerShell.Streams.Progress.DataAdded += OnProgress;
+        powerShell.Streams.Verbose.DataAdded += OnVerbose;
+
+        var outputCollection = new PSDataCollection<PSObject>();
+
+        outputCollection.DataAdded += OnOutput;
+
+        IAsyncResult invokeResult = powerShell.BeginInvoke<PSObject, PSObject>(null, outputCollection);
+
+        powerShell.EndInvoke(invokeResult);
+
+        if (_errorCount != 0)
         {
-          powerShell.Runspace = runspace;
-
-          powerShell.AddScript(script);
-
-          powerShell.Streams.Error.DataAdded += OnError;
-          powerShell.Streams.Debug.DataAdded += OnDebug;
-          powerShell.Streams.Warning.DataAdded += OnWarning;
-          powerShell.Streams.Progress.DataAdded += OnProgress;
-          powerShell.Streams.Verbose.DataAdded += OnVerbose;
-
-          var outputCollection = new PSDataCollection<PSObject>();
-
-          outputCollection.DataAdded += OnOutput;
-
-          IAsyncResult invokeResult = powerShell.BeginInvoke<PSObject, PSObject>(null, outputCollection);
-
-          powerShell.EndInvoke(invokeResult);
-
-          if (_errorCount != 0)
-          {
-            throw new PowerShellScriptExecutionException(powerShell.Streams.Error);
-          }
-
-          return outputCollection.LastOrDefault();
+          throw new PowerShellScriptExecutionException(powerShell.Streams.Error);
         }
+
+        return outputCollection.LastOrDefault();
       }
     }
 
