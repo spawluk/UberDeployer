@@ -45,61 +45,65 @@ namespace UberDeployer.Core.Deployment.Pipeline
 
       deploymentContext.DateStarted = DateTime.UtcNow;
 
-      List<ProjectDeploymentData> projectsPreparedSuccessfully = PrepareProjectsBeforeDeploy(projectDeployments, deploymentContext);
+      int successfullyDeployed = 0;
 
-      List<ProjectDeploymentData> projectsDeployedSuccessfully = DeployProjects(targetEnvironment, deploymentContext, projectsPreparedSuccessfully);
+      foreach (var projectDeployment in projectDeployments)
+      {
+        var isPrepared = PrepareProject(projectDeployment, deploymentContext);
+
+        if (isPrepared == false)
+        {
+          continue;
+        }
+
+        var isDeployed = ExecuteProjectDeployment(projectDeployment, deploymentContext);
+
+        if (isDeployed)
+        {
+          successfullyDeployed++;
+        }
+      }
 
       deploymentContext.DateFinished = DateTime.UtcNow;
-      deploymentContext.FinishedSuccessfully = projectDeployments.Count == projectsDeployedSuccessfully.Count;
+      deploymentContext.FinishedSuccessfully = projectDeployments.Count == successfullyDeployed;
 
-      int failedCount = projectDeployments.Count - projectsDeployedSuccessfully.Count;
+      int failedCount = projectDeployments.Count - successfullyDeployed;
 
-      PostDiagnosticMessage(string.Format("Finished deployment of environment: '{0}', successfully deployed: {1}, failed: {2}", targetEnvironment, projectsDeployedSuccessfully.Count, failedCount), DiagnosticMessageType.Info);
+      PostDiagnosticMessage(string.Format("Finished deployment of environment: '{0}', successfully deployed: {1}, failed: {2}", targetEnvironment, successfullyDeployed, failedCount), DiagnosticMessageType.Info);
       PostDiagnosticMessage(
         "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
         DiagnosticMessageType.Info);
     }
 
-    private List<ProjectDeploymentData> DeployProjects(string targetEnvironment, DeploymentContext deploymentContext, IEnumerable<ProjectDeploymentData> projectDeployments)
+    private bool PrepareProject(ProjectDeploymentData projectDeploymentData, DeploymentContext deploymentContext)
     {
-      var deployedSuccessfully = new List<ProjectDeploymentData>();
-      
-      PostDiagnosticMessage(string.Format("Start deploying other projects on evnfironment: '{0}'", targetEnvironment), DiagnosticMessageType.Info);
+      DeploymentInfo deploymentInfo = projectDeploymentData.DeploymentInfo;
+      DeploymentTask deploymentTask = projectDeploymentData.DeploymentTask;
 
-      foreach (var projectDeployment in projectDeployments)
+      PostDiagnosticMessage(string.Format("Preparing {0} '{1}'.", (deploymentInfo.IsSimulation ? " (simulation)" : ""), deploymentTask.GetType().Name), DiagnosticMessageType.Info);
+
+      deploymentTask.DiagnosticMessagePosted += OnDeploymentTaskDiagnosticMessagePosted;
+
+      OnDeploymentTaskStarting(deploymentInfo, deploymentTask, deploymentContext);
+
+      try
       {
-        bool executedSuccessfully = ExecuteProjectDeployment(projectDeployment, deploymentContext);
+        deploymentTask.Initialize(deploymentInfo);
 
-        if (executedSuccessfully)
-        {
-          deployedSuccessfully.Add(projectDeployment);
-        }
+        deploymentTask.Prepare();
+
+        return true;
+      }
+      catch (Exception exc)
+      {
+        PostDiagnosticMessage(string.Format("Exception while preparing: {0}", exc.Message), DiagnosticMessageType.Error);
+      }
+      finally
+      {
+        deploymentTask.DiagnosticMessagePosted -= OnDeploymentTaskDiagnosticMessagePosted;
       }
 
-      return deployedSuccessfully;
-    }
-
-    private List<ProjectDeploymentData> PrepareProjectsBeforeDeploy(List<ProjectDeploymentData> projectDeployments, DeploymentContext deploymentContext)
-    {
-      PostDiagnosticMessage(string.Format("Start preparing projects before deploy."), DiagnosticMessageType.Info);
-
-      var projectsPreparedSuccessfully = new List<ProjectDeploymentData>();
-
-      foreach (var projectDeployment in projectDeployments)
-      {
-        bool preparedSuccessfully = PrepareProject(projectDeployment, deploymentContext);
-
-        if (preparedSuccessfully)
-        {
-          projectsPreparedSuccessfully.Add(projectDeployment);
-        }
-      }
-
-      PostDiagnosticMessage(
-        string.Format("Finished preparing projects, successfully prepared: {0}, failed: {1}.", projectsPreparedSuccessfully.Count, projectDeployments.Count - projectsPreparedSuccessfully.Count),
-        DiagnosticMessageType.Info);
-
-      return projectsPreparedSuccessfully;
+      return false;
     }
 
     private bool ExecuteProjectDeployment(ProjectDeploymentData projectDeploymentData, DeploymentContext deploymentContext)
@@ -148,37 +152,6 @@ namespace UberDeployer.Core.Deployment.Pipeline
 
         LogInnerException(exc.InnerException);
       }
-    }
-
-    private bool PrepareProject(ProjectDeploymentData projectDeploymentData, DeploymentContext deploymentContext)
-    {
-      DeploymentInfo deploymentInfo = projectDeploymentData.DeploymentInfo;
-      DeploymentTask deploymentTask = projectDeploymentData.DeploymentTask;
-
-      PostDiagnosticMessage(string.Format("Preparing {0} '{1}'.", (deploymentInfo.IsSimulation ? " (simulation)" : ""), deploymentTask.GetType().Name), DiagnosticMessageType.Info);
-
-      deploymentTask.DiagnosticMessagePosted += OnDeploymentTaskDiagnosticMessagePosted;
-
-      OnDeploymentTaskStarting(deploymentInfo, deploymentTask, deploymentContext);
-
-      try
-      {
-        deploymentTask.Initialize(deploymentInfo);
-
-        deploymentTask.Prepare();
-
-        return true;
-      }
-      catch (Exception exc)
-      {
-        PostDiagnosticMessage(string.Format("Exception while preparing: {0}", exc.Message), DiagnosticMessageType.Error);
-      }
-      finally
-      {
-        deploymentTask.DiagnosticMessagePosted -= OnDeploymentTaskDiagnosticMessagePosted;
-      }
-
-      return false;
     }
 
     protected void PostDiagnosticMessage(string message, DiagnosticMessageType diagnosticMessageType)

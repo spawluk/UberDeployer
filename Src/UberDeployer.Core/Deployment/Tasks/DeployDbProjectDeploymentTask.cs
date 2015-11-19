@@ -132,6 +132,11 @@ namespace UberDeployer.Core.Deployment.Tasks
 
       else
       {
+        // create step for dropping database
+        var createDatabaseDeploymentStep = new CreateDatabaseDeploymentStep(projectInfo, databaseServer, _dbManagerFactory);
+
+        AddSubTask(createDatabaseDeploymentStep);
+
         // create step for deploying dacpac
         var publishDatabaseDeploymentStep =
           new PublishDatabaseDeploymentStep(

@@ -129,9 +129,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Data\EnvDeploy\Local.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Data\EnvDeploy\Local.json" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -144,15 +142,12 @@
     </Content>
     <Content Include="..\..\Data\EnvironmentInfo_Local.xml">
       <Link>Data\EnvironmentInfo_Local.xml</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Data\EnvironmentInfo_Remote.xml">
       <Link>Data\EnvironmentInfo_Remote.xml</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\data\ProjectInfos.xml">
       <Link>Data\ProjectInfos.xml</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="..\..\Lib\MsWebDeploy\msdeploy.exe">

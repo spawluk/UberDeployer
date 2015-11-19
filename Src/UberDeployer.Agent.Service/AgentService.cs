@@ -385,6 +385,9 @@ namespace UberDeployer.Agent.Service
         case ProjectType.Extension:
           return new ExtensionInputParams();
 
+        case ProjectType.PowerShellScript:
+          return new PowerShellInputParams();
+
         default:
           throw new DeploymentTaskException(string.Format("Project type: {0} is not supported in environment deployment.", projectInfo.Type));
       }      
