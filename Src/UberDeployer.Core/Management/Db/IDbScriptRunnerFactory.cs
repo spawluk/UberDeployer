@@ -5,6 +5,6 @@ namespace UberDeployer.Core.Management.Db
   public interface IDbScriptRunnerFactory
   {
     IDbScriptRunner CreateDbScriptRunner(bool usesSqlCmdUpgradeScripts, string databaseServerName,
-      string databaseName);
+      string databaseName, string argumentsSqlCmd);
   }
 }

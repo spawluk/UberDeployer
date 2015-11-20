@@ -16,18 +16,20 @@ namespace UberDeployer.Core.Management.Db
 
     private readonly string _databaseServer;
     private readonly string _databaseName;
+    private readonly string _argumentsSqlCmd;
 
     private string _tempDirPath;
     private string _tmpScriptPath;
     private static string _tmpErrorPath;
 
-    public MsSqlSqlCmdScriptRunner(string databaseServer, string databaseName)
+    public MsSqlSqlCmdScriptRunner(string databaseServer, string databaseName, string argumentsSqlCmd)
     {
       Guard.NotNullNorEmpty(databaseServer, "databaseServer");
       Guard.NotNullNorEmpty(databaseName, "databaseName");
 
       _databaseServer = databaseServer;
       _databaseName = databaseName;
+      _argumentsSqlCmd = argumentsSqlCmd;
     }
 
     public void Execute(string scriptToExecute)
@@ -45,7 +47,7 @@ namespace UberDeployer.Core.Management.Db
 
       try
       {
-        string arguments = string.Format("-S \"{0}\" -E -i \"{2}\" -V15 -b -v DatabaseName=\"{1}\"", _databaseServer, _databaseName, _tmpScriptPath);
+        string arguments = string.Format("-S \"{0}\" -E -i \"{2}\" -V15 -b -v DatabaseName=\"{1}\" {3}", _databaseServer, _databaseName, _tmpScriptPath, _argumentsSqlCmd);
 
         Execute(SqlCmdExe, arguments);        
 
