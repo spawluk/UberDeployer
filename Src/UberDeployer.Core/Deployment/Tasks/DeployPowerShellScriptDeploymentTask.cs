@@ -77,6 +77,21 @@ namespace UberDeployer.Core.Deployment.Tasks
         AddSubTask(binariesConfiguratorStep);
       }
 
+      if (_projectInfo.IsRemote == false)
+      {
+        // Run powershell script
+        var runPowerShellScriptStep =
+          new RunPowerShellScriptStep(
+            _projectInfo.IsRemote,
+            null,
+            new Lazy<string>(() => extractArtifactsDeploymentStep.BinariesDirPath),
+            _projectInfo.ScriptName);
+
+        AddSubTask(runPowerShellScriptStep);
+
+        return;
+      }
+
       foreach (var targetMachineName in targetMachineNames)
       {
         // Create temp dir on remote machine
@@ -97,6 +112,7 @@ namespace UberDeployer.Core.Deployment.Tasks
         // Run powershell script
         var runPowerShellScriptStep =
           new RunPowerShellScriptStep(
+            _projectInfo.IsRemote,
             targetMachineName,
             new Lazy<string>(() => createRemoteTempDirStep.RemoteTempDirPath),
             _projectInfo.ScriptName);

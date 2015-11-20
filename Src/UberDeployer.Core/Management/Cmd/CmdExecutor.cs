@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using log4net;
@@ -64,6 +65,10 @@ namespace UberDeployer.Core.Management.Cmd
 
           _log.InfoFormat("Executed in cmd: {0} {1}", fileToExecute, arguments);
         }
+      }
+      catch (Exception exception)
+      {
+        _log.Error("Could not execute command.", exception);
       }
       finally
       {
