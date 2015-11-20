@@ -206,6 +206,7 @@ namespace UberDeployer.Tests.Core.Deployment
       {
         typeof(DownloadArtifactsDeploymentStep),
         typeof(ExtractArtifactsDeploymentStep),
+        typeof(CreateDatabaseDeploymentStep),
         typeof(PublishDatabaseDeploymentStep),
       };
 
