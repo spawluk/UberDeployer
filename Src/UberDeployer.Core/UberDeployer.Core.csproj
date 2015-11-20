@@ -260,6 +260,7 @@
     <Compile Include="Management\MsDeploy\MsDeploy.cs" />
     <Compile Include="Management\MsDeploy\MsDeployException.cs" />
     <Compile Include="Management\PowerShell\IPowerShellExecutor.cs" />
+    <Compile Include="Management\PowerShell\PowerShellConfiguration.cs" />
     <Compile Include="Management\PowerShell\PowerShellExecutor.cs" />
     <Compile Include="Management\PowerShell\PowerShellScriptExecutionException.cs" />
     <Compile Include="Management\ScheduledTasks\ITaskScheduler.cs" />

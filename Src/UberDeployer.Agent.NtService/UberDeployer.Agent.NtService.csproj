@@ -149,6 +149,7 @@
     <Content Include="..\..\data\ProjectInfos.xml">
       <Link>Data\ProjectInfos.xml</Link>
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Lib\MsWebDeploy\msdeploy.exe">
       <Link>msdeploy.exe</Link>

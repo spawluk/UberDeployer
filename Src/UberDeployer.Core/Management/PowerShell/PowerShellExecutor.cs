@@ -8,79 +8,67 @@ namespace UberDeployer.Core.Management.PowerShell
 {
   public class PowerShellExecutor : IPowerShellExecutor
   {
-    private readonly string _machineName;
-
-    private readonly string _localMachineName;
-
-    private readonly Action<string> _onOutput;
-
-    private readonly Action<string> _onError;
+    private readonly PowerShellConfiguration _powerShellConfiguration;
 
     private int _errorCount = 0;
 
-    public PowerShellExecutor(string machineName, string localMachineName, Action<string> onOutput, Action<string> onError)
+    public PowerShellExecutor(PowerShellConfiguration powerShellConfiguration)
     {
-      Guard.NotNullNorEmpty(machineName, "machineName");
-      Guard.NotNullNorEmpty(localMachineName, "localMachineName");
+      Guard.NotNull(powerShellConfiguration, "powerShellConfiguration");
 
-      _machineName = machineName;
-      _localMachineName = localMachineName;
-      _onOutput = onOutput;
-      _onError = onError;
+      _powerShellConfiguration = powerShellConfiguration;
     }
 
     public PSObject Execute(string script)
     {
-      _errorCount = 0;
-
-      return _machineName == _localMachineName ? ExecuteScript(script, null) : ExecuteRemotely(script);
-    }
-
-    private PSObject ExecuteRemotely(string script)
-    {
-      var connectionInfo = new WSManConnectionInfo
-      {
-        ComputerName = _machineName,
-        AuthenticationMechanism = AuthenticationMechanism.Negotiate,
-      };
-
-      using (Runspace runspace = RunspaceFactory.CreateRunspace(connectionInfo))
+      using (Runspace runspace = CreateRunspace())
       {
         runspace.Open();
 
-        return ExecuteScript(script, runspace);
+        using (var powerShell = System.Management.Automation.PowerShell.Create())
+        {
+          powerShell.Runspace = runspace;
+
+          powerShell.AddScript(script);
+
+          powerShell.Streams.Error.DataAdded += OnError;
+          powerShell.Streams.Debug.DataAdded += OnDebug;
+          powerShell.Streams.Warning.DataAdded += OnWarning;
+          powerShell.Streams.Progress.DataAdded += OnProgress;
+          powerShell.Streams.Verbose.DataAdded += OnVerbose;
+
+          var outputCollection = new PSDataCollection<PSObject>();
+
+          outputCollection.DataAdded += OnOutput;
+
+          IAsyncResult invokeResult = powerShell.BeginInvoke<PSObject, PSObject>(null, outputCollection);
+
+          powerShell.EndInvoke(invokeResult);
+
+          if (_errorCount != 0)
+          {
+            throw new PowerShellScriptExecutionException(powerShell.Streams.Error);
+          }
+
+          return outputCollection.LastOrDefault();
+        }
       }
     }
 
-    private PSObject ExecuteScript(string script, Runspace runspace)
+    private Runspace CreateRunspace()
     {
-      using (var powerShell = System.Management.Automation.PowerShell.Create())
+      if (_powerShellConfiguration.IsRemote)
       {
-        powerShell.Runspace = runspace;
-
-        powerShell.AddScript(script);
-
-        powerShell.Streams.Error.DataAdded += OnError;
-        powerShell.Streams.Debug.DataAdded += OnDebug;
-        powerShell.Streams.Warning.DataAdded += OnWarning;
-        powerShell.Streams.Progress.DataAdded += OnProgress;
-        powerShell.Streams.Verbose.DataAdded += OnVerbose;
-
-        var outputCollection = new PSDataCollection<PSObject>();
-
-        outputCollection.DataAdded += OnOutput;
-
-        IAsyncResult invokeResult = powerShell.BeginInvoke<PSObject, PSObject>(null, outputCollection);
-
-        powerShell.EndInvoke(invokeResult);
-
-        if (_errorCount != 0)
+        var connectionInfo = new WSManConnectionInfo
         {
-          throw new PowerShellScriptExecutionException(powerShell.Streams.Error);
-        }
+          ComputerName = _powerShellConfiguration.RemoteMachineName,
+          AuthenticationMechanism = AuthenticationMechanism.Negotiate,
+        };
 
-        return outputCollection.LastOrDefault();
+        return RunspaceFactory.CreateRunspace(connectionInfo);
       }
+
+      return RunspaceFactory.CreateRunspace();
     }
 
     private void OnOutput(object sender, DataAddedEventArgs e)
@@ -116,7 +104,7 @@ namespace UberDeployer.Core.Management.PowerShell
 
     private void WriteOutput(string prefix, object sender, DataAddedEventArgs e)
     {
-      if (_onOutput == null)
+      if (_powerShellConfiguration.OnOutput == null)
       {
         return;
       }
@@ -126,13 +114,13 @@ namespace UberDeployer.Core.Management.PowerShell
       {
         PSObject psObject = psDataCollection[e.Index];
         
-        _onOutput(string.Format("{0}: {1}", prefix, psObject));
+        _powerShellConfiguration.OnOutput(string.Format("{0}: {1}", prefix, psObject));
       }
     }
 
     private void WriteError(string prefix, object sender, DataAddedEventArgs e)
     {
-      if (_onError == null)
+      if (_powerShellConfiguration.OnError == null)
       {
         return;
       }
@@ -141,7 +129,7 @@ namespace UberDeployer.Core.Management.PowerShell
       if (psErrorCollection != null)
       {
         ErrorRecord error = psErrorCollection[e.Index];
-        _onError(string.Format("{0}: {1}", prefix, error.Exception));
+        _powerShellConfiguration.OnError(string.Format("{0}: {1}", prefix, error.Exception));
       }
     }
   }

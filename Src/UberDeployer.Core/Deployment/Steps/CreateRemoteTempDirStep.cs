@@ -26,7 +26,14 @@ namespace UberDeployer.Core.Deployment.Steps
 
     protected override void DoExecute()
     {
-      var powerShellRemoteExecutor = new PowerShellExecutor(_machineName, Environment.MachineName, OnOutput, OnError);
+      var powerShellRemoteExecutor = new PowerShellExecutor(
+        new PowerShellConfiguration
+        {
+          IsRemote = true,
+          RemoteMachineName = _machineName,
+          OnOutput = OnOutput,
+          OnError = OnError,
+        });
 
       PSObject psObject = powerShellRemoteExecutor.Execute(CreateTempDirScript);
 

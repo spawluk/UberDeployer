@@ -259,6 +259,7 @@ namespace UberDeployer.Core.DataAccess.Xml
             powerShellScriptProjectInfoXml.ArtifactsAreNotEnvironmentSpecific,
             ConvertTargetMachine(powerShellScriptProjectInfoXml.TargetMachine),
             powerShellScriptProjectInfoXml.ScriptName,
+            powerShellScriptProjectInfoXml.IsRemote,
             powerShellScriptProjectInfoXml.DependentProjects);
       }
 
@@ -267,7 +268,10 @@ namespace UberDeployer.Core.DataAccess.Xml
 
     private static TargetMachine ConvertTargetMachine(TargetMachineXml targetMachine)
     {
-      Guard.NotNull(targetMachine, "targetMachine");
+      if (targetMachine == null)
+      {
+        return null;
+      }
 
       if (targetMachine is AppServerTargetMachineXml)
       {
