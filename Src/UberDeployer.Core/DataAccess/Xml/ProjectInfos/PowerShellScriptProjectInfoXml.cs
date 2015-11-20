@@ -4,6 +4,8 @@ namespace UberDeployer.Core.DataAccess.Xml.ProjectInfos
 {
   public class PowerShellScriptProjectInfoXml : ProjectInfoXml
   {
+    public bool IsRemote { get; set; }
+
     public TargetMachineXml TargetMachine { get; set; }
     
     public string ScriptName { get; set; }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FluentNHibernate.Conventions.AcceptanceCriteria;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain.Input;
@@ -18,6 +19,7 @@ namespace UberDeployer.Core.Domain
       bool artifactsAreNotEnvironmentSpecific,
       TargetMachine targetMachine,
       string scriptName,
+      bool isRemote,
       List<string> dependendProjectNames = null)
       : base(
         name, 
@@ -27,11 +29,11 @@ namespace UberDeployer.Core.Domain
         artifactsRepositoryDirName, 
         artifactsAreNotEnvironmentSpecific)
     {
-      Guard.NotNull(targetMachine, "targetMachine");
       Guard.NotNullNorEmpty(scriptName, "scriptName");
 
       TargetMachine = targetMachine;
       ScriptName = scriptName;
+      IsRemote = isRemote;
     }
 
     public override ProjectType Type
@@ -70,8 +72,15 @@ namespace UberDeployer.Core.Domain
     
     public string ScriptName { get; private set; }
 
+    public bool IsRemote { get; private set; }
+
     public IEnumerable<string> GetTargetMachines(EnvironmentInfo environmentInfo)
     {
+      if (IsRemote == false)
+      {
+        return new string[] { };
+      }
+
       if (TargetMachine == null || TargetMachine == null)
       {
         throw new DeploymentTaskException("Target machine to run PowerShell script is not specified. Set 'ExecuteOnMachine' property in ProjectInfos.xml");

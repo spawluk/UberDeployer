@@ -107,6 +107,11 @@ namespace UberDeployer.CommonConfiguration
           applicationConfiguration.WebAsynchronousPasswordCollectorMaxWaitTimeInSeconds);
     }
 
+    public IScriptsToRunSelector CreateScriptsToRunWebSelectorForEnvironmentDeploy()
+    {
+      return new ScriptsToRunSelectorForEnvironmentDeploy();
+    }
+
     public IDbScriptRunnerFactory CreateDbScriptRunnerFactory()
     {
       return _container.Resolve<IDbScriptRunnerFactory>();

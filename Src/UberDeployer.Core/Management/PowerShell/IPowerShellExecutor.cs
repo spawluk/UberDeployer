@@ -2,7 +2,7 @@
 
 namespace UberDeployer.Core.Management.PowerShell
 {
-  public interface IPowerShellRemoteExecutor
+  public interface IPowerShellExecutor
   {
     PSObject Execute(string script);
   }
