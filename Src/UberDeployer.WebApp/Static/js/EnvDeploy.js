@@ -53,87 +53,39 @@ UberDeployer.EnvDeploy = function() {
     deploymentHub.client.disconnected = function() {
     };
 
-    deploymentHub.client.promptForCredentials =
-      function(message) {
-        showCollectCredentialsDialog(
-          message.deploymentId,
-          message.projectName,
-          message.projectConfigurationName,
-          message.targetEnvironmentName,
-          message.machineName,
-          message.username);
-      };  
-
-    deploymentHub.client.cancelPromptForCredentials =
-      function() {
-        closeCollectCredentialsDialog();
-      };
-
     $.connection.hub.start();
   };
 
-  var showCollectCredentialsDialog = function(deploymentId, projectName, projectConfigurationName, targetEnvironmentName, machineName, username) {
-    $('#dlg-collect-credentials-deployment-id').val(deploymentId);
-    $('#dlg-collect-credentials-project-name').html(projectName);
-    $('#dlg-collect-credentials-project-configuration-name').html(projectConfigurationName);
-    $('#dlg-collect-credentials-target-environment-name').html(targetEnvironmentName);
-    $('#dlg-collect-credentials-machine-name').val(machineName);
-    $('#dlg-collect-credentials-username').val(username);
-    $('#dlg-collect-credentials-password').val('');
-
-    $('#dlg-collect-credentials').modal('show');
-  };
-
-  var closeCollectCredentialsDialog = function() {
-    $('#dlg-collect-credentials-deployment-id').val('');
-    $('#dlg-collect-credentials-project-name').html('');
-    $('#dlg-collect-credentials-project-configuration-name').html('');
-    $('#dlg-collect-credentials-target-environment-name').html('');
-    $('#dlg-collect-credentials-machine-name').val('');
-    $('#dlg-collect-credentials-username').val('');
-    $('#dlg-collect-credentials-password').val('');
-
-    $('#dlg-collect-credentials').modal('hide');
-  };
-
-  var setupCollectCredentialsDialog = function() {
-    $('#dlg-collect-credentials-ok')
-      .click(function() {
-        var deploymentId = $('#dlg-collect-credentials-deployment-id').val();
-        var password = $('#dlg-collect-credentials-password').val();
-
-        if (password === '') {
-          alert('You have to enter the password.');
-          return;
-        }
-
-        $.ajax({
-          url: g_AppPrefix + 'InternalApi/OnCredentialsCollected',
-          type: "POST",
-          data: {
-            deploymentId: deploymentId,
-            password: password,
-          },
-          traditional: true
+  var ConfirmRestoreDialog = (function () {
+    function ConfirmRestoreDialog() {
+      var self = this;
+      $('#dlg-confirm-restore-ok')
+        .click(function () {
+          self.closeDialog();
+          doDeployEnv();
         });
+    };
 
-        closeCollectCredentialsDialog();
-      });
+    ConfirmRestoreDialog.prototype.showDialog = function (targetEnvironmentName) {
+      $('#dlg-confirm-restore-target-environment-name').html(targetEnvironmentName);
+      $('#dlg-confirm-restore').modal('show');
+    };
 
-    $('#dlg-collect-credentials')
-      .on(
-        'shown',
-        function() {
-          $('#dlg-collect-credentials-password').focus();
-        });
-  };  
+    ConfirmRestoreDialog.prototype.closeDialog = function () {
+      $('#dlg-confirm-restore-target-environment-name').html('');
+      $('#dlg-confirm-restore').modal('hide');
+    };
+
+    return ConfirmRestoreDialog;
+  })();
 
   return {
     initializeEnvDeploymentPage : function(initData) {
       _initialSelection = initData.initialSelection;
 
       setupSignalR();
-      setupCollectCredentialsDialog();
+
+      var confirmRestoreDialog = new ConfirmRestoreDialog();
 
       $.ajaxSetup({
         'error': function(xhr) {
@@ -141,8 +93,8 @@ UberDeployer.EnvDeploy = function() {
         }
       });
 
-      $('#btn-deployEnv').click(function() {
-        doDeployEnv();
+      $('#btn-deployEnv').click(function () {
+        confirmRestoreDialog.showDialog(getSelectedTargetEnvironmentName());
       });
 
       loadEnvironments(function() {

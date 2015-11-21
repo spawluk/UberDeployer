@@ -302,7 +302,7 @@ namespace UberDeployer.Agent.Service
 
           if (projectInfo == null)
           {
-            throw new DeploymentTaskException(string.Format("Not found configuration for project: {0}", projectToDeploy));
+            throw new DeploymentTaskException(string.Format("Not found configuration for project: {0}", projectToDeploy.ProjectName));
           }
 
           ProjectConfigurationBuild lastSuccessfulBuild = GetLatestSuccessfulBuild(projectToDeploy.ProjectName, environmentDeployInfo.BuildConfigurationName);

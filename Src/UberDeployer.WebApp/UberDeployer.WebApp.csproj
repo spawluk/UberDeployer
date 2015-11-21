@@ -266,6 +266,7 @@
     <Content Include="Views\Deployment\Popups\CollectDatabaseScripts.cshtml" />
     <Content Include="Views\Deployment\Popups\DeployArtifactsToLocation.cshtml" />
     <Content Include="Views\Deployment\Popups\CollectDependencies.cshtml" />
+    <Content Include="Views\EnvDeployment\Popups\ConfirmRestore.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberDeployer.Agent.Proxy\UberDeployer.Agent.Proxy.csproj">
