@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UberDeployer.Common.SyntaxSugar;
 using UberDeployer.Core.Configuration;
 using UberDeployer.Core.Deployment.Tasks;
+using UberDeployer.Core.Deployment.Tasks.DependenciesDeployment;
 using UberDeployer.Core.Domain;
 
 namespace UberDeployer.Core.Deployment.Pipeline
@@ -56,7 +57,7 @@ namespace UberDeployer.Core.Deployment.Pipeline
       {
         deploymentTask.Initialize(deploymentInfo);
 
-        if (_applicationConfiguration.DeployDependentProjects)
+        if (_applicationConfiguration.DeployDependentProjects && deploymentInfo.ProjectConfigurationName == DeployDependenciesTask.DefaultTeamCityProjectConfiguration)
         {
           deploymentTask.EnableDependenciesDeployment(_objectFactory);
         }

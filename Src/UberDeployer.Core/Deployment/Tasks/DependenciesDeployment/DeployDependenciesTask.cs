@@ -21,7 +21,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
     private readonly List<DeploymentTaskBase> _subTasks;
     private readonly Guid _deploymentId;
 
-    private const string _DefaultTeamCityProjectConfiguration = "Production";
+    public const string DefaultTeamCityProjectConfiguration = "Production";
 
     public DeployDependenciesTask(
       string projectName,
@@ -83,7 +83,7 @@ namespace UberDeployer.Core.Deployment.Tasks.DependenciesDeployment
         return;
       }
 
-      List<ProjectDeployment> defaultProjectDeployments = BuildDefaultProjectDeployments(dependentProjectsToDeploy, _DefaultTeamCityProjectConfiguration);
+      List<ProjectDeployment> defaultProjectDeployments = BuildDefaultProjectDeployments(dependentProjectsToDeploy, DefaultTeamCityProjectConfiguration);
 
       IEnumerable<ProjectDeployment> configuredProjectDeployments = ConfigureDeploymentsByClient(defaultProjectDeployments);
 
