@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using UberDeployer.Common.SyntaxSugar;
-using UberDeployer.Core.DataAccess.Xml;
-using UberDeployer.Core.Deployment;
 using UberDeployer.Core.Deployment.Tasks;
 using UberDeployer.Core.Domain.Input;
 using UberDeployer.Core.Management.FailoverCluster;
@@ -12,7 +11,19 @@ namespace UberDeployer.Core.Domain
 {
   public class NtServiceProjectInfo : ProjectInfo
   {
-    public NtServiceProjectInfo(string name, string artifactsRepositoryName, IEnumerable<string> allowedEnvironmentNames, string artifactsRepositoryDirName, bool artifactsAreNotEnvironmentSpecific, string ntServiceName, string ntServiceDirName, string ntServiceDisplayName, string ntServiceExeName, string ntServiceUserId, string extensionsDirName, List<string> dependendProjectNames = null)
+    public NtServiceProjectInfo(
+      string name,
+      string artifactsRepositoryName,
+      IEnumerable<string> allowedEnvironmentNames,
+      string artifactsRepositoryDirName,
+      bool artifactsAreNotEnvironmentSpecific,
+      string ntServiceName,
+      string ntServiceDirName,
+      string ntServiceDisplayName,
+      string ntServiceExeName,
+      string ntServiceUserId,
+      string extensionsDirName,
+      List<string> dependendProjectNames = null)
       : base(name, artifactsRepositoryName, allowedEnvironmentNames, dependendProjectNames, artifactsRepositoryDirName, artifactsAreNotEnvironmentSpecific)
     {
       Guard.NotNullNorEmpty(ntServiceName, "ntServiceName");
@@ -30,7 +41,10 @@ namespace UberDeployer.Core.Domain
 
     public override ProjectType Type
     {
-      get { return ProjectType.NtService; }
+      get
+      {
+        return ProjectType.NtService;
+      }
     }
 
     public override InputParams CreateEmptyInputParams()

@@ -47,5 +47,10 @@ namespace UberDeployer.Core.Management.NtServices
     public string ServicePassword { get; private set; }
 
     #endregion
+
+    public bool IsUserALocalSystem()
+    {
+      return ServiceUserName == "LocalSystem";
+    }
   }
 }

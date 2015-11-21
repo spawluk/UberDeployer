@@ -89,14 +89,17 @@ namespace UberDeployer.Core.Management.NtServices
           ntServiceDescriptor.ServiceExecutablePath,
           ConvertSreviceStartModeToString(ntServiceDescriptor.ServiceStartMode));
 
-      if (!string.IsNullOrEmpty(ntServiceDescriptor.ServiceUserName))
+      if (ntServiceDescriptor.IsUserALocalSystem() == false)
       {
-        args += string.Format(" obj= \"{0}\"", ntServiceDescriptor.ServiceUserName);
-      }
+        if (!string.IsNullOrEmpty(ntServiceDescriptor.ServiceUserName))
+        {
+          args += string.Format(" obj= \"{0}\"", ntServiceDescriptor.ServiceUserName);
+        }
 
-      if (!string.IsNullOrEmpty(ntServiceDescriptor.ServicePassword))
-      {
-        args += string.Format(" password= \"{0}\"", ntServiceDescriptor.ServicePassword);
+        if (!string.IsNullOrEmpty(ntServiceDescriptor.ServicePassword))
+        {
+          args += string.Format(" password= \"{0}\"", ntServiceDescriptor.ServicePassword);
+        }
       }
 
       string stdOut;
