@@ -29,9 +29,9 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\Lib\DotNetZip\Ionic.Zip.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
+    <Reference Include="log4net, Version=1.2.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\log4net\log4net.dll</HintPath>
+      <HintPath>..\packages\log4net.2.0.4\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="msdeploy, Version=7.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <ExecutableExtension>.exe</ExecutableExtension>
@@ -108,6 +108,7 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
