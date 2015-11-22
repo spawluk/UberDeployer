@@ -183,6 +183,8 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
+#Visual Studio 2015 specific files
+.vs
 
 # =========================
 # Project specific files and folders
