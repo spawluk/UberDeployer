@@ -14,13 +14,20 @@ namespace UberDeployer.Core.Deployment.Tasks
 {
   public class DeployNtServiceDeploymentTask : DeploymentTask
   {
+    private const string LocalSystemUserName = "LocalSystem";
+
     private readonly IArtifactsRepository _artifactsRepository;
 
     private readonly INtServiceManager _ntServiceManager;
+
     private readonly IPasswordCollector _passwordCollector;
+
     private readonly IFailoverClusterManager _failoverClusterManager;
+
     private readonly IDirectoryAdapter _directoryAdapter;
+
     private readonly IFileAdapter _fileAdapter;
+
     private readonly IZipFileAdapter _zipFileAdapter;
 
     private NtServiceProjectInfo _projectInfo;
@@ -53,6 +60,8 @@ namespace UberDeployer.Core.Deployment.Tasks
       _fileAdapter = fileAdapter;
       _zipFileAdapter = zipFileAdapter;
     }
+
+    public bool UseLocalSystemUser { get; set; }
 
     protected override void DoPrepare()
     {
@@ -105,7 +114,7 @@ namespace UberDeployer.Core.Deployment.Tasks
         {
           throw new InvalidOperationException(string.Format("Failover clustering for NT services is enabled for environment '{0}' but there is no cluster group mapping for project '{1}'.", environmentInfo.Name, DeploymentInfo.ProjectName));
         }
-
+        
         DoPrepareDeploymentToClusteredEnvironment(
           environmentInfo,
           new Lazy<string>(() => extractArtifactsDeploymentStep.BinariesDirPath));
@@ -139,6 +148,11 @@ namespace UberDeployer.Core.Deployment.Tasks
       Func<CollectedCredentials> collectCredentialsFunc =
         () =>
         {
+          if (UseLocalSystemUser)
+          {
+            return new CollectedCredentials(LocalSystemUserName);
+          }
+
           EnvironmentUser environmentUser =
             environmentInfo.GetEnvironmentUser(_projectInfo.NtServiceUserId);
 
@@ -218,23 +232,30 @@ namespace UberDeployer.Core.Deployment.Tasks
           }
           // ReSharper restore AccessToModifiedClosure
 
-          EnvironmentUser environmentUser =
-            environmentInfo.GetEnvironmentUser(_projectInfo.NtServiceUserId);
+          if (UseLocalSystemUser)
+          {
+            cachedCollectedCredentials = new CollectedCredentials(LocalSystemUserName);
+          }
+          else
+          {
+            EnvironmentUser environmentUser =
+              environmentInfo.GetEnvironmentUser(_projectInfo.NtServiceUserId);
 
-          string environmentUserPassword =
-            PasswordCollectorHelper.CollectPasssword(
-              _passwordCollector,
-              DeploymentInfo.DeploymentId,
-              environmentInfo,
-              machineName,
-              environmentUser,
-              OnDiagnosticMessagePosted);
+            string environmentUserPassword =
+              PasswordCollectorHelper.CollectPasssword(
+                _passwordCollector,
+                DeploymentInfo.DeploymentId,
+                environmentInfo,
+                machineName,
+                environmentUser,
+                OnDiagnosticMessagePosted);
 
-          cachedCollectedCredentials =
-            new CollectedCredentials(
-              environmentUser.UserName,
-              environmentUserPassword);
-
+            cachedCollectedCredentials =
+              new CollectedCredentials(
+                environmentUser.UserName,
+                environmentUserPassword);
+          }
+          
           return cachedCollectedCredentials;
         };
 

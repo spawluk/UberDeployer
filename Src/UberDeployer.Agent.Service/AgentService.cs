@@ -285,7 +285,7 @@ namespace UberDeployer.Agent.Service
     private IEnumerable<ProjectDeploymentData> CreateProjectEnvironmentDeployments(Guid uniqueClientId, EnvironmentDeployInfo environmentDeployInfo, IEnumerable<ProjectToDeploy> projects)
     {
       var projectDeployments = new List<ProjectDeploymentData>();
-      var environmentProjectDeployments = new List<ProjectDeploymentData>();
+      var priorityProjectDeplyoments = new List<ProjectDeploymentData>();
 
       EnvironmentInfo environmentInfo = _environmentInfoRepository.FindByName(environmentDeployInfo.TargetEnvironment);
 
@@ -313,8 +313,12 @@ namespace UberDeployer.Agent.Service
           }
 
           InputParams inputParams = BuildInputParams(projectInfo, environmentInfo);
+
           var deploymentInfo = new Core.Domain.DeploymentInfo(projectToDeploy.DeploymentId, false, projectToDeploy.ProjectName, environmentDeployInfo.BuildConfigurationName, lastSuccessfulBuild.Id, environmentDeployInfo.TargetEnvironment, inputParams);
 
+          DeploymentTask deploymentTask;
+
+          // TODO LK: could replace below code with factory
           if (projectInfo.Type == ProjectType.Db)
           {
             DeploymentTask dropDbProjectDeploymentTask = new DropDbProjectDeploymentTask(
@@ -322,9 +326,9 @@ namespace UberDeployer.Agent.Service
               ObjectFactory.Instance.CreateEnvironmentInfoRepository(),
               ObjectFactory.Instance.CreateDbManagerFactory());
 
-            environmentProjectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, dropDbProjectDeploymentTask));
+            priorityProjectDeplyoments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, dropDbProjectDeploymentTask));
 
-            DeploymentTask dbTask =
+            deploymentTask =
               new DeployDbProjectDeploymentTask(
                 ObjectFactory.Instance.CreateProjectInfoRepository(),
                 ObjectFactory.Instance.CreateEnvironmentInfoRepository(),
@@ -338,15 +342,29 @@ namespace UberDeployer.Agent.Service
                 ObjectFactory.Instance.CreateDbManagerFactory(),
                 ObjectFactory.Instance.CreateUserNameNormalizer(),
                 ObjectFactory.Instance.CreateDirectoryAdapter());
-
-            projectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, dbTask));
+          }
+          else if (projectInfo.Type == ProjectType.NtService)
+          {
+            deploymentTask = new DeployNtServiceDeploymentTask(
+              ObjectFactory.Instance.CreateProjectInfoRepository(),
+              ObjectFactory.Instance.CreateEnvironmentInfoRepository(),
+              ObjectFactory.Instance.CreateArtifactsRepository(),
+              ObjectFactory.Instance.CreateNtServiceManager(),
+              ObjectFactory.Instance.CreatePasswordCollector(),
+              ObjectFactory.Instance.CreateFailoverClusterManager(),
+              ObjectFactory.Instance.CreateDirectoryAdapter(),
+              ObjectFactory.Instance.CreateFileAdapter(),
+              ObjectFactory.Instance.CreateZipFileAdapter())
+            {
+              UseLocalSystemUser = true
+            };
           }
           else
           {
-            DeploymentTask deploymentTask = projectInfo.CreateDeploymentTask(ObjectFactory.Instance);
-
-            projectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, deploymentTask));
+            deploymentTask = projectInfo.CreateDeploymentTask(ObjectFactory.Instance);
           }
+
+          projectDeployments.Add(new ProjectDeploymentData(deploymentInfo, projectInfo, deploymentTask));
         }
         catch (Exception e)
         {
@@ -354,9 +372,9 @@ namespace UberDeployer.Agent.Service
         }
       }
 
-      environmentProjectDeployments.AddRange(projectDeployments);
+      priorityProjectDeplyoments.AddRange(projectDeployments);
 
-      return environmentProjectDeployments;
+      return priorityProjectDeplyoments;
     }
 
     private static InputParams BuildInputParams(ProjectInfo projectInfo, EnvironmentInfo environmentInfo)
